@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
@@ -66,6 +68,24 @@ public class UserController {
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
         return ResponseEntity.ok(userService.save(dto));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Integer id, @Valid @RequestBody UserDTO dto, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(result.getAllErrors());
+        }
+        if (!userService.findById(id).getEmail().equals(dto.getEmail()) && checkEmail(dto.getEmail())){
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }
+        dto.setId(id);
+        return ResponseEntity.ok(userService.save(dto));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteUser(@RequestBody List<Integer> ids) {
+        userService.delete(ids);
+        return ResponseEntity.ok("Delete Successfully");
     }
 
     private boolean checkEmail(String email) {
