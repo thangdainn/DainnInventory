@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class DainnInventoryApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(DainnInventoryApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(DainnInventoryApplication.class, args);
+    }
 
 }

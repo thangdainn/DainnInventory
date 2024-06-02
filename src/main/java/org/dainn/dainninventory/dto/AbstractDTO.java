@@ -1,18 +1,18 @@
-package org.dainn.dainninventory.controller.response;
+package org.dainn.dainninventory.dto;
 
 import lombok.*;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-@Builder
-public abstract class AbstractResponse<T> {
+public abstract class AbstractDTO {
     private Integer id;
     private Integer status;
-    private Date createdDate;
-    private Date modifiedDate;
+    private LocalDateTime createdDate;
+    private LocalDateTime modifiedDate;
 }
+
+

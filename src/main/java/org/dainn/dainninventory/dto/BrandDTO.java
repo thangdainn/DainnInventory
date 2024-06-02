@@ -2,13 +2,11 @@ package org.dainn.dainninventory.dto;
 
 import lombok.*;
 
-import java.sql.Date;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BrandsDTO extends AbstractDTO{
+public class BrandDTO extends AbstractDTO{
     private String description;
     private String name;
 

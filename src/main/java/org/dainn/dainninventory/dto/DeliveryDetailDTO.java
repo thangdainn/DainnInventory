@@ -1,21 +1,12 @@
+package org.dainn.dainninventory.dto;
 
-public class DeliveryDetailDTO {
-    private Long deliveryId;
-    private Long orderId;
+import lombok.*;
 
-    public Long getDeliveryId() {
-        return this.deliveryId;
-    }
-
-    public void setDeliveryId(Long deliveryId) {
-        this.deliveryId = deliveryId;
-    }
-
-    public Long getOrderId() {
-        return this.orderId;
-    }
-
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
-    }
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class DeliveryDetailDTO extends AbstractDTO{
+    private Integer deliveryId;
+    private Integer orderId;
 }

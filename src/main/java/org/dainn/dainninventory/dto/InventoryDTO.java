@@ -6,7 +6,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class InventoriesDTO extends AbstractDTO{
+public class InventoryDTO extends AbstractDTO{
     private Integer quantity;
     private Integer reorderPoint;
     private Integer productId;

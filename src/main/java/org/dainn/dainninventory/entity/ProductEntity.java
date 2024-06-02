@@ -1,2 +1,53 @@
-package org.dainn.dainninventory.entity;public class ProductEntity {
+package org.dainn.dainninventory.entity;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "products")
+public class ProductEntity extends BaseEntity{
+    @Column(name = "name", nullable = false, unique = true)
+    private String name;
+
+    @Column(name = "code", nullable = false, unique = true)
+    private String code;
+
+    @Column(name = "description", nullable = false)
+    private String description;
+
+    @Column(name = "price", nullable = false)
+    private double price;
+
+    @Column(name = "img_url", nullable = false)
+    private String imgUrl;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id", nullable = false)
+    private BrandEntity brand;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private CategoryEntity category;
+
+//    @ManyToOne
+//    @JoinColumn(name = "supplier_id", nullable = false)
+//    private SupplierEntity supplier;
+
+    @OneToMany(mappedBy = "product")
+    private List<ImageEntity> images = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product")
+    private List<OrderDetailEntity> orderDetails = new ArrayList<>();
 }

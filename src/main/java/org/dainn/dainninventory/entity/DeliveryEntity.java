@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "deliveries")
-public class Delivery extends BaseEntity{
+public class DeliveryEntity extends BaseEntity{
     @Column(name = "name", nullable = false)
     private String name;
 

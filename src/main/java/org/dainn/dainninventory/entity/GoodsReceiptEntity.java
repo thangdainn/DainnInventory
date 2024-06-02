@@ -14,8 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "good_receipts")
-public class GoodReceipt extends BaseEntity {
+@Table(name = "goods_receipts")
+public class GoodsReceiptEntity extends BaseEntity {
     @Column(name = "phone", nullable = false)
     private String phone;
 
@@ -29,6 +29,6 @@ public class GoodReceipt extends BaseEntity {
     @JoinColumn(name = "supplier_id")
     private SupplierEntity supplier;
 
-    @OneToMany(mappedBy = "goodReceipt")
-    private List<GoodReceiptDetail> goodReceiptDetails = new ArrayList<>();
+    @OneToMany(mappedBy = "goodsReceipt")
+    private List<GoodsReceiptDetailEntity> goodsReceiptDetails = new ArrayList<>();
 }

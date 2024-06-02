@@ -6,7 +6,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GoodsReceiptDetailsDTO extends AbstractDTO{
+public class GoodsReceiptDetailDTO extends AbstractDTO{
     private double price;
     private Integer quantity;
     private Integer goodReceiptId;

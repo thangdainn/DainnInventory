@@ -1,11 +1,17 @@
 package org.dainn.dainninventory.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@Data
-@Builder
-public class RolesDTO extends AbstractDTO<RolesDTO>{
-    private String description;
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class RoleDTO extends AbstractDTO{
+    @NotBlank(message = "Name is required")
     private String name;
+
+    @NotBlank(message = "Description is required")
+    private String description;
 }

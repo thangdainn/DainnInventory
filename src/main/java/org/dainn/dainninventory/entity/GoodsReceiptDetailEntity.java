@@ -11,17 +11,17 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "good_receipt_details")
-public class GoodReceiptDetail extends BaseEntity {
+@Table(name = "goods_receipt_details")
+public class GoodsReceiptDetailEntity extends BaseEntity {
     @Column(name = "price", nullable = false)
     private double price;
 
-    @Column(name = "quatity", nullable = false)
+    @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "good_receipt_id")
-    private GoodReceipt goodReceipt;
+    @JoinColumn(name = "goods_receipt_id")
+    private GoodsReceiptEntity goodsReceipt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")

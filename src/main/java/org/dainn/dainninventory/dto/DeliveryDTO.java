@@ -6,7 +6,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeliveriesDTO extends AbstractDTO{
+public class DeliveryDTO extends AbstractDTO{
     private String address;
     private String name;
     private String phone;

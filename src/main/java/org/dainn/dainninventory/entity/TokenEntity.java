@@ -1,4 +1,4 @@
-package com.thymeleaf.entity;
+package org.dainn.dainninventory.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -14,26 +14,22 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "token")
-public class TokenEntity extends BaseEntity{
+@Table(name = "tokens")
+public class TokenEntity{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
 
-//    @NotNull
-//    @Column(name = "access_token")
-//    private String token;
-
-//    @NotNull
-//    @Column(name = "expiration_date")
-//    private Timestamp expirationDate;
-
-    @NotNull
-    @Column(name = "refresh_token")
+    @Column(name = "refresh_token", nullable = false)
     private String refreshToken;
 
-    @NotNull
-    @Column(name = "refresh_token_expiration_date")
+    @Column(name = "refresh_token_expiration_date", nullable = false)
     private Timestamp refreshTokenExpirationDate;
 
-    @NotNull
+    @Column(name = "device_info", nullable = false)
+    private String deviceInfo;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;

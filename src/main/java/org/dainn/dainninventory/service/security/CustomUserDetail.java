@@ -1,9 +1,9 @@
-package com.thymeleaf.security;
+package org.dainn.dainninventory.service.security;
 
-import com.thymeleaf.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.dainn.dainninventory.entity.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,7 +23,7 @@ public class CustomUserDetail implements UserDetails {
 
 
     public CustomUserDetail(UserEntity userEntity) {
-        username = userEntity.getUserName();
+        username = userEntity.getEmail();
         password = userEntity.getPassword();
         name = userEntity.getName();
         authorities = userEntity.getRoles()

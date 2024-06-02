@@ -9,7 +9,7 @@ import java.sql.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrdersDTO {
+public class OrderDTO {
     private Integer id;
     private String customerName;
     private String customerPhone;

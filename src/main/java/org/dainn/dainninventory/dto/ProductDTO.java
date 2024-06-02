@@ -6,7 +6,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductsDTO extends AbstractDTO{
+public class ProductDTO extends AbstractDTO{
     private String code;
     private String description;
     private String imgUrl;

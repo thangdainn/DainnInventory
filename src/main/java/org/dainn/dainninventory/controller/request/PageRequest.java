@@ -1,4 +1,4 @@
-package org.dainn.dainninventory.controller.response;
+package org.dainn.dainninventory.controller.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,9 +12,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PageResponse<T> {
-    private int page;
-    private int size;
-    private int totalPages;
-    private List<T> data = new ArrayList<>();
+public abstract class PageRequest {
+    private Integer page;
+    private Integer size;
+    private String sortBy;
+    private String sortDir;
 }

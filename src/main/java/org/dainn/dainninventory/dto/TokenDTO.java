@@ -8,7 +8,7 @@ import java.sql.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TokensDTO {
+public class TokenDTO {
     private Integer id;
     private String deviceInfo;
     private String refreshToken;

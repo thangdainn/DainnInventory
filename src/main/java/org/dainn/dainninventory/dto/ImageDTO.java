@@ -6,6 +6,6 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ImagesDTO extends AbstractDTO{
+public class ImageDTO extends AbstractDTO{
     private Integer productId;
 }

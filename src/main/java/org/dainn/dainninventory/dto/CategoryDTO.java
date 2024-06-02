@@ -6,7 +6,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoriesDTO extends AbstractDTO{
+public class CategoryDTO extends AbstractDTO{
     private String description;
     private String name;
 }

@@ -1,9 +1,10 @@
 package org.dainn.dainninventory.repository;
 
+import org.dainn.dainninventory.entity.BrandEntity;
 import org.dainn.dainninventory.entity.CategoryEntity;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-
-public interface ICategoryRepository extends JpaRepository<CategoryEntity, Integer> {
+@Repository
+public interface IBrandRepository extends JpaRepository<BrandEntity, Integer> {
 }

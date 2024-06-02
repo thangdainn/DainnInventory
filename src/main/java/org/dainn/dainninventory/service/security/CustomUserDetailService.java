@@ -1,9 +1,11 @@
-package com.thymeleaf.security;
+package org.dainn.dainninventory.service.security;
 
-import com.thymeleaf.entity.UserEntity;
-import com.thymeleaf.repository.IRoleRepository;
-import com.thymeleaf.repository.IUserRepository;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.dainn.dainninventory.entity.UserEntity;
+import org.dainn.dainninventory.repository.IRoleRepository;
+import org.dainn.dainninventory.repository.IUserRepository;
+import org.dainn.dainninventory.utils.ProviderId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,10 +13,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Component
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class CustomUserDetailService implements UserDetailsService {
 
     @Autowired
@@ -24,24 +27,24 @@ public class CustomUserDetailService implements UserDetailsService {
     private IRoleRepository roleRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UserEntity> userEntities = userRepository.findByUserNameAndActiveFlag(username, 1);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<UserEntity> userEntities = userRepository.findByEmailAndStatus(email, 1);
         if (userEntities.isPresent()) {
             UserEntity user = userEntities.get();
-            user.setRoles(roleRepository.findByUsers(user));
+            user.setRoles(roleRepository.findByUsers(List.of(user)));
             return new CustomUserDetail(user);
         } else {
-            return new CustomUserDetail(username, "", "", new ArrayList<>());
+            return new CustomUserDetail(email, "", "", new ArrayList<>());
         }
     }
-    public UserDetails loadUserByUsernameAndProviderId(String username, String providerId) throws UsernameNotFoundException {
-        Optional<UserEntity> userEntities = userRepository.findByUserNameAndProviderId(username, providerId);
+    public UserDetails loadUserByUsernameAndProviderId(String email, ProviderId providerId) throws UsernameNotFoundException {
+        Optional<UserEntity> userEntities = userRepository.findByEmailAndProviderId(email, providerId);
         if (userEntities.isPresent()) {
             UserEntity user = userEntities.get();
-            user.setRoles(roleRepository.findByUsers(user));
+            user.setRoles(roleRepository.findByUsers(List.of(user)));
             return new CustomUserDetail(user);
         } else {
-            return new CustomUserDetail(username, "", "", new ArrayList<>());
+            return new CustomUserDetail(email, "", "", new ArrayList<>());
         }
     }
 }
