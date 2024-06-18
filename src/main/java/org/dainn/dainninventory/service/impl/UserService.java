@@ -2,8 +2,7 @@ package org.dainn.dainninventory.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.controller.request.UserPageRequest;
-import org.dainn.dainninventory.controller.response.PageResponse;
-import org.dainn.dainninventory.controller.response.UserResponse;
+import org.dainn.dainninventory.controller.request.UserRequest;
 import org.dainn.dainninventory.dto.UserDTO;
 import org.dainn.dainninventory.entity.RoleEntity;
 import org.dainn.dainninventory.entity.UserEntity;
@@ -32,7 +31,8 @@ public class UserService implements IUserService {
 
     @Transactional
     @Override
-    public UserResponse save(UserDTO userDTO) {
+    public UserDTO save(UserRequest userRequest) {
+        UserDTO userDTO = userMapper.toDTO(userRequest);
         UserEntity userEntity;
         if (userDTO.getId() != null) {
             UserEntity userOld = userRepository.findById(userDTO.getId())
@@ -59,7 +59,7 @@ public class UserService implements IUserService {
             }
         }
         userEntity.setRoles(roles);
-        return userMapper.toResponse(userRepository.save(userEntity));
+        return userMapper.toDTO(userRepository.save(userEntity));
     }
 
     @Transactional
@@ -69,9 +69,9 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserResponse findById(Integer id) {
+    public UserDTO findById(Integer id) {
         return userRepository.findById(id)
-                .map(userMapper::toResponse).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+                .map(userMapper::toDTO).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
     }
 
     @Override
@@ -80,22 +80,41 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<UserResponse> findAll() {
-        return userRepository.findAll().stream().map(userMapper::toResponse).toList();
+    public List<UserDTO> findAll() {
+        return userRepository.findAll().stream().map(userMapper::toDTO).toList();
     }
 
     @Override
-    public Page<UserResponse> findAll(Pageable pageable) {
+    public Page<UserDTO> findAll(Pageable pageable) {
         Page<UserEntity> page = userRepository.findAll(pageable);
         return new PageImpl<>(page.getContent().stream()
-                .map(userMapper::toResponse).toList(), page.getPageable(), page.getTotalElements());
+                .map(userMapper::toDTO).toList(), page.getPageable(), page.getTotalElements());
     }
 
     @Override
-    public Page<UserResponse> findByEmailContaining(String email, Pageable pageable) {
+    public Page<UserDTO> findAll(UserPageRequest request) {
+        Sort sort;
+        if (request.getSortBy() != null && !request.getSortBy().isBlank()) {
+            sort = request.getSortBy().equalsIgnoreCase(Sort.Direction.ASC.name())
+                    ? Sort.by(request.getSortBy()).ascending() : Sort.by(request.getSortBy()).descending();
+        } else {
+            sort = Sort.unsorted();
+        }
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
+        Page<UserEntity> entityPage;
+        if (request.getKeyword() != null) {
+            entityPage = userRepository.findByEmailContaining(request.getKeyword(), pageable);
+        } else {
+            entityPage = userRepository.findAll(pageable);
+        }
+        return entityPage.map(userMapper::toDTO);
+    }
+
+    @Override
+    public Page<UserDTO> findByEmailContaining(String email, Pageable pageable) {
         Page<UserEntity> page = userRepository.findByEmailContaining(email, pageable);
         return new PageImpl<>(page.getContent().stream()
-                .map(userMapper::toResponse).toList(), page.getPageable(), page.getTotalElements());
+                .map(userMapper::toDTO).toList(), page.getPageable(), page.getTotalElements());
     }
 
     @Override

@@ -68,7 +68,4 @@ public class OrderEntity {
     @OneToMany(mappedBy = "order")
     private List<OrderDetailEntity> orderDetails = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private DeliveryEntity delivery;
-
 }

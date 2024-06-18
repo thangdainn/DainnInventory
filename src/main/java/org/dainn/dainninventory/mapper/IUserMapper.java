@@ -1,6 +1,6 @@
 package org.dainn.dainninventory.mapper;
 
-import org.dainn.dainninventory.controller.response.UserResponse;
+import org.dainn.dainninventory.controller.request.UserRequest;
 import org.dainn.dainninventory.dto.UserDTO;
 import org.dainn.dainninventory.entity.RoleEntity;
 import org.dainn.dainninventory.entity.UserEntity;
@@ -16,11 +16,12 @@ import java.util.List;
 public interface IUserMapper {
     UserEntity toEntity(UserDTO request);
 
+    UserDTO toDTO(UserRequest userRequest);
     @Mapping(target = "rolesName", source = "roles", qualifiedByName = "toRoleDTO")
     UserDTO toDTO(UserEntity entity);
 
-    @Mapping(target = "rolesName", source = "roles", qualifiedByName = "toRoleDTO")
-    UserResponse toResponse(UserEntity entity);
+//    @Mapping(target = "rolesName", source = "roles", qualifiedByName = "toRoleDTO")
+//    UserResponse toResponse(UserEntity entity);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdDate", ignore = true)

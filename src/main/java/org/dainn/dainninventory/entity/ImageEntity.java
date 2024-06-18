@@ -14,6 +14,9 @@ import lombok.Setter;
 @Entity
 @Table(name = "images")
 public class ImageEntity extends BaseEntity{
+    @Column(name = "url", nullable = false)
+    private String url;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private ProductEntity product;

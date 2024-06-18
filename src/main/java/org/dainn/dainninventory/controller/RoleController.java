@@ -13,12 +13,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/role")
+@RequestMapping("/api/roles")
 @RequiredArgsConstructor
 public class RoleController {
 
-    @Autowired
-    private IRoleService roleService;
+    private final IRoleService roleService;
 
     @GetMapping
     public ResponseEntity<?> getRoles() {

@@ -41,10 +41,6 @@ public class ProductEntity extends BaseEntity{
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryEntity category;
 
-//    @ManyToOne
-//    @JoinColumn(name = "supplier_id", nullable = false)
-//    private SupplierEntity supplier;
-
     @OneToMany(mappedBy = "product")
     private List<ImageEntity> images = new ArrayList<>();
 

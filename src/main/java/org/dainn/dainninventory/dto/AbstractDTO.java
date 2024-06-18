@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public abstract class AbstractDTO {
     private Integer id;
-    private Integer status;
+    private Integer status = 1;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 }

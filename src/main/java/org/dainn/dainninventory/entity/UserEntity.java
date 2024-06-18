@@ -35,4 +35,7 @@ public class UserEntity extends BaseEntity{
 
     @OneToMany(mappedBy = "user")
     private List<TokenEntity> tokens = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<GoodsReceiptEntity> goodsReceipts = new ArrayList<>();
 }

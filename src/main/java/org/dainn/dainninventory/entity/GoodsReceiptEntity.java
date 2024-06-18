@@ -16,14 +16,12 @@ import java.util.List;
 @Entity
 @Table(name = "goods_receipts")
 public class GoodsReceiptEntity extends BaseEntity {
-    @Column(name = "phone", nullable = false)
-    private String phone;
+    @Column(name = "total_amount", nullable = false)
+    private double totalAmount;
 
-    @Column(name = "address", nullable = false)
-    private String address;
-
-    @Column(name = "total", nullable = false)
-    private double total;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_id")
