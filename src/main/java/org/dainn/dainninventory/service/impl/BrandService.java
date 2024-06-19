@@ -51,12 +51,6 @@ public class BrandService implements IBrandService {
     }
 
     @Override
-    public BrandEntity findEntityById(Integer id) {
-        return brandRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.BRAND_NOT_EXISTED));
-    }
-
-    @Override
     public BrandDTO findByName(String name) {
         return brandMapper.toDTO(brandRepository.findByName(name)
                 .orElseThrow(() -> new AppException(ErrorCode.BRAND_NOT_EXISTED)));

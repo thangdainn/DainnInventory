@@ -56,12 +56,6 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public CategoryEntity findEntityById(Integer id) {
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED));
-    }
-
-    @Override
     public CategoryDTO findByName(String name) {
         return categoryMapper.toDTO(categoryRepository.findByName(name)
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED)));

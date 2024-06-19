@@ -37,6 +37,9 @@ public class UserService implements IUserService {
         if (userDTO.getId() != null) {
             UserEntity userOld = userRepository.findById(userDTO.getId())
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+            if (!userOld.getEmail().equals(userDTO.getEmail()) && checkEmailAndProvider(userDTO.getEmail(), userDTO.getProviderId())) {
+                throw new AppException(ErrorCode.EMAIL_EXISTED);
+            }
             if (userDTO.getPassword().isBlank()) {
                 userDTO.setPassword(userOld.getPassword());
             } else {
@@ -44,6 +47,9 @@ public class UserService implements IUserService {
             }
             userEntity = userMapper.updateEntity(userOld, userDTO);
         } else {
+            if (checkEmailAndProvider(userDTO.getEmail(), userDTO.getProviderId())) {
+                throw new AppException(ErrorCode.EMAIL_EXISTED);
+            }
             userEntity = userMapper.toEntity(userDTO);
             userEntity.setPassword(encoder.encode(userDTO.getPassword()));
         }
@@ -60,6 +66,10 @@ public class UserService implements IUserService {
         }
         userEntity.setRoles(roles);
         return userMapper.toDTO(userRepository.save(userEntity));
+    }
+
+    boolean checkEmailAndProvider(String email, ProviderId providerId) {
+        return userRepository.existsByEmailAndProviderId(email, providerId);
     }
 
     @Transactional

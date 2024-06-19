@@ -3,9 +3,11 @@ package org.dainn.dainninventory.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.controller.request.ProductPageRequest;
+import org.dainn.dainninventory.controller.request.ProductRequest;
 import org.dainn.dainninventory.controller.request.UserPageRequest;
 import org.dainn.dainninventory.controller.request.UserRequest;
 import org.dainn.dainninventory.controller.response.PageResponse;
+import org.dainn.dainninventory.dto.InventoryDTO;
 import org.dainn.dainninventory.dto.ProductDTO;
 import org.dainn.dainninventory.dto.UserDTO;
 import org.dainn.dainninventory.exception.AppException;
@@ -47,7 +49,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestPart("product") ProductDTO dto,
+    public ResponseEntity<?> create(@Valid @RequestPart("product") ProductRequest dto,
                                     @Valid @RequestPart("mainImage") MultipartFile mainImg,
                                     @Valid @RequestPart("subImage") List<MultipartFile> subImg,
                                     BindingResult result) {
@@ -59,7 +61,7 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Integer id,
-                                    @Valid @RequestPart("product") ProductDTO dto,
+                                    @Valid @RequestPart("product") ProductRequest dto,
                                     @RequestPart(value = "mainImage", required = false) MultipartFile mainImg,
                                     @RequestPart(value = "subImage", required = false) List<MultipartFile> subImg,
                                     BindingResult result) {

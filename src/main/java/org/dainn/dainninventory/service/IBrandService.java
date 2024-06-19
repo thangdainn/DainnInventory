@@ -10,7 +10,6 @@ public interface IBrandService {
     BrandDTO save(BrandDTO dto);
     void delete(List<Integer> ids);
     BrandDTO findById(Integer id);
-    BrandEntity findEntityById(Integer id);
     BrandDTO findByName(String name);
     List<BrandDTO> findAll();
 }

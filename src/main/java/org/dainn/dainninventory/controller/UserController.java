@@ -47,9 +47,6 @@ public class UserController {
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().body(result.getAllErrors());
         }
-        if (checkEmail(dto.getEmail())) {
-            throw new AppException(ErrorCode.EMAIL_EXISTED);
-        }
         return ResponseEntity.ok(userService.save(dto));
     }
 
@@ -57,9 +54,6 @@ public class UserController {
     public ResponseEntity<?> updateUser(@PathVariable Integer id, @Valid @RequestBody UserRequest dto, BindingResult result) {
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().body(result.getAllErrors());
-        }
-        if (!userService.findById(id).getEmail().equals(dto.getEmail()) && checkEmail(dto.getEmail())){
-            throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
         dto.setId(id);
         return ResponseEntity.ok(userService.save(dto));
@@ -69,9 +63,5 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@RequestBody List<Integer> ids) {
         userService.delete(ids);
         return ResponseEntity.ok("Delete Successfully");
-    }
-
-    private boolean checkEmail(String email) {
-        return userService.findByEmailAndProviderId(email, ProviderId.local) != null;
     }
 }

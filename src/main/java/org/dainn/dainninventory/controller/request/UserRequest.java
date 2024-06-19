@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.dainn.dainninventory.utils.ProviderId;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class UserRequest {
     @NotBlank(message = "Name is required")
 
     private String name;
-    private String providerId;
+    private ProviderId providerId = ProviderId.local;
     private String password;
     private Integer status;
     private LocalDateTime createdDate;

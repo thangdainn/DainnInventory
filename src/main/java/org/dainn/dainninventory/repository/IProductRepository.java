@@ -14,6 +14,9 @@ import java.util.Optional;
 
 @Repository
 public interface IProductRepository extends JpaRepository<ProductEntity, Integer> {
+
+    boolean existsByCode(String code);
+    boolean existsByName(String name);
     Optional<ProductEntity> findByCode(String code);
     @Modifying
     @Query("UPDATE ProductEntity r SET r.status = 0 WHERE r.id IN :ids")

@@ -25,6 +25,8 @@ public enum ErrorCode {
     SUPPLIER_NOT_EXISTED("Supplier not existed", HttpStatus.BAD_REQUEST),
     PRODUCT_EXISTED("Product existed", HttpStatus.BAD_REQUEST),
     PRODUCT_NOT_EXISTED("Product not existed", HttpStatus.BAD_REQUEST),
+    PRODUCT_CODE_EXISTED("Product code existed", HttpStatus.BAD_REQUEST),
+    PRODUCT_NAME_EXISTED("Product name existed", HttpStatus.BAD_REQUEST),
     UPLOAD_IMAGE_FAILED("Upload image failed", HttpStatus.BAD_REQUEST),
 
     ;

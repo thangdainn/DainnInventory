@@ -3,24 +3,22 @@ package org.dainn.dainninventory.service.impl;
 import com.cloudinary.Cloudinary;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.controller.request.ProductPageRequest;
+import org.dainn.dainninventory.controller.request.ProductRequest;
 import org.dainn.dainninventory.controller.request.UserPageRequest;
 import org.dainn.dainninventory.dto.BrandDTO;
+import org.dainn.dainninventory.dto.InventoryDTO;
 import org.dainn.dainninventory.dto.ProductDTO;
-import org.dainn.dainninventory.entity.BrandEntity;
-import org.dainn.dainninventory.entity.ImageEntity;
-import org.dainn.dainninventory.entity.ProductEntity;
-import org.dainn.dainninventory.entity.UserEntity;
+import org.dainn.dainninventory.entity.*;
 import org.dainn.dainninventory.exception.AppException;
 import org.dainn.dainninventory.exception.ErrorCode;
 import org.dainn.dainninventory.mapper.IBrandMapper;
+import org.dainn.dainninventory.mapper.IInventoryMapper;
 import org.dainn.dainninventory.mapper.IProductMapper;
 import org.dainn.dainninventory.repository.IBrandRepository;
+import org.dainn.dainninventory.repository.ICategoryRepository;
 import org.dainn.dainninventory.repository.IImageRepository;
 import org.dainn.dainninventory.repository.IProductRepository;
-import org.dainn.dainninventory.service.IBrandService;
-import org.dainn.dainninventory.service.ICategoryService;
-import org.dainn.dainninventory.service.IImageService;
-import org.dainn.dainninventory.service.IProductService;
+import org.dainn.dainninventory.service.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,13 +37,21 @@ public class ProductService implements IProductService {
     private final IProductRepository productRepository;
     private final IImageService imageService;
     private final IProductMapper productMapper;
-    private final ICategoryService categoryService;
-    private final IBrandService brandService;
-
+    private final IInventoryMapper inventoryMapper;
+    private final ICategoryRepository categoryRepository;
+    private final IBrandRepository brandRepository;
+    private final IInventoryService inventoryService;
     @Transactional
     @Override
-    public ProductDTO save(ProductDTO dto, MultipartFile mainImg, List<MultipartFile> subImg) {
+    public ProductDTO save(ProductRequest request, MultipartFile mainImg, List<MultipartFile> subImg) {
+        if (productRepository.existsByCode(request.getCode())) {
+            throw new AppException(ErrorCode.PRODUCT_CODE_EXISTED);
+        }
+        if (productRepository.existsByName(request.getName())) {
+            throw new AppException(ErrorCode.PRODUCT_NAME_EXISTED);
+        }
         ProductEntity productEntity;
+        ProductDTO dto = productMapper.toDTO(request);
         if (dto.getId() != null) {
             ProductEntity old = productRepository.findById(dto.getId())
                     .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
@@ -59,13 +65,18 @@ public class ProductService implements IProductService {
             productEntity = productMapper.toEntity(dto);
             productEntity.setImgUrl(imageService.uploadImage(mainImg));
         }
-        productEntity.setCategory(categoryService.findEntityById(dto.getCategoryId()));
-        productEntity.setBrand(brandService.findEntityById(dto.getBrandId()));
+        productEntity.setCategory(categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED)));
+        productEntity.setBrand(brandRepository.findById(dto.getBrandId())
+                .orElseThrow(() -> new AppException(ErrorCode.BRAND_NOT_EXISTED)));
         productEntity = productRepository.save(productEntity);
-        if (subImg != null && !subImg.isEmpty()){
+        if (subImg != null && !subImg.isEmpty()) {
             imageService.deleteByProductId(productEntity.getId());
             imageService.uploadImages(subImg, productEntity);
         }
+        InventoryDTO inventoryDTO = inventoryMapper.toDTO(request);
+        inventoryDTO.setProductId(productEntity.getId());
+        inventoryService.save(inventoryDTO);
         return productMapper.toDTO(productEntity);
     }
 

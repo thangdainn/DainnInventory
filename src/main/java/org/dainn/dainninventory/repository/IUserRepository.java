@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @Repository
 public interface IUserRepository extends JpaRepository<UserEntity, Integer> {
+    boolean existsByEmailAndProviderId(String email, ProviderId providerId);
     Optional<UserEntity> findByEmailAndStatus(String email, Integer status);
 
     Optional<UserEntity> findByEmailAndProviderId(String email, ProviderId providerId);

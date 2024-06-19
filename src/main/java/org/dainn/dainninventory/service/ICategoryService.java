@@ -10,7 +10,6 @@ public interface ICategoryService {
     CategoryDTO save(CategoryDTO dto);
     void delete(List<Integer> ids);
     CategoryDTO findById(Integer id);
-    CategoryEntity findEntityById(Integer id);
     CategoryDTO findByName(String name);
     List<CategoryDTO> findAll();
 }

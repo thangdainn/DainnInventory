@@ -23,6 +23,6 @@ public class UserDTO extends AbstractDTO{
 
     @JsonIgnore
     private String password;
-    private ProviderId providerId = ProviderId.local;
+    private ProviderId providerId;
     private List<String> rolesName = new ArrayList<>();
 }
