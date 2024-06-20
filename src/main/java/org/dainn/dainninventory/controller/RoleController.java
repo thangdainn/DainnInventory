@@ -16,41 +16,37 @@ import java.util.List;
 @RequestMapping("/api/roles")
 @RequiredArgsConstructor
 public class RoleController {
-
     private final IRoleService roleService;
 
     @GetMapping
-    public ResponseEntity<?> getRoles() {
+    public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(roleService.findAll());
     }
 
     @GetMapping(value = "/{name}")
-    public ResponseEntity<?> getRole(@PathVariable(name = "name") String name) {
-        RoleDTO dto = roleService.findByName(name);
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<?> get(@PathVariable(name = "name") String name) {
+        return ResponseEntity.ok(roleService.findByName(name));
     }
 
     @PostMapping
-    public ResponseEntity<?> createRole(@Valid @RequestBody RoleDTO roleDTO, BindingResult bindingResult) {
+    public ResponseEntity<?> create(@Valid @RequestBody RoleDTO dto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
-        roleDTO = roleService.save(roleDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(roleDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(roleService.save(dto));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<?> updateRole(@PathVariable(name = "id") Integer id, @Valid @RequestBody RoleDTO roleDTO, BindingResult bindingResult) {
+    public ResponseEntity<?> update(@PathVariable(name = "id") Integer id, @Valid @RequestBody RoleDTO dto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
-        roleDTO.setId(id);
-        roleDTO = roleService.save(roleDTO);
-        return ResponseEntity.ok(roleDTO);
+        dto.setId(id);
+        return ResponseEntity.ok(roleService.save(dto));
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteRole(@RequestBody List<Integer> ids) {
+    public ResponseEntity<?> delete(@RequestBody List<Integer> ids) {
         roleService.delete(ids);
         return ResponseEntity.ok("Delete Successfully");
     }

@@ -44,17 +44,19 @@ public class ProductService implements IProductService {
     @Transactional
     @Override
     public ProductDTO save(ProductRequest request, MultipartFile mainImg, List<MultipartFile> subImg) {
-        if (productRepository.existsByCode(request.getCode())) {
-            throw new AppException(ErrorCode.PRODUCT_CODE_EXISTED);
-        }
-        if (productRepository.existsByName(request.getName())) {
-            throw new AppException(ErrorCode.PRODUCT_NAME_EXISTED);
-        }
+
         ProductEntity productEntity;
         ProductDTO dto = productMapper.toDTO(request);
         if (dto.getId() != null) {
+
             ProductEntity old = productRepository.findById(dto.getId())
                     .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
+            if (!old.getCode().equals(dto.getCode()) && productRepository.existsByCode(request.getCode())) {
+                throw new AppException(ErrorCode.PRODUCT_CODE_EXISTED);
+            }
+            if (!old.getName().equals(dto.getName()) && productRepository.existsByName(request.getName())) {
+                throw new AppException(ErrorCode.PRODUCT_NAME_EXISTED);
+            }
             if (mainImg == null) {
                 dto.setImgUrl(old.getImgUrl());
             } else {
@@ -62,6 +64,12 @@ public class ProductService implements IProductService {
             }
             productEntity = productMapper.updateEntity(old, dto);
         } else {
+            if (productRepository.existsByCode(request.getCode())) {
+                throw new AppException(ErrorCode.PRODUCT_CODE_EXISTED);
+            }
+            if (productRepository.existsByName(request.getName())) {
+                throw new AppException(ErrorCode.PRODUCT_NAME_EXISTED);
+            }
             productEntity = productMapper.toEntity(dto);
             productEntity.setImgUrl(imageService.uploadImage(mainImg));
         }

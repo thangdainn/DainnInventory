@@ -2,9 +2,8 @@ package org.dainn.dainninventory.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.dainn.dainninventory.dto.BrandDTO;
-import org.dainn.dainninventory.service.IBrandService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.dainn.dainninventory.dto.GoodsReceiptDTO;
+import org.dainn.dainninventory.service.IGoodsReceiptService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -13,41 +12,44 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/brands")
+@RequestMapping("/api/goods-receipts")
 @RequiredArgsConstructor
-public class BrandController {
-    private final IBrandService brandService;
+public class GoodsReceiptController {
+    private final IGoodsReceiptService goodReceiptService;
 
     @GetMapping
     public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(brandService.findAll());
+        return ResponseEntity.ok(goodReceiptService.findAll());
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<?> get(@PathVariable(name = "id") Integer id) {
-        return ResponseEntity.ok(brandService.findById(id));
+        return ResponseEntity.ok(goodReceiptService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody BrandDTO brandDTO, BindingResult bindingResult) {
+    public ResponseEntity<?> create(@Valid @RequestBody GoodsReceiptDTO dto,
+                                    BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(brandService.save(brandDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(goodReceiptService.save(dto));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<?> update(@PathVariable(name = "id") Integer id, @Valid @RequestBody BrandDTO brandDTO, BindingResult bindingResult) {
+    public ResponseEntity<?> update(@PathVariable(name = "id") Integer id,
+                                    @Valid @RequestBody GoodsReceiptDTO dto,
+                                    BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
-        brandDTO.setId(id);
-        return ResponseEntity.ok(brandService.save(brandDTO));
+        dto.setId(id);
+        return ResponseEntity.ok(goodReceiptService.save(dto));
     }
 
     @DeleteMapping
     public ResponseEntity<?> delete(@RequestBody List<Integer> ids) {
-        brandService.delete(ids);
+        goodReceiptService.delete(ids);
         return ResponseEntity.ok("Delete Successfully");
     }
 }

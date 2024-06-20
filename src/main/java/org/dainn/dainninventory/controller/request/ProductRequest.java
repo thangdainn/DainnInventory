@@ -14,11 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductRequest {
-    private Integer id;
-    private Integer status;
-    private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
+public class ProductRequest extends AbstractRequest{
     @NotBlank(message = "Code is required")
     @NotNull(message = "Code is required")
     private String code;

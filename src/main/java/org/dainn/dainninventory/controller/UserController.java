@@ -24,7 +24,7 @@ public class UserController {
     private final IUserService userService;
 
     @GetMapping
-    public ResponseEntity<?> getUsers(@ModelAttribute UserPageRequest request) {
+    public ResponseEntity<?> getAll(@ModelAttribute UserPageRequest request) {
         if (request.getPage() == null) {
             return ResponseEntity.ok(userService.findAll());
         }
@@ -38,12 +38,12 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUser(@PathVariable Integer id) {
+    public ResponseEntity<?> get(@PathVariable Integer id) {
         return ResponseEntity.ok(userService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<?> createUser(@Valid @RequestBody UserRequest dto, BindingResult result) {
+    public ResponseEntity<?> create(@Valid @RequestBody UserRequest dto, BindingResult result) {
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().body(result.getAllErrors());
         }
@@ -51,7 +51,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Integer id, @Valid @RequestBody UserRequest dto, BindingResult result) {
+    public ResponseEntity<?> update(@PathVariable Integer id, @Valid @RequestBody UserRequest dto, BindingResult result) {
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().body(result.getAllErrors());
         }
@@ -60,7 +60,7 @@ public class UserController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteUser(@RequestBody List<Integer> ids) {
+    public ResponseEntity<?> delete(@RequestBody List<Integer> ids) {
         userService.delete(ids);
         return ResponseEntity.ok("Delete Successfully");
     }

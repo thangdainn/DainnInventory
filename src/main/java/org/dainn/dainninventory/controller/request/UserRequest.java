@@ -16,9 +16,8 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRequest {
+public class UserRequest extends AbstractRequest{
 
-    private Integer id;
     @NotBlank(message = "Email is required")
     @Email(message = "Email is invalid")
     private String email;
@@ -27,8 +26,5 @@ public class UserRequest {
     private String name;
     private ProviderId providerId = ProviderId.local;
     private String password;
-    private Integer status;
-    private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
     private List<String> rolesName = new ArrayList<>();
 }

@@ -16,41 +16,37 @@ import java.util.List;
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
 public class CategoryController {
-
-    @Autowired
-    private ICategoryService categoryService;
+    private final ICategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<?> getBrands() {
+    public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(categoryService.findAll());
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<?> getBrand(@PathVariable(name = "id") Integer id) {
+    public ResponseEntity<?> get(@PathVariable(name = "id") Integer id) {
         return ResponseEntity.ok(categoryService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<?> createRole(@Valid @RequestBody CategoryDTO CategoryDTO, BindingResult bindingResult) {
+    public ResponseEntity<?> create(@Valid @RequestBody CategoryDTO dto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
-        CategoryDTO = categoryService.save(CategoryDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(CategoryDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.save(dto));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<?> updateRole(@PathVariable(name = "id") Integer id, @Valid @RequestBody CategoryDTO CategoryDTO, BindingResult bindingResult) {
+    public ResponseEntity<?> update(@PathVariable(name = "id") Integer id, @Valid @RequestBody CategoryDTO dto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
-        CategoryDTO.setId(id);
-        CategoryDTO = categoryService.save(CategoryDTO);
-        return ResponseEntity.ok(CategoryDTO);
+        dto.setId(id);
+        return ResponseEntity.ok(categoryService.save(dto));
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteRole(@RequestBody List<Integer> ids) {
+    public ResponseEntity<?> delete(@RequestBody List<Integer> ids) {
         categoryService.delete(ids);
         return ResponseEntity.ok("Delete Successfully");
     }

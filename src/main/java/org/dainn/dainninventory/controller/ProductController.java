@@ -44,7 +44,7 @@ public class ProductController {
     }
 
     @GetMapping("/{code}")
-    public ResponseEntity<?> getProduct(@PathVariable String code) {
+    public ResponseEntity<?> get(@PathVariable String code) {
         return ResponseEntity.ok(productService.findByCode(code));
     }
 
