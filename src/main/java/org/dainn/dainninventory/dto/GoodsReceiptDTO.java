@@ -1,5 +1,6 @@
 package org.dainn.dainninventory.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -20,5 +21,6 @@ public class GoodsReceiptDTO extends AbstractDTO{
     @NotNull(message = "Supplier id is required")
     private Integer supplierId;
 
+    @Valid
     private List<GoodsReceiptDetailDTO> detailDTOS = new ArrayList<>();
 }

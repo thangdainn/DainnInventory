@@ -6,10 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.dainn.dainninventory.utils.OrderStatus;
+import org.dainn.dainninventory.utils.PaymentMethod;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +20,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "orders")
 public class OrderEntity {
@@ -36,11 +40,9 @@ public class OrderEntity {
     @Column(name = "total_amount", nullable = false)
     private String totalAmount;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "payment_method", nullable = false)
-    private String paymentMethod;
-
-    @Column(name = "note")
-    private String note;
+    private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -53,13 +55,13 @@ public class OrderEntity {
         }
     }
 
-    @Column(name = "order_date", nullable = false)
+    @Column(name = "order_date")
     @CreatedDate
-    private Date orderDate;
+    private LocalDateTime orderDate;
 
     @Column(name = "modified_date")
     @LastModifiedDate
-    private Date modifiedDate;
+    private LocalDateTime modifiedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

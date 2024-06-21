@@ -14,6 +14,9 @@ public class GoodsReceiptDetailDTO extends AbstractDTO {
     @NotNull(message = "Quantity is required")
     private Integer quantity;
 
+    @NotNull(message = "Total is required")
+    private double total;
+
     @NotNull(message = "Product is required")
     private Integer productId;
 }

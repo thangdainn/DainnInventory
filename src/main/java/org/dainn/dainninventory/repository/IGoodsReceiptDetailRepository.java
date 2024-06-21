@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 
 public interface IGoodsReceiptDetailRepository extends JpaRepository<GoodsReceiptDetailEntity, Integer> {
-    List<GoodsReceiptDetailEntity> findByGoodsReceiptId(Integer goodsReceiptId);
+    List<GoodsReceiptDetailEntity> findByGoodsReceipt_Id(Integer goodsReceiptId);
 }

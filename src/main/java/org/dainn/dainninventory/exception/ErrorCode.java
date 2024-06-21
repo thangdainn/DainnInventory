@@ -37,6 +37,8 @@ public enum ErrorCode {
 
     GOOD_RECEIPT_NOT_EXISTED("Good Receipt not existed", HttpStatus.NOT_FOUND),
 
+    ORDER_NOT_EXISTED("Order not existed", HttpStatus.NOT_FOUND),
+
     ;
     ErrorCode(String message, HttpStatusCode statusCode) {
         this.message = message;

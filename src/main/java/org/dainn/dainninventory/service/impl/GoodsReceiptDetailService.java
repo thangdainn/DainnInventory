@@ -47,7 +47,7 @@ public class GoodsReceiptDetailService implements IGoodsReceiptDetailService {
 
     @Override
     public List<GoodsReceiptDetailDTO> findByGoodReceiptId(Integer id) {
-        return goodsReceiptDetailRepository.findByGoodsReceiptId(id)
+        return goodsReceiptDetailRepository.findByGoodsReceipt_Id(id)
                 .stream().map(goodReceiptDetailMapper::toDTO).toList();
     }
 

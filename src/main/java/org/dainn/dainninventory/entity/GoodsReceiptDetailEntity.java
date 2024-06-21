@@ -19,6 +19,9 @@ public class GoodsReceiptDetailEntity extends BaseEntity {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
+    @Column(name = "total", nullable = false)
+    private double total;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "goods_receipt_id")
     private GoodsReceiptEntity goodsReceipt;

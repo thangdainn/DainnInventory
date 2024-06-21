@@ -68,7 +68,7 @@ public class UserService implements IUserService {
         return userMapper.toDTO(userRepository.save(userEntity));
     }
 
-    boolean checkEmailAndProvider(String email, ProviderId providerId) {
+    private boolean checkEmailAndProvider(String email, ProviderId providerId) {
         return userRepository.existsByEmailAndProviderId(email, providerId);
     }
 
