@@ -1,6 +1,7 @@
 package org.dainn.dainninventory.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.controller.request.ProductPageRequest;
 import org.dainn.dainninventory.controller.request.ProductRequest;
@@ -51,23 +52,15 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestPart("product") ProductRequest dto,
                                     @Valid @RequestPart("mainImage") MultipartFile mainImg,
-                                    @Valid @RequestPart("subImage") List<MultipartFile> subImg,
-                                    BindingResult result) {
-        if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body(result.getAllErrors());
-        }
+                                    @Valid @RequestPart("subImage") List<MultipartFile> subImg) {
         return ResponseEntity.ok(productService.save(dto, mainImg, subImg));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Integer id,
+    public ResponseEntity<?> update(@Min(1) @PathVariable Integer id,
                                     @Valid @RequestPart("product") ProductRequest dto,
                                     @RequestPart(value = "mainImage", required = false) MultipartFile mainImg,
-                                    @RequestPart(value = "subImage", required = false) List<MultipartFile> subImg,
-                                    BindingResult result) {
-        if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body(result.getAllErrors());
-        }
+                                    @RequestPart(value = "subImage", required = false) List<MultipartFile> subImg) {
         dto.setId(id);
         return ResponseEntity.ok(productService.save(dto, mainImg, subImg));
     }

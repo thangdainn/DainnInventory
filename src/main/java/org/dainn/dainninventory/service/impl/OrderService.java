@@ -11,6 +11,7 @@ import org.dainn.dainninventory.repository.IUserRepository;
 import org.dainn.dainninventory.service.IOrderDetailService;
 import org.dainn.dainninventory.service.IOrderService;
 import org.dainn.dainninventory.utils.OrderStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,5 +56,10 @@ public class OrderService implements IOrderService {
     public List<OrderDTO> findAll() {
         return orderRepository.findAll()
                 .stream().map(orderMapper::toDTO).toList();
+    }
+
+    @Override
+    public Page<OrderDTO> findAll(Integer activeFlag, Integer page, Integer size) {
+        return null;
     }
 }

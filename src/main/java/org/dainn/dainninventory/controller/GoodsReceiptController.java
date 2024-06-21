@@ -1,6 +1,7 @@
 package org.dainn.dainninventory.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.dto.GoodsReceiptDTO;
 import org.dainn.dainninventory.service.IGoodsReceiptService;
@@ -23,26 +24,18 @@ public class GoodsReceiptController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<?> get(@PathVariable(name = "id") Integer id) {
+    public ResponseEntity<?> get(@Min(1) @PathVariable(name = "id") Integer id) {
         return ResponseEntity.ok(goodReceiptService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody GoodsReceiptDTO dto,
-                                    BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
-        }
+    public ResponseEntity<?> create(@Valid @RequestBody GoodsReceiptDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(goodReceiptService.save(dto));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<?> update(@PathVariable(name = "id") Integer id,
-                                    @Valid @RequestBody GoodsReceiptDTO dto,
-                                    BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
-        }
+    public ResponseEntity<?> update(@Min(1) @PathVariable(name = "id") Integer id,
+                                    @Valid @RequestBody GoodsReceiptDTO dto) {
         dto.setId(id);
         return ResponseEntity.ok(goodReceiptService.save(dto));
     }

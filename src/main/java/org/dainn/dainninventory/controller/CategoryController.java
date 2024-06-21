@@ -1,6 +1,7 @@
 package org.dainn.dainninventory.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.dto.CategoryDTO;
 import org.dainn.dainninventory.service.ICategoryService;
@@ -24,23 +25,18 @@ public class CategoryController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<?> get(@PathVariable(name = "id") Integer id) {
+    public ResponseEntity<?> get(@Min(1) @PathVariable(name = "id") Integer id) {
         return ResponseEntity.ok(categoryService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody CategoryDTO dto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
-        }
+    public ResponseEntity<?> create(@Valid @RequestBody CategoryDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.save(dto));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<?> update(@PathVariable(name = "id") Integer id, @Valid @RequestBody CategoryDTO dto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
-        }
+    public ResponseEntity<?> update(@Min(1) @PathVariable(name = "id") Integer id,
+                                    @Valid @RequestBody CategoryDTO dto) {
         dto.setId(id);
         return ResponseEntity.ok(categoryService.save(dto));
     }

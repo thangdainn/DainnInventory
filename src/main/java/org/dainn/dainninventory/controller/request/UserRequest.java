@@ -21,8 +21,8 @@ public class UserRequest extends AbstractRequest{
     @NotBlank(message = "Email is required")
     @Email(message = "Email is invalid")
     private String email;
-    @NotBlank(message = "Name is required")
 
+    @NotBlank(message = "Name is required")
     private String name;
     private ProviderId providerId = ProviderId.local;
     private String password;
