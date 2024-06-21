@@ -1,6 +1,7 @@
 package org.dainn.dainninventory.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.dto.BrandDTO;
 import org.dainn.dainninventory.dto.SupplierDTO;
@@ -25,23 +26,17 @@ public class SupplierController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<?> get(@PathVariable(name = "id") Integer id) {
+    public ResponseEntity<?> get(@Min(1) @PathVariable(name = "id") Integer id) {
         return ResponseEntity.ok(supplierService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody SupplierDTO dto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
-        }
+    public ResponseEntity<?> create(@Valid @RequestBody SupplierDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(supplierService.save(dto));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<?> update(@PathVariable(name = "id") Integer id, @Valid @RequestBody SupplierDTO dto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
-        }
+    public ResponseEntity<?> update(@PathVariable(name = "id") Integer id, @Valid @RequestBody SupplierDTO dto) {
         dto.setId(id);
         return ResponseEntity.ok(supplierService.save(dto));
     }

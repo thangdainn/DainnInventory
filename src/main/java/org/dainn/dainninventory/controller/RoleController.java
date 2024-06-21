@@ -1,6 +1,7 @@
 package org.dainn.dainninventory.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.dto.RoleDTO;
 import org.dainn.dainninventory.service.IRoleService;
@@ -29,18 +30,12 @@ public class RoleController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody RoleDTO dto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
-        }
+    public ResponseEntity<?> create(@Valid @RequestBody RoleDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(roleService.save(dto));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<?> update(@PathVariable(name = "id") Integer id, @Valid @RequestBody RoleDTO dto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
-        }
+    public ResponseEntity<?> update(@Min(1) @PathVariable(name = "id") Integer id, @Valid @RequestBody RoleDTO dto) {
         dto.setId(id);
         return ResponseEntity.ok(roleService.save(dto));
     }

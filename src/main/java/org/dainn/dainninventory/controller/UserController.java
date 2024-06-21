@@ -1,6 +1,7 @@
 package org.dainn.dainninventory.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.controller.request.UserPageRequest;
 import org.dainn.dainninventory.controller.request.UserRequest;
@@ -38,23 +39,17 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> get(@PathVariable Integer id) {
+    public ResponseEntity<?> get(@Min(1) @PathVariable Integer id) {
         return ResponseEntity.ok(userService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody UserRequest dto, BindingResult result) {
-        if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body(result.getAllErrors());
-        }
+    public ResponseEntity<?> create(@Valid @RequestBody UserRequest dto) {
         return ResponseEntity.ok(userService.save(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Integer id, @Valid @RequestBody UserRequest dto, BindingResult result) {
-        if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body(result.getAllErrors());
-        }
+    public ResponseEntity<?> update(@PathVariable Integer id, @Valid @RequestBody UserRequest dto) {
         dto.setId(id);
         return ResponseEntity.ok(userService.save(dto));
     }
