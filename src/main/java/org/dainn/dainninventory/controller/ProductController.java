@@ -8,6 +8,7 @@ import org.dainn.dainninventory.controller.request.ProductRequest;
 import org.dainn.dainninventory.controller.response.PageResponse;
 import org.dainn.dainninventory.dto.ProductDTO;
 import org.dainn.dainninventory.service.IProductService;
+import org.dainn.dainninventory.utils.ValidateString;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,7 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<?> getAll(@ModelAttribute ProductPageRequest request) {
+        request.setKeyword(ValidateString.trimString(request.getKeyword()));
         if (request.getPage() == null) {
             return ResponseEntity.ok(productService.findAll());
         }

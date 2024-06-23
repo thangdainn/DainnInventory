@@ -10,6 +10,7 @@ import org.dainn.dainninventory.mapper.IRoleMapper;
 import org.dainn.dainninventory.repository.IRoleRepository;
 import org.dainn.dainninventory.service.IRoleService;
 import org.dainn.dainninventory.utils.Paging;
+import org.dainn.dainninventory.utils.ValidateString;
 import org.dainn.dainninventory.utils.constant.RoleConstant;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -75,7 +76,9 @@ public class RoleService implements IRoleService {
 
     @Override
     public Page<RoleDTO> findAllByName(RolePageRequest request) {
-        return roleRepository.findAllByNameContainingIgnoreCaseAndStatus(request.getKeyword(), request.getStatus(), Paging.getPageable(request))
-                .map(roleMapper::toDTO);
+        return (ValidateString.isNullOrBlank(request.getKeyword())
+                ? roleRepository.findAllByStatus(request.getStatus(), Paging.getPageable(request))
+                : roleRepository.findAllByNameContainingIgnoreCaseAndStatus(request.getKeyword(), request.getStatus(), Paging.getPageable(request))
+        ).map(roleMapper::toDTO);
     }
 }

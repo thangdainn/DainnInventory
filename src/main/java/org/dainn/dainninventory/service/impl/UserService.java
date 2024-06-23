@@ -16,6 +16,7 @@ import org.dainn.dainninventory.repository.specification.SpecSearchCriteria;
 import org.dainn.dainninventory.repository.specification.SpecificationBuilder;
 import org.dainn.dainninventory.service.IUserService;
 import org.dainn.dainninventory.utils.Paging;
+import org.dainn.dainninventory.utils.ValidateString;
 import org.dainn.dainninventory.utils.constant.RoleConstant;
 import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.data.domain.Page;
@@ -118,7 +119,7 @@ public class UserService implements IUserService {
         Page<UserEntity> page;
 
         builder.with("status", SearchOperation.EQUALITY, request.getStatus(), false, new ArrayList<>());
-        if (request.getKeyword() != null && !request.getKeyword().isBlank()) {
+        if (!ValidateString.isNullOrBlank(request.getKeyword())) {
             builder.with("email", SearchOperation.CONTAINS, request.getKeyword(), true, new ArrayList<>());
             builder.with("name", SearchOperation.CONTAINS, request.getKeyword(), true, new ArrayList<>());
         }
