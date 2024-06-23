@@ -21,7 +21,8 @@ public class BaseSpecification<T> implements Specification<T> {
             case NEGATION -> criteriaBuilder.notEqual(root.get(criteria.getKey()), criteria.getValue());
             case GREATER_THAN ->criteriaBuilder.greaterThan(root.get(criteria.getKey()), criteria.getValue().toString());
             case LESS_THAN -> criteriaBuilder.lessThan(root.get(criteria.getKey()), criteria.getValue().toString());
-            case LIKE, CONTAINS -> criteriaBuilder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%");
+            case LIKE -> criteriaBuilder.like(root.get(criteria.getKey()), criteria.getValue().toString());
+            case CONTAINS -> criteriaBuilder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%");
             case STARTS_WITH -> criteriaBuilder.like(root.get(criteria.getKey()), criteria.getValue() + "%");
             case ENDS_WITH -> criteriaBuilder.like(root.get(criteria.getKey()), "%" + criteria.getValue());
             case IN -> criteriaBuilder.in(root.get(criteria.getKey())).value(criteria.getValues());
