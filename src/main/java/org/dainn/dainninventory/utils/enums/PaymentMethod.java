@@ -1,4 +1,4 @@
-package org.dainn.dainninventory.utils;
+package org.dainn.dainninventory.utils.enums;
 
 import lombok.Getter;
 

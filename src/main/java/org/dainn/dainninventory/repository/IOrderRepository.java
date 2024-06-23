@@ -1,8 +1,7 @@
 package org.dainn.dainninventory.repository;
 
-import org.dainn.dainninventory.entity.BrandEntity;
 import org.dainn.dainninventory.entity.OrderEntity;
-import org.dainn.dainninventory.utils.OrderStatus;
+import org.dainn.dainninventory.utils.enums.OrderStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

@@ -1,7 +1,7 @@
 package org.dainn.dainninventory.controller.request;
 
 import lombok.*;
-import org.dainn.dainninventory.utils.Provider;
+import org.dainn.dainninventory.utils.enums.Provider;
 
 @Getter
 @Setter

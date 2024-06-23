@@ -1,6 +1,7 @@
 package org.dainn.dainninventory.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.dainn.dainninventory.controller.request.RolePageRequest;
 import org.dainn.dainninventory.dto.RoleDTO;
 import org.dainn.dainninventory.entity.RoleEntity;
 import org.dainn.dainninventory.exception.AppException;
@@ -8,6 +9,9 @@ import org.dainn.dainninventory.exception.ErrorCode;
 import org.dainn.dainninventory.mapper.IRoleMapper;
 import org.dainn.dainninventory.repository.IRoleRepository;
 import org.dainn.dainninventory.service.IRoleService;
+import org.dainn.dainninventory.utils.Paging;
+import org.dainn.dainninventory.utils.constant.RoleConstant;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +28,7 @@ public class RoleService implements IRoleService {
     @Override
     public RoleDTO save(RoleDTO roleDTO) {
         RoleEntity roleEntity;
-        roleDTO.setName("ROLE_" + roleDTO.getName().toUpperCase());
+        roleDTO.setName(RoleConstant.PREFIX_ROLE + roleDTO.getName().toUpperCase());
         if (roleDTO.getId() != null) {
             RoleEntity roleOld = roleRepository.findById(roleDTO.getId())
                     .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
@@ -59,6 +63,19 @@ public class RoleService implements IRoleService {
 
     @Override
     public List<RoleDTO> findAll() {
-        return roleRepository.findAll().stream().map(roleMapper::toDTO).toList();
+        return roleRepository.findAll()
+                .stream().map(roleMapper::toDTO).toList();
+    }
+
+    @Override
+    public List<RoleDTO> findAll(Integer status) {
+        return roleRepository.findAllByStatus(status)
+                .stream().map(roleMapper::toDTO).toList();
+    }
+
+    @Override
+    public Page<RoleDTO> findAllByName(RolePageRequest request) {
+        return roleRepository.findAllByNameContainingIgnoreCaseAndStatus(request.getKeyword(), request.getStatus(), Paging.getPageable(request))
+                .map(roleMapper::toDTO);
     }
 }

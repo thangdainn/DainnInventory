@@ -10,7 +10,7 @@ import org.dainn.dainninventory.repository.IOrderRepository;
 import org.dainn.dainninventory.repository.IUserRepository;
 import org.dainn.dainninventory.service.IOrderDetailService;
 import org.dainn.dainninventory.service.IOrderService;
-import org.dainn.dainninventory.utils.OrderStatus;
+import org.dainn.dainninventory.utils.enums.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

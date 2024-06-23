@@ -1,7 +1,7 @@
 package org.dainn.dainninventory.service;
 
 import org.dainn.dainninventory.dto.OrderDTO;
-import org.dainn.dainninventory.utils.OrderStatus;
+import org.dainn.dainninventory.utils.enums.OrderStatus;
 import org.springframework.data.domain.Page;
 
 import java.util.List;

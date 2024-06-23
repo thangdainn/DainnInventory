@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.dainn.dainninventory.utils.OrderStatus;
+import org.dainn.dainninventory.utils.enums.OrderStatus;
 
 @Getter
 @Setter

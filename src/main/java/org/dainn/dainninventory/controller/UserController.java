@@ -26,13 +26,13 @@ public class UserController {
             return ResponseEntity.ok(userService.findAll(request.getStatus()));
         }
 
-        Page<UserDTO> entityPage = userService.findWithSpec(request);
+        Page<UserDTO> page = userService.findWithSpec(request);
 
         return ResponseEntity.ok(PageResponse.<UserDTO>builder()
-                .page(entityPage.getPageable().getPageNumber())
-                .size(entityPage.getPageable().getPageSize())
-                .totalPages(entityPage.getTotalPages())
-                .data(entityPage.getContent())
+                .page(page.getPageable().getPageNumber())
+                .size(page.getPageable().getPageSize())
+                .totalPages(page.getTotalPages())
+                .data(page.getContent())
                 .build());
     }
 

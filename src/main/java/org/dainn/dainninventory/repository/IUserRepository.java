@@ -1,9 +1,7 @@
 package org.dainn.dainninventory.repository;
 
 import org.dainn.dainninventory.entity.UserEntity;
-import org.dainn.dainninventory.utils.Provider;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;

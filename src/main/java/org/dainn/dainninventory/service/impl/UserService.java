@@ -16,11 +16,10 @@ import org.dainn.dainninventory.repository.specification.SpecSearchCriteria;
 import org.dainn.dainninventory.repository.specification.SpecificationBuilder;
 import org.dainn.dainninventory.service.IUserService;
 import org.dainn.dainninventory.utils.Paging;
+import org.dainn.dainninventory.utils.constant.RoleConstant;
 import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -64,7 +63,7 @@ public class UserService implements IUserService {
         }
         List<RoleEntity> roles = new ArrayList<>();
         if (userDTO.getRolesName().isEmpty()) {
-            roles.add(roleRepository.findByName("ROLE_USER")
+            roles.add(roleRepository.findByName(RoleConstant.PREFIX_ROLE + "USER")
                     .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED)));
         } else {
             for (String name : userDTO.getRolesName()) {
@@ -113,13 +112,6 @@ public class UserService implements IUserService {
                 .stream().map(userMapper::toDTO).toList();
     }
 
-//    @Override
-//    public UserDTO findByEmailAndProviderId(String email, Provider provider) {
-//        return userRepository.findByEmailAndProvider(email, provider)
-//                .map(userMapper::toDTO)
-//                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-//    }
-
     @Override
     public Page<UserDTO> findWithSpec(UserPageRequest request) {
         SpecificationBuilder<UserEntity> builder = new SpecificationBuilder<>();
@@ -147,14 +139,4 @@ public class UserService implements IUserService {
 
     }
 
-//    private Pageable getPageable(UserPageRequest request) {
-//        Sort sort;
-//        if (request.getSortBy() != null && !request.getSortBy().isBlank()) {
-//            sort = request.getSortDir().equalsIgnoreCase(Sort.Direction.ASC.name())
-//                    ? Sort.by(request.getSortBy()).ascending() : Sort.by(request.getSortBy()).descending();
-//        } else {
-//            sort = Sort.unsorted();
-//        }
-//        return PageRequest.of(request.getPage(), request.getSize(), sort);
-//    }
 }

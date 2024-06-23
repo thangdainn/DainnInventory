@@ -1,8 +1,11 @@
 package org.dainn.dainninventory.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import org.dainn.dainninventory.utils.Provider;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.dainn.dainninventory.utils.enums.Provider;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -3,9 +3,12 @@ package org.dainn.dainninventory.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.dainn.dainninventory.controller.request.RolePageRequest;
+import org.dainn.dainninventory.controller.response.PageResponse;
 import org.dainn.dainninventory.dto.RoleDTO;
 import org.dainn.dainninventory.service.IRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -20,8 +23,18 @@ public class RoleController {
     private final IRoleService roleService;
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(roleService.findAll());
+    public ResponseEntity<?> getAll(@ModelAttribute RolePageRequest request) {
+        if (request.getPage() == null) {
+            return ResponseEntity.ok(roleService.findAll(request.getStatus()));
+        }
+        Page<RoleDTO> page = roleService.findAllByName(request);
+
+        return ResponseEntity.ok(PageResponse.<RoleDTO>builder()
+                .page(page.getPageable().getPageNumber())
+                .size(page.getPageable().getPageSize())
+                .totalPages(page.getTotalPages())
+                .data(page.getContent())
+                .build());
     }
 
     @GetMapping(value = "/{name}")

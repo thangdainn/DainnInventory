@@ -3,7 +3,7 @@ package org.dainn.dainninventory.service.security;
 import org.dainn.dainninventory.entity.UserEntity;
 import org.dainn.dainninventory.repository.IRoleRepository;
 import org.dainn.dainninventory.repository.IUserRepository;
-import org.dainn.dainninventory.utils.Provider;
+import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
