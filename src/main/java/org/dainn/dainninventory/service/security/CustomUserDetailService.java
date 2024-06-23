@@ -1,11 +1,9 @@
 package org.dainn.dainninventory.service.security;
 
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.entity.UserEntity;
 import org.dainn.dainninventory.repository.IRoleRepository;
 import org.dainn.dainninventory.repository.IUserRepository;
-import org.dainn.dainninventory.utils.ProviderId;
+import org.dainn.dainninventory.utils.Provider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -37,8 +35,8 @@ public class CustomUserDetailService implements UserDetailsService {
             return new CustomUserDetail(email, "", "", new ArrayList<>());
         }
     }
-    public UserDetails loadUserByUsernameAndProviderId(String email, ProviderId providerId) throws UsernameNotFoundException {
-        Optional<UserEntity> userEntities = userRepository.findByEmailAndProviderId(email, providerId);
+    public UserDetails loadUserByUsernameAndProviderId(String email, Provider provider) throws UsernameNotFoundException {
+        Optional<UserEntity> userEntities = userRepository.findByEmailAndProvider(email, provider);
         if (userEntities.isPresent()) {
             UserEntity user = userEntities.get();
             user.setRoles(roleRepository.findByUsers(List.of(user)));

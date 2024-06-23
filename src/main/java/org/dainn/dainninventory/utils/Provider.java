@@ -1,6 +1,6 @@
 package org.dainn.dainninventory.utils;
 
-public enum ProviderId {
+public enum Provider {
     local,
     google,
     facebook,
