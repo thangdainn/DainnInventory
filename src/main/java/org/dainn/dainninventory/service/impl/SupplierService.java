@@ -1,6 +1,9 @@
 package org.dainn.dainninventory.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.dainn.dainninventory.controller.request.CategoryPageRequest;
+import org.dainn.dainninventory.controller.request.SupplierPageRequest;
+import org.dainn.dainninventory.dto.CategoryDTO;
 import org.dainn.dainninventory.dto.SupplierDTO;
 import org.dainn.dainninventory.entity.SupplierEntity;
 import org.dainn.dainninventory.exception.AppException;
@@ -8,6 +11,9 @@ import org.dainn.dainninventory.exception.ErrorCode;
 import org.dainn.dainninventory.mapper.ISupplierMapper;
 import org.dainn.dainninventory.repository.ISupplierRepository;
 import org.dainn.dainninventory.service.ISupplierService;
+import org.dainn.dainninventory.utils.Paging;
+import org.dainn.dainninventory.utils.ValidateString;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,5 +66,19 @@ public class SupplierService implements ISupplierService {
     public List<SupplierDTO> findAll() {
         return supplierRepository.findAll()
                 .stream().map(supplierMapper::toDTO).toList();
+    }
+
+    @Override
+    public List<SupplierDTO> findAll(Integer status) {
+        return supplierRepository.findAllByStatus(status)
+                .stream().map(supplierMapper::toDTO).toList();
+    }
+
+    @Override
+    public Page<SupplierDTO> findAllByName(SupplierPageRequest request) {
+        return (ValidateString.isNullOrBlank(request.getKeyword())
+                ? supplierRepository.findAllByStatus(request.getStatus(), Paging.getPageable(request))
+                : supplierRepository.findAllByNameContainingIgnoreCaseAndStatus(request.getKeyword(), request.getStatus(), Paging.getPageable(request))
+        ).map(supplierMapper::toDTO);
     }
 }

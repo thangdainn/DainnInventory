@@ -7,6 +7,7 @@ import org.dainn.dainninventory.controller.request.RolePageRequest;
 import org.dainn.dainninventory.controller.response.PageResponse;
 import org.dainn.dainninventory.dto.RoleDTO;
 import org.dainn.dainninventory.service.IRoleService;
+import org.dainn.dainninventory.utils.ValidateString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ public class RoleController {
 
     @GetMapping
     public ResponseEntity<?> getAll(@ModelAttribute RolePageRequest request) {
+        request.setKeyword(ValidateString.trimString(request.getKeyword()));
         if (request.getPage() == null) {
             return ResponseEntity.ok(roleService.findAll(request.getStatus()));
         }

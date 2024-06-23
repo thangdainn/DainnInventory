@@ -1,7 +1,10 @@
 package org.dainn.dainninventory.repository;
 
 import org.dainn.dainninventory.entity.BrandEntity;
+import org.dainn.dainninventory.entity.RoleEntity;
 import org.dainn.dainninventory.entity.SupplierEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,4 +20,8 @@ public interface ISupplierRepository extends JpaRepository<SupplierEntity, Integ
     @Modifying
     @Query("UPDATE SupplierEntity r SET r.status = 0 WHERE r.id IN :ids")
     void deleteAllByIdInBatchCustom(@Param("ids") List<Integer> ids);
+    List<SupplierEntity> findAllByStatus(Integer status);
+
+    Page<SupplierEntity> findAllByStatus(Integer status, Pageable pageable);
+    Page<SupplierEntity> findAllByNameContainingIgnoreCaseAndStatus(String name, Integer status, Pageable pageable);
 }

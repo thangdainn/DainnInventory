@@ -25,6 +25,7 @@ public interface IRoleRepository extends JpaRepository<RoleEntity, Integer> {
     void deleteAllByIdInBatchCustom(@Param("ids") List<Integer> ids);
 
     List<RoleEntity> findAllByStatus(Integer status);
+    Page<RoleEntity> findAllByStatus(Integer status, Pageable pageable);
 
     Page<RoleEntity> findAllByNameContainingIgnoreCaseAndStatus(String name, Integer status, Pageable pageable);
 
