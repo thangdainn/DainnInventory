@@ -1,6 +1,7 @@
 package org.dainn.dainninventory.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.dainn.dainninventory.controller.request.BrandPageRequest;
 import org.dainn.dainninventory.dto.BrandDTO;
 import org.dainn.dainninventory.entity.BrandEntity;
 import org.dainn.dainninventory.exception.AppException;
@@ -8,6 +9,9 @@ import org.dainn.dainninventory.exception.ErrorCode;
 import org.dainn.dainninventory.mapper.IBrandMapper;
 import org.dainn.dainninventory.repository.IBrandRepository;
 import org.dainn.dainninventory.service.IBrandService;
+import org.dainn.dainninventory.utils.Paging;
+import org.dainn.dainninventory.utils.ValidateString;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,5 +64,19 @@ public class BrandService implements IBrandService {
     public List<BrandDTO> findAll() {
         return brandRepository.findAll()
                 .stream().map(brandMapper::toDTO).toList();
+    }
+
+    @Override
+    public List<BrandDTO> findAll(Integer status) {
+        return brandRepository.findAllByStatus(status)
+                .stream().map(brandMapper::toDTO).toList();
+    }
+
+    @Override
+    public Page<BrandDTO> findAllByName(BrandPageRequest request) {
+        return (ValidateString.isNullOrBlank(request.getKeyword())
+                ? brandRepository.findAllByStatus(request.getStatus(), Paging.getPageable(request))
+                : brandRepository.findAllByNameContainingIgnoreCaseAndStatus(request.getKeyword(), request.getStatus(), Paging.getPageable(request))
+        ).map(brandMapper::toDTO);
     }
 }
