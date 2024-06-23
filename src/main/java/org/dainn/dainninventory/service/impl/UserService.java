@@ -15,7 +15,8 @@ import org.dainn.dainninventory.repository.specification.SearchOperation;
 import org.dainn.dainninventory.repository.specification.SpecSearchCriteria;
 import org.dainn.dainninventory.repository.specification.SpecificationBuilder;
 import org.dainn.dainninventory.service.IUserService;
-import org.dainn.dainninventory.utils.Provider;
+import org.dainn.dainninventory.utils.Paging;
+import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -126,8 +127,8 @@ public class UserService implements IUserService {
 
         builder.with("status", SearchOperation.EQUALITY, request.getStatus(), false, new ArrayList<>());
         if (request.getKeyword() != null && !request.getKeyword().isBlank()) {
-            builder.with("email", SearchOperation.LIKE, request.getKeyword(), true, new ArrayList<>());
-            builder.with("name", SearchOperation.LIKE, request.getKeyword(), true, new ArrayList<>());
+            builder.with("email", SearchOperation.CONTAINS, request.getKeyword(), true, new ArrayList<>());
+            builder.with("name", SearchOperation.CONTAINS, request.getKeyword(), true, new ArrayList<>());
         }
         if (request.getProvider() != null) {
             builder.with("provider", SearchOperation.EQUALITY, request.getProvider(), false, new ArrayList<>());
@@ -137,23 +138,23 @@ public class UserService implements IUserService {
             roleCriteria.add(new SpecSearchCriteria("id", SearchOperation.EQUALITY, request.getRoleId(), true));
             Specification<UserEntity> roleSpec = builder.joinTableWithCondition("roles", roleCriteria);
             Specification<UserEntity> spec = Specification.where(builder.build()).and(roleSpec);
-            page = userRepository.findAll(spec, getPageable(request));
+            page = userRepository.findAll(spec, Paging.getPageable(request));
             return page.map(userMapper::toDTO);
         }
 
-        page = userRepository.findAll(Objects.requireNonNull(builder.build()), getPageable(request));
+        page = userRepository.findAll(Objects.requireNonNull(builder.build()), Paging.getPageable(request));
         return page.map(userMapper::toDTO);
 
     }
 
-    private Pageable getPageable(UserPageRequest request) {
-        Sort sort;
-        if (request.getSortBy() != null && !request.getSortBy().isBlank()) {
-            sort = request.getSortDir().equalsIgnoreCase(Sort.Direction.ASC.name())
-                    ? Sort.by(request.getSortBy()).ascending() : Sort.by(request.getSortBy()).descending();
-        } else {
-            sort = Sort.unsorted();
-        }
-        return PageRequest.of(request.getPage(), request.getSize(), sort);
-    }
+//    private Pageable getPageable(UserPageRequest request) {
+//        Sort sort;
+//        if (request.getSortBy() != null && !request.getSortBy().isBlank()) {
+//            sort = request.getSortDir().equalsIgnoreCase(Sort.Direction.ASC.name())
+//                    ? Sort.by(request.getSortBy()).ascending() : Sort.by(request.getSortBy()).descending();
+//        } else {
+//            sort = Sort.unsorted();
+//        }
+//        return PageRequest.of(request.getPage(), request.getSize(), sort);
+//    }
 }
