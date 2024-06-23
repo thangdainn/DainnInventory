@@ -3,9 +3,15 @@ package org.dainn.dainninventory.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.dainn.dainninventory.controller.request.BrandPageRequest;
+import org.dainn.dainninventory.controller.request.CategoryPageRequest;
+import org.dainn.dainninventory.controller.response.PageResponse;
+import org.dainn.dainninventory.dto.BrandDTO;
 import org.dainn.dainninventory.dto.CategoryDTO;
 import org.dainn.dainninventory.service.ICategoryService;
+import org.dainn.dainninventory.utils.ValidateString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -20,8 +26,20 @@ public class CategoryController {
     private final ICategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(categoryService.findAll());
+    public ResponseEntity<?> getAll(@ModelAttribute CategoryPageRequest request) {
+        request.setKeyword(ValidateString.trimString(request.getKeyword()));
+
+        if (request.getPage() == null) {
+            return ResponseEntity.ok(categoryService.findAll(request.getStatus()));
+        }
+        Page<CategoryDTO> page = categoryService.findAllByName(request);
+
+        return ResponseEntity.ok(PageResponse.<CategoryDTO>builder()
+                .page(page.getPageable().getPageNumber())
+                .size(page.getPageable().getPageSize())
+                .totalPages(page.getTotalPages())
+                .data(page.getContent())
+                .build());
     }
 
     @GetMapping(value = "/{id}")

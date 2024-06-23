@@ -1,18 +1,17 @@
 package org.dainn.dainninventory.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.dainn.dainninventory.dto.BrandDTO;
+import org.dainn.dainninventory.controller.request.CategoryPageRequest;
 import org.dainn.dainninventory.dto.CategoryDTO;
-import org.dainn.dainninventory.entity.BrandEntity;
 import org.dainn.dainninventory.entity.CategoryEntity;
 import org.dainn.dainninventory.exception.AppException;
 import org.dainn.dainninventory.exception.ErrorCode;
-import org.dainn.dainninventory.mapper.IBrandMapper;
 import org.dainn.dainninventory.mapper.ICategoryMapper;
-import org.dainn.dainninventory.repository.IBrandRepository;
 import org.dainn.dainninventory.repository.ICategoryRepository;
-import org.dainn.dainninventory.service.IBrandService;
 import org.dainn.dainninventory.service.ICategoryService;
+import org.dainn.dainninventory.utils.Paging;
+import org.dainn.dainninventory.utils.ValidateString;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,5 +64,19 @@ public class CategoryService implements ICategoryService {
     public List<CategoryDTO> findAll() {
         return categoryRepository.findAll()
                 .stream().map(categoryMapper::toDTO).toList();
+    }
+
+    @Override
+    public List<CategoryDTO> findAll(Integer status) {
+        return categoryRepository.findAllByStatus(status)
+                .stream().map(categoryMapper::toDTO).toList();
+    }
+
+    @Override
+    public Page<CategoryDTO> findAllByName(CategoryPageRequest request) {
+        return (ValidateString.isNullOrBlank(request.getKeyword())
+                ? categoryRepository.findAllByStatus(request.getStatus(), Paging.getPageable(request))
+                : categoryRepository.findAllByNameContainingIgnoreCaseAndStatus(request.getKeyword(), request.getStatus(), Paging.getPageable(request))
+        ).map(categoryMapper::toDTO);
     }
 }

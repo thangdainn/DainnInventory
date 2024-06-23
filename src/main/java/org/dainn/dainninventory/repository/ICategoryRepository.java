@@ -2,6 +2,7 @@ package org.dainn.dainninventory.repository;
 
 import org.dainn.dainninventory.entity.BrandEntity;
 import org.dainn.dainninventory.entity.CategoryEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -19,4 +20,8 @@ public interface ICategoryRepository extends JpaRepository<CategoryEntity, Integ
     @Modifying
     @Query("UPDATE CategoryEntity r SET r.status = 0 WHERE r.id IN :ids")
     void deleteAllByIdInBatchCustom(@Param("ids") List<Integer> ids);
+    List<CategoryEntity> findAllByStatus(Integer status);
+    Page<CategoryEntity> findAllByStatus(Integer status, Pageable pageable);
+
+    Page<CategoryEntity> findAllByNameContainingIgnoreCaseAndStatus(String name, Integer status, Pageable pageable);
 }
