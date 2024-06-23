@@ -7,13 +7,9 @@ import org.dainn.dainninventory.controller.request.UserPageRequest;
 import org.dainn.dainninventory.controller.request.UserRequest;
 import org.dainn.dainninventory.controller.response.PageResponse;
 import org.dainn.dainninventory.dto.UserDTO;
-import org.dainn.dainninventory.exception.AppException;
-import org.dainn.dainninventory.exception.ErrorCode;
 import org.dainn.dainninventory.service.IUserService;
-import org.dainn.dainninventory.utils.ProviderId;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,9 +23,11 @@ public class UserController {
     @GetMapping
     public ResponseEntity<?> getAll(@ModelAttribute UserPageRequest request) {
         if (request.getPage() == null) {
-            return ResponseEntity.ok(userService.findAll());
+            return ResponseEntity.ok(userService.findAll(request.getStatus()));
         }
-        Page<UserDTO> entityPage = userService.findAll(request);
+
+        Page<UserDTO> entityPage = userService.findWithSpec(request);
+
         return ResponseEntity.ok(PageResponse.<UserDTO>builder()
                 .page(entityPage.getPageable().getPageNumber())
                 .size(entityPage.getPageable().getPageSize())

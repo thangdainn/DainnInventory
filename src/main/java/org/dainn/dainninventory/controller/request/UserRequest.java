@@ -6,9 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.dainn.dainninventory.utils.ProviderId;
+import org.dainn.dainninventory.utils.Provider;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +23,7 @@ public class UserRequest extends AbstractRequest{
 
     @NotBlank(message = "Name is required")
     private String name;
-    private ProviderId providerId = ProviderId.local;
+    private Provider provider = Provider.local;
     private String password;
     private List<String> rolesName = new ArrayList<>();
 }

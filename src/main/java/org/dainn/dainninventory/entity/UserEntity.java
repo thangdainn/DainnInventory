@@ -2,7 +2,7 @@ package org.dainn.dainninventory.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.dainn.dainninventory.utils.ProviderId;
+import org.dainn.dainninventory.utils.Provider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +24,8 @@ public class UserEntity extends BaseEntity{
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "provider_id", nullable = false)
-    private ProviderId providerId;
+    @Column(name = "provider", nullable = false)
+    private Provider provider;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",

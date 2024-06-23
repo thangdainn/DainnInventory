@@ -3,7 +3,7 @@ package org.dainn.dainninventory.service;
 import org.dainn.dainninventory.controller.request.UserPageRequest;
 import org.dainn.dainninventory.controller.request.UserRequest;
 import org.dainn.dainninventory.dto.UserDTO;
-import org.dainn.dainninventory.utils.ProviderId;
+import org.dainn.dainninventory.utils.Provider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -13,11 +13,10 @@ public interface IUserService {
     UserDTO save(UserRequest userRequest);
     void delete(List<Integer> ids);
     UserDTO findById(Integer id);
-    UserDTO findByEmail(String email);
     List<UserDTO> findAll();
     Page<UserDTO> findAll(Pageable pageable);
-    Page<UserDTO> findAll(UserPageRequest request);
-    Page<UserDTO> findByEmailContaining(String email, Pageable pageable);
+    List<UserDTO> findAll(Integer status);
+//    UserDTO findByEmailAndProviderId(String email, Provider providerId);
 
-    UserDTO findByEmailAndProviderId(String userName, ProviderId providerId);
+    Page<UserDTO> findWithSpec(UserPageRequest request);
 }

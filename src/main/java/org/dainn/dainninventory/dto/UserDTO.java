@@ -1,10 +1,8 @@
 package org.dainn.dainninventory.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import org.dainn.dainninventory.utils.ProviderId;
+import org.dainn.dainninventory.utils.Provider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +21,6 @@ public class UserDTO extends AbstractDTO{
 
     @JsonIgnore
     private String password;
-    private ProviderId providerId;
+    private Provider provider;
     private List<String> rolesName = new ArrayList<>();
 }

@@ -116,7 +116,7 @@ public class ProductService implements IProductService {
     public Page<ProductDTO> findAll(ProductPageRequest request) {
         Sort sort;
         if (request.getSortBy() != null && !request.getSortBy().isBlank()) {
-            sort = request.getSortBy().equalsIgnoreCase(Sort.Direction.ASC.name())
+            sort = request.getSortDir().equalsIgnoreCase(Sort.Direction.ASC.name())
                     ? Sort.by(request.getSortBy()).ascending() : Sort.by(request.getSortBy()).descending();
         } else {
             sort = Sort.unsorted();
