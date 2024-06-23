@@ -96,19 +96,20 @@ public class UserService implements IUserService {
 
     @Override
     public List<UserDTO> findAll() {
-        return userRepository.findAll().stream().map(userMapper::toDTO).toList();
+        return userRepository.findAll()
+                .stream().map(userMapper::toDTO).toList();
     }
 
     @Override
     public Page<UserDTO> findAll(Pageable pageable) {
-        Page<UserEntity> page = userRepository.findAll(pageable);
-        return page.map(userMapper::toDTO);
+        return userRepository.findAll(pageable)
+                .map(userMapper::toDTO);
     }
 
     @Override
     public List<UserDTO> findAll(Integer status) {
-        List<UserEntity> entities = userRepository.findAllByStatus(status);
-        return entities.stream().map(userMapper::toDTO).toList();
+        return userRepository.findAllByStatus(status)
+                .stream().map(userMapper::toDTO).toList();
     }
 
 //    @Override
