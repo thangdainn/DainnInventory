@@ -8,11 +8,9 @@ import org.dainn.dainninventory.controller.response.PageResponse;
 import org.dainn.dainninventory.dto.RoleDTO;
 import org.dainn.dainninventory.service.IRoleService;
 import org.dainn.dainninventory.utils.ValidateString;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
