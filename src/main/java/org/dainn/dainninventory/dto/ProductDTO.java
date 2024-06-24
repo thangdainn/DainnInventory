@@ -8,6 +8,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,11 +29,13 @@ public class ProductDTO extends AbstractDTO {
     private String name;
 
     @NotNull(message = "Price is required")
-    private double price;
+    private BigDecimal price;
 
     @NotNull(message = "Brand is required")
     private Integer brandId;
 
     @NotNull(message = "Category is required")
     private Integer categoryId;
+
+    private List<String> imageUrls = new ArrayList<>();
 }

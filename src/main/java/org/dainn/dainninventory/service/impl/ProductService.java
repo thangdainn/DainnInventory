@@ -1,34 +1,37 @@
 package org.dainn.dainninventory.service.impl;
 
-import com.cloudinary.Cloudinary;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.controller.request.ProductPageRequest;
 import org.dainn.dainninventory.controller.request.ProductRequest;
-import org.dainn.dainninventory.controller.request.UserPageRequest;
-import org.dainn.dainninventory.dto.BrandDTO;
+import org.dainn.dainninventory.dto.ImageDTO;
 import org.dainn.dainninventory.dto.InventoryDTO;
 import org.dainn.dainninventory.dto.ProductDTO;
-import org.dainn.dainninventory.entity.*;
+import org.dainn.dainninventory.entity.ProductEntity;
 import org.dainn.dainninventory.exception.AppException;
 import org.dainn.dainninventory.exception.ErrorCode;
-import org.dainn.dainninventory.mapper.IBrandMapper;
 import org.dainn.dainninventory.mapper.IInventoryMapper;
 import org.dainn.dainninventory.mapper.IProductMapper;
 import org.dainn.dainninventory.repository.IBrandRepository;
 import org.dainn.dainninventory.repository.ICategoryRepository;
-import org.dainn.dainninventory.repository.IImageRepository;
 import org.dainn.dainninventory.repository.IProductRepository;
-import org.dainn.dainninventory.service.*;
+import org.dainn.dainninventory.repository.specification.SearchOperation;
+import org.dainn.dainninventory.repository.specification.SpecSearchCriteria;
+import org.dainn.dainninventory.repository.specification.SpecificationBuilder;
+import org.dainn.dainninventory.service.IImageService;
+import org.dainn.dainninventory.service.IInventoryService;
+import org.dainn.dainninventory.service.IProductService;
+import org.dainn.dainninventory.utils.Paging;
+import org.dainn.dainninventory.utils.ValidateString;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +44,7 @@ public class ProductService implements IProductService {
     private final ICategoryRepository categoryRepository;
     private final IBrandRepository brandRepository;
     private final IInventoryService inventoryService;
+
     @Transactional
     @Override
     public ProductDTO save(ProductRequest request, MultipartFile mainImg, List<MultipartFile> subImg) {
@@ -48,7 +52,6 @@ public class ProductService implements IProductService {
         ProductEntity productEntity;
         ProductDTO dto = productMapper.toDTO(request);
         if (dto.getId() != null) {
-
             ProductEntity old = productRepository.findById(dto.getId())
                     .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
             if (!old.getCode().equals(dto.getCode()) && productRepository.existsByCode(request.getCode())) {
@@ -102,8 +105,14 @@ public class ProductService implements IProductService {
 
     @Override
     public ProductDTO findByCode(String code) {
-        return productMapper.toDTO(productRepository.findByCode(code)
-                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED)));
+        Optional<ProductEntity> optional = productRepository.findByCode(code);
+        if (optional.isEmpty()) {
+            throw new AppException(ErrorCode.PRODUCT_NOT_EXISTED);
+        }
+        ProductDTO dto = productMapper.toDTO(optional.get());
+        dto.setImageUrls(imageService.findByProductId(dto.getId())
+                .stream().map(ImageDTO::getUrl).toList());
+        return dto;
     }
 
     @Override
@@ -113,22 +122,56 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Page<ProductDTO> findAll(ProductPageRequest request) {
-        Sort sort;
-        if (request.getSortBy() != null && !request.getSortBy().isBlank()) {
-            sort = request.getSortDir().equalsIgnoreCase(Sort.Direction.ASC.name())
-                    ? Sort.by(request.getSortBy()).ascending() : Sort.by(request.getSortBy()).descending();
-        } else {
-            sort = Sort.unsorted();
+    public List<ProductDTO> findAll(Integer status) {
+        return productRepository.findAllByStatus(status)
+                .stream().map(productMapper::toDTO).toList();
+    }
+
+    @Override
+    public Page<ProductDTO> findWithSpec(ProductPageRequest request) {
+        SpecificationBuilder<ProductEntity> builder = new SpecificationBuilder<>();
+        Page<ProductEntity> page;
+        Specification<ProductEntity> spec;
+
+        if (!ValidateString.isNullOrBlank(request.getKeyword())) {
+            builder.with("name", SearchOperation.CONTAINS, request.getKeyword(), false);
         }
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
-        Page<ProductEntity> entityPage;
-        if (request.getKeyword() != null) {
-            entityPage = productRepository.findByDynamicFilters(
-                    request.getKeyword(), request.getBrandId(), request.getCategoryId(), request.getStatus(), pageable);
-        } else {
-            entityPage = productRepository.findAll(pageable);
+        if (request.getMinPrice() != null) {
+            builder.with("price", SearchOperation.GREATER_THAN_OR_EQUAL, request.getMinPrice(), false);
         }
-        return entityPage.map(productMapper::toDTO);
+        if (request.getMaxPrice() != null) {
+            builder.with("price", SearchOperation.LESS_THAN_OR_EQUAL, request.getMaxPrice(), false);
+        }
+        builder.with("status", SearchOperation.EQUALITY, request.getStatus(), false);
+        spec = builder.build();
+        List<SpecSearchCriteria> categoryCriteria = new ArrayList<>();
+        List<SpecSearchCriteria> brandCriteria = new ArrayList<>();
+        Specification<ProductEntity> categorySpec = null;
+        Specification<ProductEntity> brandSpec = null;
+        if (isNonNullOrNonEmpty(request.getCategoryIds())) {
+            for (Integer categoryId : request.getCategoryIds()) {
+                categoryCriteria.add(new SpecSearchCriteria("id", SearchOperation.EQUALITY, categoryId, true));
+            }
+            categorySpec = builder.joinTableWithCondition("category", categoryCriteria);
+        }
+        if (isNonNullOrNonEmpty(request.getBrandIds())) {
+            for (Integer brandId : request.getBrandIds()) {
+                brandCriteria.add(new SpecSearchCriteria("id", SearchOperation.EQUALITY, brandId, true));
+            }
+            brandSpec = builder.joinTableWithCondition("brand", brandCriteria);
+        }
+        if (!categoryCriteria.isEmpty() && !brandCriteria.isEmpty()) {
+            spec = Specification.where(spec).and(categorySpec).and(brandSpec);
+        } else if (!categoryCriteria.isEmpty()) {
+            spec = Specification.where(spec).and(categorySpec);
+        } else if (!brandCriteria.isEmpty()) {
+            spec = Specification.where(spec).and(brandSpec);
+        }
+        page = productRepository.findAll(Objects.requireNonNull(spec), Paging.getPageable(request));
+        return page.map(productMapper::toDTO);
+    }
+
+    private boolean isNonNullOrNonEmpty(List<Integer> list) {
+        return list != null && !list.isEmpty();
     }
 }

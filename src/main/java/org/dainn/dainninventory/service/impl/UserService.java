@@ -117,25 +117,24 @@ public class UserService implements IUserService {
     public Page<UserDTO> findWithSpec(UserPageRequest request) {
         SpecificationBuilder<UserEntity> builder = new SpecificationBuilder<>();
         Page<UserEntity> page;
-
-        builder.with("status", SearchOperation.EQUALITY, request.getStatus(), false, new ArrayList<>());
+        Specification<UserEntity> spec;
         if (!ValidateString.isNullOrBlank(request.getKeyword())) {
-            builder.with("email", SearchOperation.CONTAINS, request.getKeyword(), true, new ArrayList<>());
-            builder.with("name", SearchOperation.CONTAINS, request.getKeyword(), true, new ArrayList<>());
+            builder.with("email", SearchOperation.CONTAINS, request.getKeyword(), true);
+            builder.with("name", SearchOperation.CONTAINS, request.getKeyword(), true);
         }
         if (request.getProvider() != null) {
-            builder.with("provider", SearchOperation.EQUALITY, request.getProvider(), false, new ArrayList<>());
+            builder.with("provider", SearchOperation.EQUALITY, request.getProvider(), false);
         }
+        builder.with("status", SearchOperation.EQUALITY, request.getStatus(), false);
+        spec = builder.build();
         if (request.getRoleId() != null) {
             List<SpecSearchCriteria> roleCriteria = new ArrayList<>();
             roleCriteria.add(new SpecSearchCriteria("id", SearchOperation.EQUALITY, request.getRoleId(), true));
             Specification<UserEntity> roleSpec = builder.joinTableWithCondition("roles", roleCriteria);
-            Specification<UserEntity> spec = Specification.where(builder.build()).and(roleSpec);
-            page = userRepository.findAll(spec, Paging.getPageable(request));
-            return page.map(userMapper::toDTO);
+            spec = Specification.where(spec).and(roleSpec);
         }
 
-        page = userRepository.findAll(Objects.requireNonNull(builder.build()), Paging.getPageable(request));
+        page = userRepository.findAll(Objects.requireNonNull(spec), Paging.getPageable(request));
         return page.map(userMapper::toDTO);
 
     }

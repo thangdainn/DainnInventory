@@ -26,9 +26,9 @@ public class ProductController {
     public ResponseEntity<?> getAll(@ModelAttribute ProductPageRequest request) {
         request.setKeyword(ValidateString.trimString(request.getKeyword()));
         if (request.getPage() == null) {
-            return ResponseEntity.ok(productService.findAll());
+            return ResponseEntity.ok(productService.findAll(request.getStatus()));
         }
-        Page<ProductDTO> entityPage = productService.findAll(request);
+        Page<ProductDTO> entityPage = productService.findWithSpec(request);
         return ResponseEntity.ok(PageResponse.<ProductDTO>builder()
                 .page(entityPage.getPageable().getPageNumber())
                 .size(entityPage.getPageable().getPageSize())

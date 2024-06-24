@@ -8,4 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 public class ImageDTO extends AbstractDTO{
     private Integer productId;
+    private String url;
 }

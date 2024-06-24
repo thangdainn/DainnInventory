@@ -18,6 +18,7 @@ public interface IProductService {
     ProductDTO findById(Integer id);
     ProductDTO findByCode(String code);
     List<ProductDTO> findAll();
+    List<ProductDTO> findAll(Integer status);
 
-    Page<ProductDTO> findAll(ProductPageRequest request);
+    Page<ProductDTO> findWithSpec(ProductPageRequest request);
 }
