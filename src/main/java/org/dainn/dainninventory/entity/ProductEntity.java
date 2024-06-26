@@ -26,7 +26,7 @@ public class ProductEntity extends BaseEntity{
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "price", nullable = false)
+    @Column(name = "price", nullable = false, precision = 10)
     private BigDecimal price;
 
     @Column(name = "img_url", nullable = false)
