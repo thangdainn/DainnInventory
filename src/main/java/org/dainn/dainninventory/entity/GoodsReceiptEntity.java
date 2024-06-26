@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +17,8 @@ import java.util.List;
 @Entity
 @Table(name = "goods_receipts")
 public class GoodsReceiptEntity extends BaseEntity {
-    @Column(name = "total_amount", nullable = false)
-    private double totalAmount;
+    @Column(name = "total_amount", nullable = false, precision = 10)
+    private BigDecimal totalAmount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

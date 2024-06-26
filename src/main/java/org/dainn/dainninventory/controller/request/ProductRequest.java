@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.dainn.dainninventory.dto.AbstractDTO;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -32,7 +33,7 @@ public class ProductRequest extends AbstractRequest{
     private String name;
 
     @NotNull(message = "Price is required")
-    private double price;
+    private BigDecimal price;
 
     @NotNull(message = "Brand is required")
     private Integer brandId;

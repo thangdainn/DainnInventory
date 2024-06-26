@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,14 +15,14 @@ import lombok.Setter;
 @Entity
 @Table(name = "goods_receipt_details")
 public class GoodsReceiptDetailEntity extends BaseEntity {
-    @Column(name = "price", nullable = false)
-    private double price;
+    @Column(name = "price", nullable = false, precision = 10)
+    private BigDecimal price;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "total", nullable = false)
-    private double total;
+    @Column(name = "total", nullable = false, precision = 10)
+    private BigDecimal total;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "goods_receipt_id")

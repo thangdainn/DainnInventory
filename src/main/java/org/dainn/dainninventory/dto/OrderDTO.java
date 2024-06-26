@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.dainn.dainninventory.utils.enums.OrderStatus;
 import org.dainn.dainninventory.utils.enums.PaymentMethod;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public class OrderDTO {
     private String shippingAddress;
 
     @NotNull(message = "Total amount is required")
-    private double totalAmount;
+    private BigDecimal totalAmount;
 
     private LocalDateTime orderDate;
 
