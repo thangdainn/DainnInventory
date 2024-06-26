@@ -28,12 +28,12 @@ public class ProductController {
         if (request.getPage() == null) {
             return ResponseEntity.ok(productService.findAll(request.getStatus()));
         }
-        Page<ProductDTO> entityPage = productService.findWithSpec(request);
+        Page<ProductDTO> page = productService.findWithSpec(request);
         return ResponseEntity.ok(PageResponse.<ProductDTO>builder()
-                .page(entityPage.getPageable().getPageNumber())
-                .size(entityPage.getPageable().getPageSize())
-                .totalPages(entityPage.getTotalPages())
-                .data(entityPage.getContent())
+                .page(page.getPageable().getPageNumber())
+                .size(page.getPageable().getPageSize())
+                .totalPages(page.getTotalPages())
+                .data(page.getContent())
                 .build());
     }
 
