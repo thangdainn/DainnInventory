@@ -15,7 +15,12 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Entity
 @Table(name = "order_details")
-public class OrderDetailEntity extends BaseEntity{
+public class OrderDetailEntity{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
+
     @Column(name = "quantity", nullable = false)
     @Min(1)
     private Integer quantity;

@@ -14,7 +14,12 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Entity
 @Table(name = "goods_receipt_details")
-public class GoodsReceiptDetailEntity extends BaseEntity {
+public class GoodsReceiptDetailEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
+
     @Column(name = "price", nullable = false, precision = 10)
     private BigDecimal price;
 

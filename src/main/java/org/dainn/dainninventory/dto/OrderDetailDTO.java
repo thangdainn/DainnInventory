@@ -9,7 +9,9 @@ import java.math.BigDecimal;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderDetailDTO extends AbstractDTO{
+public class OrderDetailDTO {
+    private Integer id;
+
     @NotNull(message = "Price is required")
     private BigDecimal price;
 
