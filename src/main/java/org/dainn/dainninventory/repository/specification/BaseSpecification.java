@@ -9,6 +9,8 @@ import lombok.Getter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -21,8 +23,24 @@ public class BaseSpecification<T> implements Specification<T> {
         return switch (criteria.getOperation()) {
             case EQUALITY -> criteriaBuilder.equal(root.get(criteria.getKey()), criteria.getValue());
             case NEGATION -> criteriaBuilder.notEqual(root.get(criteria.getKey()), criteria.getValue());
-            case GREATER_THAN_OR_EQUAL ->criteriaBuilder.greaterThanOrEqualTo(root.get(criteria.getKey()), criteria.getValue().toString());
-            case LESS_THAN_OR_EQUAL -> criteriaBuilder.lessThanOrEqualTo(root.get(criteria.getKey()), criteria.getValue().toString());
+            case GREATER_THAN_OR_EQUAL -> {
+                if (criteria.getValue() instanceof Date) {
+                    yield criteriaBuilder.greaterThanOrEqualTo(root.get(criteria.getKey()), (Date) criteria.getValue());
+                } else if (criteria.getValue() instanceof BigDecimal) {
+                    yield criteriaBuilder.greaterThanOrEqualTo(root.get(criteria.getKey()), (BigDecimal) criteria.getValue());
+                } else {
+                    yield criteriaBuilder.greaterThanOrEqualTo(root.get(criteria.getKey()), criteria.getValue().toString());
+                }
+            }
+            case LESS_THAN_OR_EQUAL -> {
+                if (criteria.getValue() instanceof Date) {
+                    yield criteriaBuilder.lessThanOrEqualTo(root.get(criteria.getKey()), (Date) criteria.getValue());
+                } else if (criteria.getValue() instanceof BigDecimal) {
+                    yield criteriaBuilder.lessThanOrEqualTo(root.get(criteria.getKey()), (BigDecimal) criteria.getValue());
+                } else {
+                    yield criteriaBuilder.lessThanOrEqualTo(root.get(criteria.getKey()), criteria.getValue().toString());
+                }
+            }
             case LIKE -> criteriaBuilder.like(root.get(criteria.getKey()), criteria.getValue().toString());
             case CONTAINS -> criteriaBuilder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%");
             case STARTS_WITH -> criteriaBuilder.like(root.get(criteria.getKey()), criteria.getValue() + "%");
