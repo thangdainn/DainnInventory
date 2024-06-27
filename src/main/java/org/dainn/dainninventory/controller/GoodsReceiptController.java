@@ -3,8 +3,12 @@ package org.dainn.dainninventory.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.dainn.dainninventory.controller.request.GoodsReceiptPageRequest;
+import org.dainn.dainninventory.controller.response.PageResponse;
 import org.dainn.dainninventory.dto.GoodsReceiptDTO;
 import org.dainn.dainninventory.service.IGoodsReceiptService;
+import org.dainn.dainninventory.utils.ValidateString;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +22,18 @@ public class GoodsReceiptController {
     private final IGoodsReceiptService goodReceiptService;
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(goodReceiptService.findAll());
+    public ResponseEntity<?> getAll(@ModelAttribute GoodsReceiptPageRequest request) {
+        request.setKeyword(ValidateString.trimString(request.getKeyword()));
+        if (request.getPage() == null) {
+            return ResponseEntity.ok(goodReceiptService.findAll());
+        }
+        Page<GoodsReceiptDTO> page = goodReceiptService.findWithSpec(request);
+        return ResponseEntity.ok(PageResponse.<GoodsReceiptDTO>builder()
+                .page(page.getPageable().getPageNumber())
+                .size(page.getPageable().getPageSize())
+                .totalPages(page.getTotalPages())
+                .data(page.getContent())
+                .build());
     }
 
     @GetMapping(value = "/{id}")
