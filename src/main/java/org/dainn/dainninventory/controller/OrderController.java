@@ -3,9 +3,13 @@ package org.dainn.dainninventory.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.dainn.dainninventory.controller.request.OrderPageRequest;
 import org.dainn.dainninventory.controller.request.OrderStatusRequest;
+import org.dainn.dainninventory.controller.response.PageResponse;
 import org.dainn.dainninventory.dto.OrderDTO;
 import org.dainn.dainninventory.service.IOrderService;
+import org.dainn.dainninventory.utils.ValidateString;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +21,18 @@ public class OrderController {
     private final IOrderService orderService;
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(orderService.findAll());
+    public ResponseEntity<?> getAll(@ModelAttribute OrderPageRequest request) {
+        request.setKeyword(ValidateString.trimString(request.getKeyword()));
+        if (request.getPage() == null) {
+            return ResponseEntity.ok(orderService.findAll());
+        }
+        Page<OrderDTO> page = orderService.findWithSpec(request);
+        return ResponseEntity.ok(PageResponse.<OrderDTO>builder()
+                .page(page.getPageable().getPageNumber())
+                .size(page.getPageable().getPageSize())
+                .totalPages(page.getTotalPages())
+                .data(page.getContent())
+                .build());
     }
 
     @GetMapping(value = "/{id}")

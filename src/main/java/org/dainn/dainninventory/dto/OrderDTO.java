@@ -9,10 +9,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.dainn.dainninventory.utils.enums.OrderStatus;
 import org.dainn.dainninventory.utils.enums.PaymentMethod;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -36,7 +39,8 @@ public class OrderDTO {
     @NotNull(message = "Total amount is required")
     private BigDecimal totalAmount;
 
-    private LocalDateTime orderDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date orderDate;
 
     @NotNull(message = "Payment method is required")
     private PaymentMethod paymentMethod;
@@ -46,7 +50,8 @@ public class OrderDTO {
     @NotNull(message = "User is required")
     private Integer userId;
 
-    private LocalDateTime modifiedDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date modifiedDate;
 
     @Valid
     private List<OrderDetailDTO> detailDTOS = new ArrayList<>();

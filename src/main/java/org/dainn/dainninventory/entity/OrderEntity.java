@@ -10,10 +10,13 @@ import org.dainn.dainninventory.utils.enums.PaymentMethod;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -57,11 +60,13 @@ public class OrderEntity {
 
     @Column(name = "order_date")
     @CreatedDate
-    private LocalDateTime orderDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date orderDate;
 
     @Column(name = "modified_date")
     @LastModifiedDate
-    private LocalDateTime modifiedDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date modifiedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
