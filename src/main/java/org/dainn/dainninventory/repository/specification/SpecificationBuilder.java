@@ -39,6 +39,7 @@ public final class SpecificationBuilder<T> {
         params.add(new SpecSearchCriteria(key, operation, value, orPredicate));
         return this;
     }
+
     public SpecificationBuilder<T> with(String key, SearchOperation operation, List<Object> values, boolean orPredicate) {
         params.add(new SpecSearchCriteria(key, operation, values, orPredicate));
         return this;
@@ -68,8 +69,11 @@ public final class SpecificationBuilder<T> {
                         yield criteriaBuilder.lessThanOrEqualTo(root.get(criteria.getKey()), criteria.getValue().toString());
                     }
                 }
-                case LIKE, CONTAINS ->
-                        criteriaBuilder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%");
+                case LIKE -> criteriaBuilder.like(root.get(criteria.getKey()), criteria.getValue().toString());
+                case CONTAINS ->
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get(criteria.getKey())), "%" + criteria.getValue().toString().toLowerCase() + "%");
+//                case LIKE, CONTAINS ->
+//                        criteriaBuilder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%");
                 case STARTS_WITH -> criteriaBuilder.like(root.get(criteria.getKey()), criteria.getValue() + "%");
                 case ENDS_WITH -> criteriaBuilder.like(root.get(criteria.getKey()), "%" + criteria.getValue());
                 case IN -> {

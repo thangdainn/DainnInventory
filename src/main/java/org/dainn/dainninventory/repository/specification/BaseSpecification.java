@@ -42,7 +42,8 @@ public class BaseSpecification<T> implements Specification<T> {
                 }
             }
             case LIKE -> criteriaBuilder.like(root.get(criteria.getKey()), criteria.getValue().toString());
-            case CONTAINS -> criteriaBuilder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%");
+            case CONTAINS -> criteriaBuilder.like(criteriaBuilder.lower(
+                    root.get(criteria.getKey())), "%" + criteria.getValue().toString().toLowerCase() + "%");
             case STARTS_WITH -> criteriaBuilder.like(root.get(criteria.getKey()), criteria.getValue() + "%");
             case ENDS_WITH -> criteriaBuilder.like(root.get(criteria.getKey()), "%" + criteria.getValue());
             case IN -> {
