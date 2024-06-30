@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-//@RequiredArgsConstructor
 public class CustomUserDetailService implements UserDetailsService {
 
     @Autowired
@@ -35,7 +34,7 @@ public class CustomUserDetailService implements UserDetailsService {
             return new CustomUserDetail(email, "", "", new ArrayList<>());
         }
     }
-    public UserDetails loadUserByUsernameAndProviderId(String email, Provider provider) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsernameAndProvider(String email, Provider provider) throws UsernameNotFoundException {
         Optional<UserEntity> userEntities = userRepository.findByEmailAndProvider(email, provider);
         if (userEntities.isPresent()) {
             UserEntity user = userEntities.get();
