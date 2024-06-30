@@ -18,6 +18,7 @@ public interface IUserRepository extends JpaRepository<UserEntity, Integer>, Jpa
     Optional<UserEntity> findByEmailAndStatus(String email, Integer status);
 
     Optional<UserEntity> findByEmailAndProvider(String email, Provider provider);
+    Optional<UserEntity> findByEmailAndPasswordAndProvider(String email, String password, Provider provider);
 
     @Modifying
     @Query("UPDATE UserEntity u SET u.status = 0 WHERE u.id IN :ids")
