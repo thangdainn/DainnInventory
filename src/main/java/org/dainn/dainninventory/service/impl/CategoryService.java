@@ -10,10 +10,10 @@ import org.dainn.dainninventory.mapper.ICategoryMapper;
 import org.dainn.dainninventory.repository.ICategoryRepository;
 import org.dainn.dainninventory.service.ICategoryService;
 import org.dainn.dainninventory.utils.Paging;
-import org.dainn.dainninventory.utils.ValidateString;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -74,9 +74,9 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public Page<CategoryDTO> findAllByName(CategoryPageRequest request) {
-        return (ValidateString.isNullOrBlank(request.getKeyword())
-                ? categoryRepository.findAllByStatus(request.getStatus(), Paging.getPageable(request))
-                : categoryRepository.findAllByNameContainingIgnoreCaseAndStatus(request.getKeyword(), request.getStatus(), Paging.getPageable(request))
+        return (StringUtils.hasText(request.getKeyword())
+                ? categoryRepository.findAllByNameContainingIgnoreCaseAndStatus(request.getKeyword(), request.getStatus(), Paging.getPageable(request))
+                : categoryRepository.findAllByStatus(request.getStatus(), Paging.getPageable(request))
         ).map(categoryMapper::toDTO);
     }
 }

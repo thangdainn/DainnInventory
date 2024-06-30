@@ -15,12 +15,12 @@ import org.dainn.dainninventory.repository.specification.SpecificationBuilder;
 import org.dainn.dainninventory.service.IOrderDetailService;
 import org.dainn.dainninventory.service.IOrderService;
 import org.dainn.dainninventory.utils.Paging;
-import org.dainn.dainninventory.utils.ValidateString;
 import org.dainn.dainninventory.utils.enums.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +72,7 @@ public class OrderService implements IOrderService {
         SpecificationBuilder<OrderEntity> builder = new SpecificationBuilder<>();
         Page<OrderEntity> page;
         Specification<OrderEntity> spec;
-        if (!ValidateString.isNullOrBlank(request.getKeyword())){
+        if (StringUtils.hasText(request.getKeyword())){
             builder.with("customerName", SearchOperation.CONTAINS, request.getKeyword(), true);
             builder.with("customerPhone", SearchOperation.CONTAINS, request.getKeyword(), true);
             try {

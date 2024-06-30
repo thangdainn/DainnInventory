@@ -10,10 +10,10 @@ import org.dainn.dainninventory.mapper.ISupplierMapper;
 import org.dainn.dainninventory.repository.ISupplierRepository;
 import org.dainn.dainninventory.service.ISupplierService;
 import org.dainn.dainninventory.utils.Paging;
-import org.dainn.dainninventory.utils.ValidateString;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -74,9 +74,9 @@ public class SupplierService implements ISupplierService {
 
     @Override
     public Page<SupplierDTO> findAllByName(SupplierPageRequest request) {
-        return (ValidateString.isNullOrBlank(request.getKeyword())
-                ? supplierRepository.findAllByStatus(request.getStatus(), Paging.getPageable(request))
-                : supplierRepository.findAllByNameContainingIgnoreCaseAndStatus(request.getKeyword(), request.getStatus(), Paging.getPageable(request))
+        return (StringUtils.hasText(request.getKeyword())
+                ? supplierRepository.findAllByNameContainingIgnoreCaseAndStatus(request.getKeyword(), request.getStatus(), Paging.getPageable(request))
+                : supplierRepository.findAllByStatus(request.getStatus(), Paging.getPageable(request))
         ).map(supplierMapper::toDTO);
     }
 }

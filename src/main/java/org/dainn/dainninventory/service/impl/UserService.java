@@ -16,7 +16,6 @@ import org.dainn.dainninventory.repository.specification.SpecSearchCriteria;
 import org.dainn.dainninventory.repository.specification.SpecificationBuilder;
 import org.dainn.dainninventory.service.IUserService;
 import org.dainn.dainninventory.utils.Paging;
-import org.dainn.dainninventory.utils.ValidateString;
 import org.dainn.dainninventory.utils.constant.RoleConstant;
 import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.data.domain.Page;
@@ -25,6 +24,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,7 +125,7 @@ public class UserService implements IUserService {
         SpecificationBuilder<UserEntity> builder = new SpecificationBuilder<>();
         Page<UserEntity> page;
         Specification<UserEntity> spec;
-        if (!ValidateString.isNullOrBlank(request.getKeyword())) {
+        if (StringUtils.hasText(request.getKeyword())) {
             builder.with("email", SearchOperation.CONTAINS, request.getKeyword(), true);
             builder.with("name", SearchOperation.CONTAINS, request.getKeyword(), true);
         }

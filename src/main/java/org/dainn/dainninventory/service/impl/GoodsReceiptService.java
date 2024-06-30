@@ -16,11 +16,11 @@ import org.dainn.dainninventory.repository.specification.SpecificationBuilder;
 import org.dainn.dainninventory.service.IGoodsReceiptDetailService;
 import org.dainn.dainninventory.service.IGoodsReceiptService;
 import org.dainn.dainninventory.utils.Paging;
-import org.dainn.dainninventory.utils.ValidateString;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +90,7 @@ public class GoodsReceiptService implements IGoodsReceiptService {
             builder.with("createdDate", SearchOperation.LESS_THAN_OR_EQUAL, request.getToDate(), false);
         }
         builder.with("status", SearchOperation.EQUALITY, request.getStatus(), false);
-        if (!ValidateString.isNullOrBlank(request.getKeyword())){
+        if (StringUtils.hasText(request.getKeyword())){
             try {
                 builder.with("id", SearchOperation.EQUALITY, Integer.valueOf(request.getKeyword()), false);
                 spec = builder.build();

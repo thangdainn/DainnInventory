@@ -21,11 +21,11 @@ import org.dainn.dainninventory.service.IImageService;
 import org.dainn.dainninventory.service.IInventoryService;
 import org.dainn.dainninventory.service.IProductService;
 import org.dainn.dainninventory.utils.Paging;
-import org.dainn.dainninventory.utils.ValidateString;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -133,7 +133,7 @@ public class ProductService implements IProductService {
         Page<ProductEntity> page;
         Specification<ProductEntity> spec;
 
-        if (!ValidateString.isNullOrBlank(request.getKeyword())) {
+        if (StringUtils.hasText(request.getKeyword())) {
             builder.with("name", SearchOperation.CONTAINS, request.getKeyword(), false);
         }
         if (request.getMinPrice() != null) {
