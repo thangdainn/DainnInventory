@@ -1,13 +1,13 @@
 package org.dainn.dainninventory.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -15,16 +15,10 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-//    @ExceptionHandler(RuntimeException.class)
-//    public ProblemDetail handleException(RuntimeException e) {
-//        return ProblemDetail
-//                .forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-//    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -67,6 +61,22 @@ public class GlobalExceptionHandler {
                 .forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ProblemDetail handleException(ExpiredJwtException e) {
+        return ProblemDetail
+                .forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+
+    @ExceptionHandler(MalformedJwtException.class)
+    public ProblemDetail handleException(MalformedJwtException e) {
+        return ProblemDetail
+                .forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+    @ExceptionHandler(SignatureException.class)
+    public ProblemDetail handleSignatureException(SignatureException e) {
+        return ProblemDetail
+                .forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleException(Exception e) {
         return ProblemDetail

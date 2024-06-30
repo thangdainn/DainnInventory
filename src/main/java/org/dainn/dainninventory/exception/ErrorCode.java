@@ -39,6 +39,13 @@ public enum ErrorCode {
 
     ORDER_NOT_EXISTED("Order not existed", HttpStatus.NOT_FOUND),
 
+    EMAIL_IS_INCORRECT("Email is incorrect", HttpStatus.BAD_REQUEST),
+    PASSWORD_IS_INCORRECT("Password is incorrect", HttpStatus.BAD_REQUEST),
+
+    REFRESH_NOT_EXISTED("Refresh token not existed", HttpStatus.BAD_REQUEST),
+    REFRESH_TOKEN_EXPIRED("Refresh token expired", HttpStatus.BAD_REQUEST),
+
+
     ;
     ErrorCode(String message, HttpStatusCode statusCode) {
         this.message = message;
