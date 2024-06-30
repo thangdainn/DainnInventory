@@ -10,6 +10,7 @@ import org.dainn.dainninventory.dto.UserDTO;
 import org.dainn.dainninventory.service.IUserService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class UserController {
     private final IUserService userService;
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     public ResponseEntity<?> getAll(@ModelAttribute UserPageRequest request) {
         if (request.getPage() == null) {
             return ResponseEntity.ok(userService.findAll(request.getStatus()));

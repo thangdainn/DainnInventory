@@ -11,6 +11,7 @@ import org.dainn.dainninventory.utils.ValidateString;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,11 +44,13 @@ public class BrandController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> create(@Valid @RequestBody BrandDTO brandDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(brandService.save(brandDTO));
     }
 
     @PutMapping(value = "/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> update(@Min(1) @PathVariable(name = "id") Integer id,
                                     @Valid @RequestBody BrandDTO brandDTO) {
         brandDTO.setId(id);
@@ -55,6 +58,7 @@ public class BrandController {
     }
 
     @DeleteMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> delete(@RequestBody List<Integer> ids) {
         brandService.delete(ids);
         return ResponseEntity.ok("Delete Successfully");

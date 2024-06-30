@@ -11,6 +11,7 @@ import org.dainn.dainninventory.service.IProductService;
 import org.dainn.dainninventory.utils.ValidateString;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,6 +44,7 @@ public class ProductController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     public ResponseEntity<?> create(@Valid @RequestPart("product") ProductRequest dto,
                                     @Valid @RequestPart("mainImage") MultipartFile mainImg,
                                     @Valid @RequestPart("subImage") List<MultipartFile> subImg) {
@@ -50,6 +52,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     public ResponseEntity<?> update(@Min(1) @PathVariable Integer id,
                                     @Valid @RequestPart("product") ProductRequest dto,
                                     @RequestPart(value = "mainImage", required = false) MultipartFile mainImg,
@@ -59,6 +62,7 @@ public class ProductController {
     }
 
     @DeleteMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     public ResponseEntity<?> delete(@RequestBody List<Integer> ids) {
         productService.delete(ids);
         return ResponseEntity.ok("Delete Successfully");

@@ -9,6 +9,7 @@ import org.dainn.dainninventory.controller.response.PageResponse;
 import org.dainn.dainninventory.dto.OrderDTO;
 import org.dainn.dainninventory.service.IOrderService;
 import org.dainn.dainninventory.utils.ValidateString;
+import org.dainn.dainninventory.utils.enums.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,5 +50,10 @@ public class OrderController {
     public ResponseEntity<?> update(@Min(1) @PathVariable(name = "id") Integer id,
                                     @Valid @RequestBody OrderStatusRequest orderStatus) {
         return ResponseEntity.ok(orderService.updateStatus(id, orderStatus.getStatus()) == 1 ? "Update success" : "Update failed");
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<?> delete(@Valid @RequestBody Integer orderId) {
+        return ResponseEntity.ok(orderService.updateStatus(orderId, OrderStatus.CANCELLED) == 1 ? "Delete success" : "Delete failed");
     }
 }
