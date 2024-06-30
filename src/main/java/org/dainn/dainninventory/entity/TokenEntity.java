@@ -1,13 +1,13 @@
 package org.dainn.dainninventory.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -25,7 +25,9 @@ public class TokenEntity{
     private String refreshToken;
 
     @Column(name = "refresh_token_expiration_date", nullable = false)
-    private Timestamp refreshTokenExpirationDate;
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date refreshTokenExpirationDate;
 
     @Column(name = "device_info", nullable = false)
     private String deviceInfo;
