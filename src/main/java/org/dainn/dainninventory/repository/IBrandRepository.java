@@ -1,7 +1,6 @@
 package org.dainn.dainninventory.repository;
 
 import org.dainn.dainninventory.entity.BrandEntity;
-import org.dainn.dainninventory.entity.SupplierEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

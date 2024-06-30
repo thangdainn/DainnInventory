@@ -19,7 +19,7 @@ public final class SpecificationBuilder<T> {
 
     public Specification<T> build() {
         if (params.isEmpty()) return null;
-        Specification<T> result = new BaseSpecification<T>(params.get(0));
+        Specification<T> result = new BaseSpecification<>(params.get(0));
         for (int i = 1; i < params.size(); i++) {
             result = params.get(i).isOrPredicate() ?
                     Specification.where(result).or(new BaseSpecification<>(params.get(i))) :

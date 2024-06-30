@@ -23,6 +23,7 @@ public class RoleController {
     private final IRoleService roleService;
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAll(@ModelAttribute RolePageRequest request) {
         request.setKeyword(ValidateString.trimString(request.getKeyword()));
         if (request.getPage() == null) {
@@ -39,6 +40,7 @@ public class RoleController {
     }
 
     @GetMapping(value = "/{name}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> get(@PathVariable(name = "name") String name) {
         return ResponseEntity.ok(roleService.findByName(name));
     }

@@ -20,9 +20,6 @@ public interface IUserMapper {
     @Mapping(target = "rolesName", source = "roles", qualifiedByName = "toRoleDTO")
     UserDTO toDTO(UserEntity entity);
 
-//    @Mapping(target = "rolesName", source = "roles", qualifiedByName = "toRoleDTO")
-//    UserResponse toResponse(UserEntity entity);
-
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
     @Mapping(target = "modifiedDate", ignore = true)

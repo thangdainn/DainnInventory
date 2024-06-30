@@ -1,7 +1,6 @@
 package org.dainn.dainninventory.service;
 
 import org.dainn.dainninventory.dto.ImageDTO;
-import org.dainn.dainninventory.dto.ProductDTO;
 import org.dainn.dainninventory.entity.ImageEntity;
 import org.dainn.dainninventory.entity.ProductEntity;
 import org.springframework.web.multipart.MultipartFile;

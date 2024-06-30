@@ -1,6 +1,5 @@
 package org.dainn.dainninventory.utils;
 
-import org.dainn.dainninventory.controller.request.UserPageRequest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

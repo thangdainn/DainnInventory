@@ -82,7 +82,7 @@ public class GoodsReceiptService implements IGoodsReceiptService {
     public Page<GoodsReceiptDTO> findWithSpec(GoodsReceiptPageRequest request) {
         SpecificationBuilder<GoodsReceiptEntity> builder = new SpecificationBuilder<>();
         Page<GoodsReceiptEntity> page;
-        Specification<GoodsReceiptEntity> spec = null;
+        Specification<GoodsReceiptEntity> spec;
         if (request.getFromDate() != null){
             builder.with("createdDate", SearchOperation.GREATER_THAN_OR_EQUAL, request.getFromDate(), false);
         }

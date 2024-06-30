@@ -2,8 +2,6 @@ package org.dainn.dainninventory.service;
 
 import org.dainn.dainninventory.controller.request.BrandPageRequest;
 import org.dainn.dainninventory.dto.BrandDTO;
-import org.dainn.dainninventory.dto.RoleDTO;
-import org.dainn.dainninventory.entity.BrandEntity;
 import org.springframework.data.domain.Page;
 
 import java.util.List;

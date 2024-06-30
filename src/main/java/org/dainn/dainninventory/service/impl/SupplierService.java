@@ -1,9 +1,7 @@
 package org.dainn.dainninventory.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.dainn.dainninventory.controller.request.CategoryPageRequest;
 import org.dainn.dainninventory.controller.request.SupplierPageRequest;
-import org.dainn.dainninventory.dto.CategoryDTO;
 import org.dainn.dainninventory.dto.SupplierDTO;
 import org.dainn.dainninventory.entity.SupplierEntity;
 import org.dainn.dainninventory.exception.AppException;

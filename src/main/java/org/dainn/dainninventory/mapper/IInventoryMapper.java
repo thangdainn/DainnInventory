@@ -2,9 +2,7 @@ package org.dainn.dainninventory.mapper;
 
 import org.dainn.dainninventory.controller.request.ProductRequest;
 import org.dainn.dainninventory.dto.InventoryDTO;
-import org.dainn.dainninventory.dto.ProductDTO;
 import org.dainn.dainninventory.entity.InventoryEntity;
-import org.dainn.dainninventory.entity.ProductEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

@@ -22,7 +22,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -72,7 +71,7 @@ public class OrderService implements IOrderService {
     public Page<OrderDTO> findWithSpec(OrderPageRequest request) {
         SpecificationBuilder<OrderEntity> builder = new SpecificationBuilder<>();
         Page<OrderEntity> page;
-        Specification<OrderEntity> spec = null;
+        Specification<OrderEntity> spec;
         if (!ValidateString.isNullOrBlank(request.getKeyword())){
             builder.with("customerName", SearchOperation.CONTAINS, request.getKeyword(), true);
             builder.with("customerPhone", SearchOperation.CONTAINS, request.getKeyword(), true);

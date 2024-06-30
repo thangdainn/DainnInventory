@@ -1,9 +1,6 @@
 package org.dainn.dainninventory.service;
 
-import org.dainn.dainninventory.controller.request.CategoryPageRequest;
 import org.dainn.dainninventory.controller.request.SupplierPageRequest;
-import org.dainn.dainninventory.dto.BrandDTO;
-import org.dainn.dainninventory.dto.CategoryDTO;
 import org.dainn.dainninventory.dto.SupplierDTO;
 import org.springframework.data.domain.Page;
 

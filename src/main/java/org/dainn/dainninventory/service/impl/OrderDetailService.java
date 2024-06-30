@@ -2,7 +2,6 @@ package org.dainn.dainninventory.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.dto.OrderDetailDTO;
-import org.dainn.dainninventory.entity.GoodsReceiptDetailEntity;
 import org.dainn.dainninventory.entity.InventoryEntity;
 import org.dainn.dainninventory.entity.OrderDetailEntity;
 import org.dainn.dainninventory.exception.AppException;

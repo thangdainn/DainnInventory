@@ -1,9 +1,7 @@
 package org.dainn.dainninventory.mapper;
 
 import org.dainn.dainninventory.dto.GoodsReceiptDTO;
-import org.dainn.dainninventory.dto.SupplierDTO;
 import org.dainn.dainninventory.entity.GoodsReceiptEntity;
-import org.dainn.dainninventory.entity.ProductEntity;
 import org.dainn.dainninventory.entity.SupplierEntity;
 import org.dainn.dainninventory.entity.UserEntity;
 import org.mapstruct.Mapper;

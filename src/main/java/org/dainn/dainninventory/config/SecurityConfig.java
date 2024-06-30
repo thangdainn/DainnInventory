@@ -3,7 +3,6 @@ package org.dainn.dainninventory.config;
 import org.dainn.dainninventory.jwt.JwtAuthenticationFilter;
 import org.dainn.dainninventory.service.security.CustomUserDetailService;
 import org.dainn.dainninventory.service.security.LogoutHandleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -44,8 +43,6 @@ public class SecurityConfig {
     public LogoutHandleService logoutHandlerService() {
         return new LogoutHandleService();
     }
-
-    ;
 
     @Bean
     @Order(1)

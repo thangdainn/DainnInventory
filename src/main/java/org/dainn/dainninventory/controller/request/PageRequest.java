@@ -5,11 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.dainn.dainninventory.utils.constant.PageConstant;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter

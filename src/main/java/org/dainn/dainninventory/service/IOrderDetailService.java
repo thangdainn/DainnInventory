@@ -1,6 +1,5 @@
 package org.dainn.dainninventory.service;
 
-import org.dainn.dainninventory.dto.GoodsReceiptDetailDTO;
 import org.dainn.dainninventory.dto.OrderDetailDTO;
 
 import java.util.List;

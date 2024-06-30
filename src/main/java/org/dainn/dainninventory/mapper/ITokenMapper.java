@@ -1,7 +1,6 @@
 package org.dainn.dainninventory.mapper;
 
 import org.dainn.dainninventory.dto.TokenDTO;
-import org.dainn.dainninventory.entity.CategoryEntity;
 import org.dainn.dainninventory.entity.TokenEntity;
 import org.dainn.dainninventory.entity.UserEntity;
 import org.mapstruct.Mapper;
