@@ -11,7 +11,6 @@ import org.dainn.dainninventory.service.IOrderService;
 import org.dainn.dainninventory.utils.ValidateString;
 import org.dainn.dainninventory.utils.enums.OrderStatus;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,10 +40,10 @@ public class OrderController {
         return ResponseEntity.ok(orderService.findById(id));
     }
 
-    @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody OrderDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.insert(dto));
-    }
+//    @PostMapping
+//    public ResponseEntity<?> create(@Valid @RequestBody OrderDTO dto) {
+//        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.insert(dto));
+//    }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<?> update(@Min(1) @PathVariable(name = "id") Integer id,
