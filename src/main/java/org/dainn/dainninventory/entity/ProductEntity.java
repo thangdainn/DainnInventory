@@ -45,4 +45,7 @@ public class ProductEntity extends BaseEntity{
 
     @OneToMany(mappedBy = "product")
     private List<OrderDetailEntity> orderDetails = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product")
+    private List<CartEntity> carts = new ArrayList<>();
 }

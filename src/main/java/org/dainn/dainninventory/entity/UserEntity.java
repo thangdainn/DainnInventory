@@ -41,4 +41,7 @@ public class UserEntity extends BaseEntity{
 
     @OneToMany(mappedBy = "user")
     private List<GoodsReceiptEntity> goodsReceipts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<CartEntity> carts = new ArrayList<>();
 }
