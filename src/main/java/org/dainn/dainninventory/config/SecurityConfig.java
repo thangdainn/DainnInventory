@@ -3,6 +3,8 @@ package org.dainn.dainninventory.config;
 import org.dainn.dainninventory.jwt.JwtAuthenticationFilter;
 import org.dainn.dainninventory.service.security.CustomUserDetailService;
 import org.dainn.dainninventory.service.security.LogoutHandleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -18,7 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Configuration
 @EnableWebSecurity
@@ -35,26 +38,27 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter();
-    }
-
-    @Bean
     public LogoutHandleService logoutHandlerService() {
         return new LogoutHandleService();
     }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    @Autowired
+    @Qualifier("handlerExceptionResolver")
+    private HandlerExceptionResolver exceptionResolver;
 
     @Bean
     @Order(1)
     public SecurityFilterChain authSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .securityMatcher(new OrRequestMatcher(
-                        new AntPathRequestMatcher("/auth/**"),
-                        new AntPathRequestMatcher("/register")
-                ))
+                .securityMatcher(new AntPathRequestMatcher("/auth/**"))
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/auth/login**", "/register", "/auth/login")
+                        .requestMatchers("/auth/**")
                         .permitAll()
                         .anyRequest().authenticated()
                 )
@@ -87,7 +91,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(exceptionResolver), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

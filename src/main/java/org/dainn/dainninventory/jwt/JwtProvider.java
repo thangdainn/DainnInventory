@@ -3,11 +3,11 @@ package org.dainn.dainninventory.jwt;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.dto.UserDTO;
 import org.dainn.dainninventory.service.IUserService;
 import org.dainn.dainninventory.utils.constant.JwtConstant;
 import org.dainn.dainninventory.utils.enums.Provider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -17,9 +17,10 @@ import java.util.Map;
 import java.util.UUID;
 
 @Component
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class JwtProvider {
-    private final IUserService userService;
+    @Autowired
+    private IUserService userService;
     public final Key secretKey = new SecretKeySpec(JwtConstant.JWT_SECRET.getBytes(), SignatureAlgorithm.HS256.getJcaName());
 
     public String generateToken(String email, Provider provider) {
