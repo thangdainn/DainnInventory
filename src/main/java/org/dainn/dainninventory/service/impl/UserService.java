@@ -63,7 +63,7 @@ public class UserService implements IUserService {
             userEntity.setPassword(encoder.encode(userDTO.getPassword()));
         }
         List<RoleEntity> roles = new ArrayList<>();
-        if (userDTO.getRolesName().isEmpty()) {
+        if (userDTO.getRolesName() == null || userDTO.getRolesName().isEmpty()) {
             roles.add(roleRepository.findByName(RoleConstant.PREFIX_ROLE + "USER")
                     .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED)));
         } else {
