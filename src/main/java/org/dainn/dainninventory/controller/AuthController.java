@@ -46,9 +46,4 @@ public class AuthController {
                                                HttpServletResponse response) {
         return ResponseEntity.ok(authService.loginOauth2(authorizationHeader, request, Provider.google, response));
     }
-
-    @PostMapping("/login/test")
-    public ResponseEntity<?> test() {
-        return ResponseEntity.ok("test");
-    }
 }
