@@ -9,7 +9,9 @@ import org.dainn.dainninventory.exception.ErrorCode;
 import org.dainn.dainninventory.mapper.IInventoryMapper;
 import org.dainn.dainninventory.repository.IInventoryRepository;
 import org.dainn.dainninventory.repository.IProductRepository;
+import org.dainn.dainninventory.service.IBaseRedisService;
 import org.dainn.dainninventory.service.IInventoryService;
+import org.dainn.dainninventory.utils.constant.RedisConstant;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ public class InventoryService implements IInventoryService {
     private final IInventoryMapper inventoryMapper;
     private final IInventoryRepository inventoryRepository;
     private final IProductRepository productRepository;
+    private final IBaseRedisService baseRedisService;
 
     @Transactional
     @Override
@@ -36,6 +39,9 @@ public class InventoryService implements IInventoryService {
             inventoryEntity = inventoryMapper.toEntity(dto);
         }
         inventoryEntity.setProduct(productEntity);
-        return inventoryMapper.toDTO(inventoryRepository.save(inventoryEntity));
+        dto = inventoryMapper.toDTO(inventoryRepository.save(inventoryEntity));
+        String key = RedisConstant.INVENTORY_KEY_PREFIX + "::id:" + dto.getId();
+        baseRedisService.setCache(key, dto);
+        return dto;
     }
 }

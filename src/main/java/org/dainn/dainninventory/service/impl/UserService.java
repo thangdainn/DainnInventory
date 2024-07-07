@@ -1,5 +1,6 @@
 package org.dainn.dainninventory.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.controller.request.UserPageRequest;
 import org.dainn.dainninventory.controller.request.UserRequest;
@@ -14,12 +15,13 @@ import org.dainn.dainninventory.repository.IUserRepository;
 import org.dainn.dainninventory.repository.specification.SearchOperation;
 import org.dainn.dainninventory.repository.specification.SpecSearchCriteria;
 import org.dainn.dainninventory.repository.specification.SpecificationBuilder;
+import org.dainn.dainninventory.service.IBaseRedisService;
 import org.dainn.dainninventory.service.IUserService;
 import org.dainn.dainninventory.utils.Paging;
+import org.dainn.dainninventory.utils.constant.RedisConstant;
 import org.dainn.dainninventory.utils.constant.RoleConstant;
 import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,91 +39,141 @@ public class UserService implements IUserService {
     private final IUserRepository userRepository;
     private final IUserMapper userMapper;
     private final IRoleRepository roleRepository;
+    private final IBaseRedisService baseRedisService;
 
     @Transactional
     @Override
-    public UserDTO save(UserRequest userRequest) {
+    public UserDTO insert(UserRequest userRequest) {
         UserDTO userDTO = userMapper.toDTO(userRequest);
-        UserEntity userEntity;
-        if (userDTO.getId() != null) {
-            UserEntity userOld = userRepository.findById(userDTO.getId())
-                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-            if (!userOld.getEmail().equals(userDTO.getEmail()) && checkEmailAndProvider(userDTO.getEmail(), userDTO.getProvider())) {
-                throw new AppException(ErrorCode.EMAIL_EXISTED);
-            }
-            if (userDTO.getPassword().isBlank()) {
-                userDTO.setPassword(userOld.getPassword());
-            } else {
-                userDTO.setPassword(encoder.encode(userDTO.getPassword()));
-            }
-            userEntity = userMapper.updateEntity(userOld, userDTO);
-        } else {
-            if (checkEmailAndProvider(userDTO.getEmail(), userDTO.getProvider())) {
-                throw new AppException(ErrorCode.EMAIL_EXISTED);
-            }
-            userEntity = userMapper.toEntity(userDTO);
-            userEntity.setPassword(encoder.encode(userDTO.getPassword()));
+        if (checkEmailAndProvider(userDTO.getEmail(), userDTO.getProvider())) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
-        List<RoleEntity> roles = new ArrayList<>();
-        if (userDTO.getRolesName() == null || userDTO.getRolesName().isEmpty()) {
-            roles.add(roleRepository.findByName(RoleConstant.PREFIX_ROLE + "USER")
-                    .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED)));
-        } else {
-            for (String name : userDTO.getRolesName()) {
-                RoleEntity role = roleRepository.findByName(name)
-                        .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
-                roles.add(role);
-            }
+        UserEntity userEntity = userMapper.toEntity(userDTO);
+        userEntity.setPassword(encoder.encode(userDTO.getPassword()));
+        userEntity.setRoles(handleRoles(userDTO.getRolesName()));
+        userDTO = userMapper.toDTO(userRepository.save(userEntity));
+
+        String key = RedisConstant.USER_KEY_PREFIX + "::id:" + userDTO.getId();
+        baseRedisService.setCache(key, userDTO);
+        return userDTO;
+    }
+
+
+    @Transactional
+    @Override
+    public UserDTO update(UserRequest userRequest) {
+        UserDTO userDTO = userMapper.toDTO(userRequest);
+        UserEntity userOld = userRepository.findById(userDTO.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        if (!userOld.getEmail().equals(userDTO.getEmail())
+                && checkEmailAndProvider(userDTO.getEmail(), userDTO.getProvider())) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
-        userEntity.setRoles(roles);
-        return userMapper.toDTO(userRepository.save(userEntity));
+        if (userDTO.getPassword().isBlank()) {
+            userDTO.setPassword(userOld.getPassword());
+        } else {
+            userDTO.setPassword(encoder.encode(userDTO.getPassword()));
+        }
+        UserEntity userEntity = userMapper.updateEntity(userOld, userDTO);
+        userEntity.setRoles(handleRoles(userDTO.getRolesName()));
+        userDTO = userMapper.toDTO(userRepository.save(userEntity));
+
+        String key = RedisConstant.USER_KEY_PREFIX + "::id:" + userDTO.getId();
+        baseRedisService.flushDb();
+        baseRedisService.setCache(key, userDTO);
+        return userDTO;
     }
 
     private boolean checkEmailAndProvider(String email, Provider provider) {
         return userRepository.existsByEmailAndProvider(email, provider);
     }
 
+    private List<RoleEntity> handleRoles(List<String> rolesName) {
+        List<RoleEntity> roles = new ArrayList<>();
+        if (rolesName == null || rolesName.isEmpty()) {
+            roles.add(roleRepository.findByName(RoleConstant.PREFIX_ROLE + "USER")
+                    .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED)));
+        } else {
+            for (String name : rolesName) {
+                RoleEntity role = roleRepository.findByName(name)
+                        .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
+                roles.add(role);
+            }
+        }
+        return roles;
+    }
+
     @Transactional
     @Override
     public void delete(List<Integer> ids) {
         userRepository.deleteAllByIdInBatchCustom(ids);
+        baseRedisService.flushDb();
     }
 
     @Override
     public UserDTO findById(Integer id) {
-        return userRepository.findById(id)
-                .map(userMapper::toDTO)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        String key = RedisConstant.USER_KEY_PREFIX + "::id:" + id;
+        UserDTO dto = baseRedisService.getCache(key, new TypeReference<UserDTO>() {
+        });
+        if (dto == null) {
+            dto = userMapper.toDTO(userRepository.findById(id)
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+            baseRedisService.setCache(key, dto);
+        }
+        return dto;
     }
 
     @Override
     public UserDTO findByEmailAndProvider(String email, Provider provider) {
-        return userRepository.findByEmailAndProvider(email, provider)
-                .map(userMapper::toDTO)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        String key = RedisConstant.USER_KEY_PREFIX + "::email:" + email + "::provider:" + provider;
+        UserDTO dto = baseRedisService.getCache(key, new TypeReference<UserDTO>() {
+        });
+        if (dto == null) {
+            dto = userMapper.toDTO(userRepository.findByEmailAndProviderAndStatus(email, provider, 1)
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+            baseRedisService.setCache(key, dto);
+        }
+        return dto;
     }
 
 
     @Override
     public List<UserDTO> findAll() {
-        return userRepository.findAll()
-                .stream().map(userMapper::toDTO).toList();
+        String key = RedisConstant.USERS_KEY_PREFIX;
+        List<UserDTO> list = baseRedisService.getCache(key, new TypeReference<List<UserDTO>>() {
+        });
+        if (list == null) {
+            list = userRepository.findAll()
+                    .stream().map(userMapper::toDTO).toList();
+            baseRedisService.setCache(key, list);
+        }
+        return list;
     }
 
-    @Override
-    public Page<UserDTO> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable)
-                .map(userMapper::toDTO);
-    }
 
     @Override
     public List<UserDTO> findAll(Integer status) {
-        return userRepository.findAllByStatus(status)
-                .stream().map(userMapper::toDTO).toList();
+        String key = RedisConstant.USERS_KEY_PREFIX + "::status:" + status;
+        List<UserDTO> list = baseRedisService.getCache(key, new TypeReference<List<UserDTO>>() {
+        });
+        if (list == null) {
+            list = userRepository.findAllByStatus(status)
+                    .stream().map(userMapper::toDTO).toList();
+            baseRedisService.setCache(key, list);
+        }
+        return list;
     }
 
     @Override
     public Page<UserDTO> findWithSpec(UserPageRequest request) {
+        String key = RedisConstant.USERS_KEY_PREFIX + "::page:" + request.getPage() + "::size:" + request.getSize()
+                + "::sort:" + request.getSortBy() + "::dir:" + request.getSortDir() + "::keyword:" + request.getKeyword()
+                + "::provider:" + request.getProvider() + "::status:" + request.getStatus() + "::roleId:" + request.getRoleId();
+        Page<UserDTO> pageDTO = baseRedisService.getCache(key, new TypeReference<Page<UserDTO>>() {
+        });
+        if (pageDTO != null) {
+            return pageDTO;
+        }
         SpecificationBuilder<UserEntity> builder = new SpecificationBuilder<>();
         Page<UserEntity> page;
         Specification<UserEntity> spec;
@@ -140,10 +192,9 @@ public class UserService implements IUserService {
             Specification<UserEntity> roleSpec = builder.joinTableWithCondition("roles", roleCriteria);
             spec = Specification.where(spec).and(roleSpec);
         }
-
         page = userRepository.findAll(Objects.requireNonNull(spec), Paging.getPageable(request));
-        return page.map(userMapper::toDTO);
-
+        pageDTO = page.map(userMapper::toDTO);
+        baseRedisService.setCache(key, pageDTO);
+        return pageDTO;
     }
-
 }

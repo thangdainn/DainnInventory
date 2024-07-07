@@ -24,6 +24,7 @@ public class ProductController {
     private final IProductService productService;
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     public ResponseEntity<?> getAll(@ModelAttribute ProductPageRequest request) {
         request.setKeyword(ValidateString.trimString(request.getKeyword()));
         if (request.getPage() == null) {
@@ -48,7 +49,7 @@ public class ProductController {
     public ResponseEntity<?> create(@Valid @RequestPart("product") ProductRequest dto,
                                     @Valid @RequestPart("mainImage") MultipartFile mainImg,
                                     @Valid @RequestPart("subImage") List<MultipartFile> subImg) {
-        return ResponseEntity.ok(productService.save(dto, mainImg, subImg));
+        return ResponseEntity.ok(productService.insert(dto, mainImg, subImg));
     }
 
     @PutMapping("/{id}")
@@ -58,7 +59,7 @@ public class ProductController {
                                     @RequestPart(value = "mainImage", required = false) MultipartFile mainImg,
                                     @RequestPart(value = "subImage", required = false) List<MultipartFile> subImg) {
         dto.setId(id);
-        return ResponseEntity.ok(productService.save(dto, mainImg, subImg));
+        return ResponseEntity.ok(productService.update(dto, mainImg, subImg));
     }
 
     @DeleteMapping

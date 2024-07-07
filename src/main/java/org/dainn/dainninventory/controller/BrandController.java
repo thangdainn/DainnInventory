@@ -44,9 +44,9 @@ public class BrandController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     public ResponseEntity<?> create(@Valid @RequestBody BrandDTO brandDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(brandService.save(brandDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(brandService.insert(brandDTO));
     }
 
     @PutMapping(value = "/{id}")
@@ -54,7 +54,7 @@ public class BrandController {
     public ResponseEntity<?> update(@Min(1) @PathVariable(name = "id") Integer id,
                                     @Valid @RequestBody BrandDTO brandDTO) {
         brandDTO.setId(id);
-        return ResponseEntity.ok(brandService.save(brandDTO));
+        return ResponseEntity.ok(brandService.update(brandDTO));
     }
 
     @DeleteMapping

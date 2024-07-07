@@ -47,7 +47,7 @@ public class GoodsReceiptController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     public ResponseEntity<?> create(@Valid @RequestBody GoodsReceiptDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(goodReceiptService.save(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(goodReceiptService.insert(dto));
     }
 
     @PutMapping(value = "/{id}")
@@ -55,7 +55,7 @@ public class GoodsReceiptController {
     public ResponseEntity<?> update(@Min(1) @PathVariable(name = "id") Integer id,
                                     @Valid @RequestBody GoodsReceiptDTO dto) {
         dto.setId(id);
-        return ResponseEntity.ok(goodReceiptService.save(dto));
+        return ResponseEntity.ok(goodReceiptService.update(dto));
     }
 
     @DeleteMapping

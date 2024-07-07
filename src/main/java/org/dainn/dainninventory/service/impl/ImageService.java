@@ -9,6 +9,7 @@ import org.dainn.dainninventory.exception.AppException;
 import org.dainn.dainninventory.exception.ErrorCode;
 import org.dainn.dainninventory.mapper.IImageMapper;
 import org.dainn.dainninventory.repository.IImageRepository;
+import org.dainn.dainninventory.service.IBaseRedisService;
 import org.dainn.dainninventory.service.IImageService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +22,7 @@ public class ImageService implements IImageService {
     private final IImageRepository imageRepository;
     private final IImageMapper imageMapper;
     private final Cloudinary cloudinary;
+    private final IBaseRedisService baseRedisService;
 
     @Override
     public ImageEntity save(String url, ProductEntity productEntity) {
@@ -55,5 +57,6 @@ public class ImageService implements IImageService {
     @Override
     public void deleteByProductId(Integer productId) {
         imageRepository.deleteByProductId(productId);
+        baseRedisService.flushDb();
     }
 }

@@ -1,5 +1,6 @@
 package org.dainn.dainninventory.service.security;
 
+import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.entity.UserEntity;
 import org.dainn.dainninventory.repository.IRoleRepository;
 import org.dainn.dainninventory.repository.IUserRepository;
@@ -15,13 +16,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class CustomUserDetailService implements UserDetailsService {
 
-    @Autowired
-    private IUserRepository userRepository;
+    private final IUserRepository userRepository;
 
-    @Autowired
-    private IRoleRepository roleRepository;
+    private final IRoleRepository roleRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -35,7 +35,7 @@ public class CustomUserDetailService implements UserDetailsService {
         }
     }
     public UserDetails loadUserByUsernameAndProvider(String email, Provider provider) throws UsernameNotFoundException {
-        Optional<UserEntity> userEntities = userRepository.findByEmailAndProvider(email, provider);
+        Optional<UserEntity> userEntities = userRepository.findByEmailAndProviderAndStatus(email, provider, 1);
         if (userEntities.isPresent()) {
             UserEntity user = userEntities.get();
             user.setRoles(roleRepository.findByUsers(List.of(user)));

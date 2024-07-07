@@ -11,6 +11,7 @@ import org.dainn.dainninventory.repository.IGoodsReceiptDetailRepository;
 import org.dainn.dainninventory.repository.IGoodsReceiptRepository;
 import org.dainn.dainninventory.repository.IInventoryRepository;
 import org.dainn.dainninventory.repository.IProductRepository;
+import org.dainn.dainninventory.service.IBaseRedisService;
 import org.dainn.dainninventory.service.IGoodsReceiptDetailService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ public class GoodsReceiptDetailService implements IGoodsReceiptDetailService {
     private final IProductRepository productRepository;
     private final IInventoryRepository inventoryRepository;
     private final IGoodReceiptDetailMapper goodReceiptDetailMapper;
+    private final IBaseRedisService baseRedisService;
 
     @Transactional
     @Override
@@ -61,5 +63,6 @@ public class GoodsReceiptDetailService implements IGoodsReceiptDetailService {
             inventoryRepository.updateQuantityByProduct_Id(
                     dto.getProductId(), inventoryEntity.getQuantity() - dto.getQuantity());
         }
+        baseRedisService.flushDb();
     }
 }

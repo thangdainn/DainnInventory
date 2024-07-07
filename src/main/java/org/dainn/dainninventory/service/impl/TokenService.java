@@ -47,7 +47,7 @@ public class TokenService implements ITokenService {
         String accessToken = jwtProvider.generateToken(tokenEntity.getUser().getEmail(), tokenEntity.getUser().getProvider());
         String refreshTokenNew = jwtProvider.generateRefreshToken();
         tokenRepository.updateRefreshToken(refreshTokenNew, tokenEntity.getId());
-        response.addCookie(CookieUtil.createRefreshTokenCookie(refreshToken));
+        response.addCookie(CookieUtil.createRefreshTokenCookie(refreshTokenNew));
         return new JwtResponse(accessToken);
     }
 

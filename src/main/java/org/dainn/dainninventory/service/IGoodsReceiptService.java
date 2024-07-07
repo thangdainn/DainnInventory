@@ -7,7 +7,8 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface IGoodsReceiptService {
-    GoodsReceiptDTO save(GoodsReceiptDTO dto);
+    GoodsReceiptDTO insert(GoodsReceiptDTO dto);
+    GoodsReceiptDTO update(GoodsReceiptDTO dto);
     void delete(List<Integer> ids);
     GoodsReceiptDTO findById(Integer id);
     List<GoodsReceiptDTO> findAll();

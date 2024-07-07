@@ -46,7 +46,7 @@ public class CategoryController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> create(@Valid @RequestBody CategoryDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.save(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.insert(dto));
     }
 
     @PutMapping(value = "/{id}")
@@ -54,7 +54,7 @@ public class CategoryController {
     public ResponseEntity<?> update(@Min(1) @PathVariable(name = "id") Integer id,
                                     @Valid @RequestBody CategoryDTO dto) {
         dto.setId(id);
-        return ResponseEntity.ok(categoryService.save(dto));
+        return ResponseEntity.ok(categoryService.update(dto));
     }
 
     @DeleteMapping

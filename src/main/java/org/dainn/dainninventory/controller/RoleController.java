@@ -48,14 +48,14 @@ public class RoleController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> create(@Valid @RequestBody RoleDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(roleService.save(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(roleService.insert(dto));
     }
 
     @PutMapping(value = "/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> update(@Min(1) @PathVariable(name = "id") Integer id, @Valid @RequestBody RoleDTO dto) {
         dto.setId(id);
-        return ResponseEntity.ok(roleService.save(dto));
+        return ResponseEntity.ok(roleService.update(dto));
     }
 
     @DeleteMapping

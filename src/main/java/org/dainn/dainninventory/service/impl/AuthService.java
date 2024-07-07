@@ -52,7 +52,7 @@ public class AuthService implements IAuthService {
 
     @Override
     public JwtResponse login(LoginRequest request, HttpServletResponse response) {
-        UserEntity userEntity = userRepository.findByEmailAndProvider(request.getEmail(), Provider.local)
+        UserEntity userEntity = userRepository.findByEmailAndProviderAndStatus(request.getEmail(), Provider.local, 1)
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_IS_INCORRECT));
         if (!encoder.matches(request.getPassword(), userEntity.getPassword())) {
             throw new AppException(ErrorCode.PASSWORD_IS_INCORRECT);
@@ -72,7 +72,7 @@ public class AuthService implements IAuthService {
 
     @Override
     public UserDTO register(@Valid RegisterRequest request) {
-        return userService.save(userMapper.toUserRequest(request));
+        return userService.insert(userMapper.toUserRequest(request));
     }
 
     @Override
@@ -89,7 +89,7 @@ public class AuthService implements IAuthService {
         Map<String, Object> userInfo = this.getUserInfo(accessTokenOauth2, userInfoEndpoint);
         String email = (String) userInfo.get("email");
 
-        Optional<UserEntity> optional = userRepository.findByEmailAndProvider(email, provider);
+        Optional<UserEntity> optional = userRepository.findByEmailAndProviderAndStatus(email, provider, 1);
         UserEntity userEntity = new UserEntity();
         if (optional.isEmpty()) {
             userEntity.setEmail(email);

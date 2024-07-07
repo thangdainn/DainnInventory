@@ -16,12 +16,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final CustomUserDetailService customUserDetailService = new CustomUserDetailService();
+    private final CustomUserDetailService customUserDetailService;
     private final JwtProvider jwtProvider = new JwtProvider();
     private final HandlerExceptionResolver exception;
 
-    public JwtAuthenticationFilter(HandlerExceptionResolver exception) {
+    public JwtAuthenticationFilter(HandlerExceptionResolver exception, CustomUserDetailService customUserDetailService) {
         this.exception = exception;
+        this.customUserDetailService = customUserDetailService;
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {

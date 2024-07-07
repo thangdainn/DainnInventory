@@ -17,7 +17,7 @@ public interface IUserRepository extends JpaRepository<UserEntity, Integer>, Jpa
     boolean existsByEmailAndProvider(String email, Provider provider);
     Optional<UserEntity> findByEmailAndStatus(String email, Integer status);
 
-    Optional<UserEntity> findByEmailAndProvider(String email, Provider provider);
+    Optional<UserEntity> findByEmailAndProviderAndStatus(String email, Provider provider, Integer status);
     Optional<UserEntity> findByEmailAndPasswordAndProvider(String email, String password, Provider provider);
 
     @Modifying

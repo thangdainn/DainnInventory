@@ -11,6 +11,7 @@ import org.dainn.dainninventory.repository.IInventoryRepository;
 import org.dainn.dainninventory.repository.IOrderDetailRepository;
 import org.dainn.dainninventory.repository.IOrderRepository;
 import org.dainn.dainninventory.repository.IProductRepository;
+import org.dainn.dainninventory.service.IBaseRedisService;
 import org.dainn.dainninventory.service.IOrderDetailService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ public class OrderDetailService implements IOrderDetailService {
     private final IProductRepository productRepository;
     private final IInventoryRepository inventoryRepository;
     private final IOrderDetailMapper orderDetailMapper;
+    private final IBaseRedisService baseRedisService;
 
     @Transactional
     @Override
@@ -60,5 +62,6 @@ public class OrderDetailService implements IOrderDetailService {
             inventoryRepository.updateQuantityByProduct_Id(
                     dto.getProductId(), inventoryEntity.getQuantity() + dto.getQuantity());
         }
+        baseRedisService.flushDb();
     }
 }

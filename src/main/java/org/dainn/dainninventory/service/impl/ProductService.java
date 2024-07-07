@@ -1,5 +1,6 @@
 package org.dainn.dainninventory.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.controller.request.ProductPageRequest;
 import org.dainn.dainninventory.controller.request.ProductRequest;
@@ -17,10 +18,12 @@ import org.dainn.dainninventory.repository.IProductRepository;
 import org.dainn.dainninventory.repository.specification.SearchOperation;
 import org.dainn.dainninventory.repository.specification.SpecSearchCriteria;
 import org.dainn.dainninventory.repository.specification.SpecificationBuilder;
+import org.dainn.dainninventory.service.IBaseRedisService;
 import org.dainn.dainninventory.service.IImageService;
 import org.dainn.dainninventory.service.IInventoryService;
 import org.dainn.dainninventory.service.IProductService;
 import org.dainn.dainninventory.utils.Paging;
+import org.dainn.dainninventory.utils.constant.RedisConstant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -31,7 +34,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,91 +46,144 @@ public class ProductService implements IProductService {
     private final ICategoryRepository categoryRepository;
     private final IBrandRepository brandRepository;
     private final IInventoryService inventoryService;
+    private final IBaseRedisService baseRedisService;
 
     @Transactional
     @Override
-    public ProductDTO save(ProductRequest request, MultipartFile mainImg, List<MultipartFile> subImg) {
+    public ProductDTO insert(ProductRequest request, MultipartFile mainImg, List<MultipartFile> subImg) {
+        ProductDTO dto = productMapper.toDTO(request);
+        if (productRepository.existsByCode(request.getCode())) {
+            throw new AppException(ErrorCode.PRODUCT_CODE_EXISTED);
+        }
+        if (productRepository.existsByName(request.getName())) {
+            throw new AppException(ErrorCode.PRODUCT_NAME_EXISTED);
+        }
+        ProductEntity productEntity = productMapper.toEntity(dto);
+        productEntity.setImgUrl(imageService.uploadImage(mainImg));
+        productEntity = setConditions(request, productEntity, dto, subImg);
+        dto = productMapper.toDTO(productEntity);
+        dto.setImageUrls(imageService.findByProductId(dto.getId())
+                .stream().map(ImageDTO::getUrl).toList());
 
+        String key = RedisConstant.PRODUCT_KEY_PREFIX + "::id:" + dto.getId();
+        baseRedisService.setCache(key, dto);
+        return dto;
+    }
+
+    @Transactional
+    @Override
+    public ProductDTO update(ProductRequest request, MultipartFile mainImg, List<MultipartFile> subImg) {
         ProductEntity productEntity;
         ProductDTO dto = productMapper.toDTO(request);
-        if (dto.getId() != null) {
-            ProductEntity old = productRepository.findById(dto.getId())
-                    .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
-            if (!old.getCode().equals(dto.getCode()) && productRepository.existsByCode(request.getCode())) {
-                throw new AppException(ErrorCode.PRODUCT_CODE_EXISTED);
-            }
-            if (!old.getName().equals(dto.getName()) && productRepository.existsByName(request.getName())) {
-                throw new AppException(ErrorCode.PRODUCT_NAME_EXISTED);
-            }
-            if (mainImg == null) {
-                dto.setImgUrl(old.getImgUrl());
-            } else {
-                dto.setImgUrl(imageService.uploadImage(mainImg));
-            }
-            productEntity = productMapper.updateEntity(old, dto);
-        } else {
-            if (productRepository.existsByCode(request.getCode())) {
-                throw new AppException(ErrorCode.PRODUCT_CODE_EXISTED);
-            }
-            if (productRepository.existsByName(request.getName())) {
-                throw new AppException(ErrorCode.PRODUCT_NAME_EXISTED);
-            }
-            productEntity = productMapper.toEntity(dto);
-            productEntity.setImgUrl(imageService.uploadImage(mainImg));
+        ProductEntity old = productRepository.findById(dto.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
+        if (!old.getCode().equals(dto.getCode()) && productRepository.existsByCode(request.getCode())) {
+            throw new AppException(ErrorCode.PRODUCT_CODE_EXISTED);
         }
-        productEntity.setCategory(categoryRepository.findById(dto.getCategoryId())
+        if (!old.getName().equals(dto.getName()) && productRepository.existsByName(request.getName())) {
+            throw new AppException(ErrorCode.PRODUCT_NAME_EXISTED);
+        }
+        if (mainImg == null) {
+            dto.setImgUrl(old.getImgUrl());
+        } else {
+            dto.setImgUrl(imageService.uploadImage(mainImg));
+        }
+        productEntity = productMapper.updateEntity(old, dto);
+        productEntity = setConditions(request, productEntity, dto, subImg);
+        dto = productMapper.toDTO(productEntity);
+        dto.setImageUrls(imageService.findByProductId(dto.getId())
+                .stream().map(ImageDTO::getUrl).toList());
+
+        String key = RedisConstant.PRODUCT_KEY_PREFIX + "::id:" + dto.getId();
+        baseRedisService.flushDb();
+        baseRedisService.setCache(key, dto);
+        return dto;
+    }
+
+    private ProductEntity setConditions(ProductRequest request, ProductEntity entity, ProductDTO dto, List<MultipartFile> subImg){
+        entity.setCategory(categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED)));
-        productEntity.setBrand(brandRepository.findById(dto.getBrandId())
+        entity.setBrand(brandRepository.findById(dto.getBrandId())
                 .orElseThrow(() -> new AppException(ErrorCode.BRAND_NOT_EXISTED)));
-        productEntity = productRepository.save(productEntity);
+        entity = productRepository.save(entity);
         if (subImg != null && !subImg.isEmpty()) {
-            imageService.deleteByProductId(productEntity.getId());
-            imageService.uploadImages(subImg, productEntity);
+            imageService.deleteByProductId(entity.getId());
+            imageService.uploadImages(subImg, entity);
         }
         InventoryDTO inventoryDTO = inventoryMapper.toDTO(request);
-        inventoryDTO.setProductId(productEntity.getId());
+        inventoryDTO.setProductId(entity.getId());
         inventoryService.save(inventoryDTO);
-        return productMapper.toDTO(productEntity);
+        return entity;
     }
 
     @Transactional
     @Override
     public void delete(List<Integer> ids) {
         productRepository.deleteAllByIdInBatchCustom(ids);
+        baseRedisService.flushDb();
     }
 
     @Override
     public ProductDTO findById(Integer id) {
-        return productMapper.toDTO(productRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED)));
+        String key = RedisConstant.PRODUCT_KEY_PREFIX + "::id:" + id;
+        ProductDTO dto = baseRedisService.getCache(key, new TypeReference<ProductDTO>() {});
+        if (dto == null){
+            dto = productMapper.toDTO(productRepository.findById(id)
+                    .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED)));
+            baseRedisService.setCache(key, dto);
+        }
+        return dto;
     }
 
     @Override
     public ProductDTO findByCode(String code) {
-        Optional<ProductEntity> optional = productRepository.findByCode(code);
-        if (optional.isEmpty()) {
-            throw new AppException(ErrorCode.PRODUCT_NOT_EXISTED);
+        String key = RedisConstant.PRODUCT_KEY_PREFIX + "::code:" + code;
+        ProductDTO dto = baseRedisService.getCache(key, new TypeReference<ProductDTO>() {});
+        if (dto == null){
+            ProductEntity entity = productRepository.findByCode(code)
+                    .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
+            dto = productMapper.toDTO(entity);
+            dto.setImageUrls(imageService.findByProductId(dto.getId())
+                    .stream().map(ImageDTO::getUrl).toList());
+            baseRedisService.setCache(key, dto);
         }
-        ProductDTO dto = productMapper.toDTO(optional.get());
-        dto.setImageUrls(imageService.findByProductId(dto.getId())
-                .stream().map(ImageDTO::getUrl).toList());
         return dto;
     }
 
     @Override
     public List<ProductDTO> findAll() {
-        return productRepository.findAll()
-                .stream().map(productMapper::toDTO).toList();
+        String key = RedisConstant.PRODUCTS_KEY_PREFIX;
+        List<ProductDTO> list = baseRedisService.getCache(key, new TypeReference<List<ProductDTO>>() {});
+        if (list == null){
+            list = productRepository.findAll()
+                    .stream().map(productMapper::toDTO).toList();
+            baseRedisService.setCache(key, list);
+        }
+        return list;
     }
 
     @Override
     public List<ProductDTO> findAll(Integer status) {
-        return productRepository.findAllByStatus(status)
-                .stream().map(productMapper::toDTO).toList();
+        String key = RedisConstant.PRODUCTS_KEY_PREFIX + "::status:" + status;
+        List<ProductDTO> list = baseRedisService.getCache(key, new TypeReference<List<ProductDTO>>() {});
+        if (list == null) {
+            list = productRepository.findAllByStatus(status)
+                    .stream().map(productMapper::toDTO).toList();
+            baseRedisService.setCache(key, list);
+        }
+        return list;
     }
 
     @Override
     public Page<ProductDTO> findWithSpec(ProductPageRequest request) {
+        String key = RedisConstant.PRODUCTS_KEY_PREFIX + "::page:" + request.getPage() + "::size:" + request.getSize()
+                + "::sort:" + request.getSortBy() + "::dir:" + request.getSortDir() + "::keyword:" + request.getKeyword()
+                + "::minPrice:" + request.getMinPrice() + "::maxPrice:" + request.getMaxPrice() + "::status:" + request.getStatus()
+                + "::categoryIds:" + request.getCategoryIds() + "::brandIds:" + request.getBrandIds();
+        Page<ProductDTO> pageDTO = baseRedisService.getCache(key, new TypeReference<Page<ProductDTO>>() {});
+        if (pageDTO != null) {
+            return pageDTO;
+        }
         SpecificationBuilder<ProductEntity> builder = new SpecificationBuilder<>();
         Page<ProductEntity> page;
         Specification<ProductEntity> spec;
@@ -168,7 +223,9 @@ public class ProductService implements IProductService {
             spec = Specification.where(spec).and(brandSpec);
         }
         page = productRepository.findAll(Objects.requireNonNull(spec), Paging.getPageable(request));
-        return page.map(productMapper::toDTO);
+        pageDTO = page.map(productMapper::toDTO);
+        baseRedisService.setCache(key, pageDTO);
+        return pageDTO;
     }
 
     private boolean isNonNullOrNonEmpty(List<Integer> list) {

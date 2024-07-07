@@ -7,7 +7,8 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface IRoleService {
-    RoleDTO save(RoleDTO roleDTO);
+    RoleDTO insert(RoleDTO roleDTO);
+    RoleDTO update(RoleDTO roleDTO);
     void delete(List<Integer> ids);
     RoleDTO findById(Integer id);
     RoleDTO findByName(String name);

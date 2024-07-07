@@ -7,7 +7,8 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface ISupplierService {
-    SupplierDTO save(SupplierDTO dto);
+    SupplierDTO insert(SupplierDTO dto);
+    SupplierDTO update(SupplierDTO dto);
     void delete(List<Integer> ids);
     SupplierDTO findById(Integer id);
     SupplierDTO findByName(String name);

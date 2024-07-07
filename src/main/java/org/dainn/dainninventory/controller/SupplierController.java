@@ -46,14 +46,14 @@ public class SupplierController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> create(@Valid @RequestBody SupplierDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(supplierService.save(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(supplierService.insert(dto));
     }
 
     @PutMapping(value = "/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> update(@PathVariable(name = "id") Integer id, @Valid @RequestBody SupplierDTO dto) {
         dto.setId(id);
-        return ResponseEntity.ok(supplierService.save(dto));
+        return ResponseEntity.ok(supplierService.update(dto));
     }
 
     @DeleteMapping

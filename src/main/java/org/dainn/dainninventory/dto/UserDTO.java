@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+//@Builder
 public class UserDTO extends AbstractDTO{
     private String email;
     private String name;

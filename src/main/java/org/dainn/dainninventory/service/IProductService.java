@@ -9,7 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface IProductService {
-    ProductDTO save(ProductRequest dto, MultipartFile mainImg, List<MultipartFile> subImg);
+    ProductDTO insert(ProductRequest dto, MultipartFile mainImg, List<MultipartFile> subImg);
+    ProductDTO update(ProductRequest dto, MultipartFile mainImg, List<MultipartFile> subImg);
     void delete(List<Integer> ids);
     ProductDTO findById(Integer id);
     ProductDTO findByCode(String code);

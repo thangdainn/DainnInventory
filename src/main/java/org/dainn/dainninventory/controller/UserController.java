@@ -45,13 +45,13 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody UserRequest dto) {
-        return ResponseEntity.ok(userService.save(dto));
+        return ResponseEntity.ok(userService.insert(dto));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Integer id, @Valid @RequestBody UserRequest dto) {
         dto.setId(id);
-        return ResponseEntity.ok(userService.save(dto));
+        return ResponseEntity.ok(userService.update(dto));
     }
 
     @DeleteMapping

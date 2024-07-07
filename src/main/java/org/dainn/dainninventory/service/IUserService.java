@@ -10,12 +10,12 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface IUserService {
-    UserDTO save(UserRequest userRequest);
+    UserDTO insert(UserRequest userRequest);
+    UserDTO update(UserRequest userRequest);
     void delete(List<Integer> ids);
     UserDTO findById(Integer id);
     UserDTO findByEmailAndProvider(String email, Provider provider);
     List<UserDTO> findAll();
-    Page<UserDTO> findAll(Pageable pageable);
     List<UserDTO> findAll(Integer status);
     Page<UserDTO> findWithSpec(UserPageRequest request);
 }
