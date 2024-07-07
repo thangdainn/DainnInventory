@@ -24,7 +24,6 @@ public class ProductController {
     private final IProductService productService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     public ResponseEntity<?> getAll(@ModelAttribute ProductPageRequest request) {
         request.setKeyword(ValidateString.trimString(request.getKeyword()));
         if (request.getPage() == null) {
