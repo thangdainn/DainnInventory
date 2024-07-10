@@ -59,6 +59,16 @@ public class OrderService implements IOrderService {
         return result;
     }
 
+    @Transactional
+    @Override
+    public int updatePaid(Integer id) {
+        int result = orderRepository.updatePaid(id, true);
+        if (result == 1){
+            baseRedisService.flushDb();
+        }
+        return result;
+    }
+
 
     @Override
     public OrderDTO findById(Integer id) {

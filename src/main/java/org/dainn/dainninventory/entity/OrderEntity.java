@@ -54,7 +54,13 @@ public class OrderEntity {
         if (status == null) {
             status = OrderStatus.PROCESSING;
         }
+        if (isPaid == null) {
+            isPaid = false;
+        }
     }
+
+    @Column(name = "is_paid")
+    private Boolean isPaid;
 
     @Column(name = "order_date")
     @CreatedDate

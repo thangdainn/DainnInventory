@@ -43,6 +43,8 @@ public class OrderDTO {
     @NotNull(message = "Payment method is required")
     private PaymentMethod paymentMethod;
 
+    private Boolean isPaid = false;
+
     private OrderStatus status = OrderStatus.PROCESSING;
 
     @NotNull(message = "User is required")
