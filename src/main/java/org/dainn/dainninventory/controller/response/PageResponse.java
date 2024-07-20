@@ -13,6 +13,6 @@ import java.util.List;
 public class PageResponse<T> {
     private Integer page;
     private Integer size;
-    private Integer totalPages;
+    private long totalElements;
     private List<T> data = new ArrayList<>();
 }

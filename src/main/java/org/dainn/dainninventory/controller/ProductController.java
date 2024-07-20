@@ -33,7 +33,7 @@ public class ProductController {
         return ResponseEntity.ok(PageResponse.<ProductDTO>builder()
                 .page(page.getPageable().getPageNumber())
                 .size(page.getPageable().getPageSize())
-                .totalPages(page.getTotalPages())
+                .totalElements(page.getTotalElements())
                 .data(page.getContent())
                 .build());
     }

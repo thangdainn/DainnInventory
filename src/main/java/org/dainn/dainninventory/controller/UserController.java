@@ -33,7 +33,7 @@ public class UserController {
         return ResponseEntity.ok(PageResponse.<UserDTO>builder()
                 .page(page.getPageable().getPageNumber())
                 .size(page.getPageable().getPageSize())
-                .totalPages(page.getTotalPages())
+                .totalElements(page.getTotalElements())
                 .data(page.getContent())
                 .build());
     }

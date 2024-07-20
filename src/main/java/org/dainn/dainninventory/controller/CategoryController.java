@@ -33,7 +33,7 @@ public class CategoryController {
         return ResponseEntity.ok(PageResponse.<CategoryDTO>builder()
                 .page(page.getPageable().getPageNumber())
                 .size(page.getPageable().getPageSize())
-                .totalPages(page.getTotalPages())
+                .totalElements(page.getTotalElements())
                 .data(page.getContent())
                 .build());
     }
