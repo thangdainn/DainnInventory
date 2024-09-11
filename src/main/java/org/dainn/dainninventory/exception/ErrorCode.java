@@ -28,6 +28,10 @@ public enum ErrorCode {
     SUPPLIER_EXISTED("Supplier existed", HttpStatus.BAD_REQUEST),
     SUPPLIER_NOT_EXISTED("Supplier not existed", HttpStatus.NOT_FOUND),
 
+    SIZE_EXISTED("Size existed", HttpStatus.BAD_REQUEST),
+    SIZE_NOT_EXISTED("Size not existed", HttpStatus.NOT_FOUND),
+    PRODUCT_SIZE_NOT_EXISTED("product-size not existed", HttpStatus.NOT_FOUND),
+
     PRODUCT_EXISTED("Product existed", HttpStatus.BAD_REQUEST),
     PRODUCT_NOT_EXISTED("Product not existed", HttpStatus.NOT_FOUND),
     PRODUCT_CODE_EXISTED("Product code existed", HttpStatus.BAD_REQUEST),

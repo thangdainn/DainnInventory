@@ -23,4 +23,7 @@ public class GoodsReceiptDetailDTO {
 
     @NotNull(message = "Product is required")
     private Integer productId;
+
+    @NotNull(message = "Size is required")
+    private Integer sizeId;
 }

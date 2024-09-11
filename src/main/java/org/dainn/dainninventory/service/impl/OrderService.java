@@ -45,7 +45,7 @@ public class OrderService implements IOrderService {
         entity.setUser(userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
         entity = orderRepository.save(entity);
-        orderDetailService.insert(dto.getDetailDTOS(), entity.getId());
+        orderDetailService.insert(dto.getDetails(), entity);
         return orderMapper.toDTO(entity);
     }
 
@@ -77,7 +77,7 @@ public class OrderService implements IOrderService {
         if (dto == null){
             dto = orderMapper.toDTO(orderRepository.findById(id)
                     .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_EXISTED)));
-            dto.setDetailDTOS(orderDetailService.findByOrderId(id));
+            dto.setDetails(orderDetailService.findByOrderId(id));
             baseRedisService.setCache(key, dto);
         }
         return dto;

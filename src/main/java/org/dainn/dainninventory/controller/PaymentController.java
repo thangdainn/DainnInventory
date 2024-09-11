@@ -1,6 +1,7 @@
 package org.dainn.dainninventory.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.service.IOrderService;
 import org.dainn.dainninventory.service.impl.PaymentService;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/payment")
@@ -23,11 +26,13 @@ public class PaymentController {
     }
 
     @GetMapping("/vnp-callback")
-    public ResponseEntity<?> vnpCallback(@RequestParam String vnp_ResponseCode, @RequestParam Integer vnp_TxnRef) {
+    public void vnpCallback(@RequestParam String vnp_ResponseCode,
+                            @RequestParam Integer vnp_TxnRef,
+                            HttpServletResponse response) throws IOException {
         if (vnp_ResponseCode.equals("00")) {
             orderService.updatePaid(vnp_TxnRef);
-            return ResponseEntity.ok("success");
         }
-        return ResponseEntity.badRequest().body("fail");
+        response.sendRedirect("http://localhost:4200/order-status?vnp_TxnRef=" + vnp_TxnRef + "&vnp_ResponseCode=" + vnp_ResponseCode);
+
     }
 }

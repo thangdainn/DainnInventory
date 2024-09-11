@@ -23,4 +23,11 @@ public class OrderDetailDTO {
 
     @NotNull(message = "Product is required")
     private Integer productId;
+
+    private String productName;
+
+    private String productImage;
+
+    @NotNull(message = "Size is required")
+    private Integer sizeId;
 }

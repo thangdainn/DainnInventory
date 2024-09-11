@@ -16,7 +16,7 @@ public interface ICartRepository extends JpaRepository<CartEntity, Integer> {
 //    @Query("UPDATE CartEntity c SET c.quantity = :quantity WHERE c.id = :id")
 //    int updateQuantity(@Param("quantity") Integer quantity, @Param("id") Integer id);
     List<CartEntity> findAllByUserId(Integer userId);
-    Optional<CartEntity> findByUserIdAndProductId(Integer userId, Integer productId);
+    Optional<CartEntity> findByUserIdAndProductIdAndSizeId(Integer userId, Integer productId, Integer sizeId);
 
     void deleteAllByUserId(Integer userId);
 }

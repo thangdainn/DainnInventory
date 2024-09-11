@@ -1,5 +1,6 @@
 package org.dainn.dainninventory.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.dto.CartDTO;
 import org.dainn.dainninventory.service.ICartService;
@@ -10,21 +11,22 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api/carts")
 @RequiredArgsConstructor
 public class CartController {
     private final ICartService cartService;
 
-    @GetMapping
-    public ResponseEntity<?> getAllByUserId(@RequestBody CartDTO dto) {
-        if (dto.getUserId() == null) {
+    @PostMapping("/{id}")
+    public ResponseEntity<?> getAllByUserId(@PathVariable(name = "id") Integer userId) {
+        if (userId == null) {
             return ResponseEntity.badRequest().body("User Id is required");
         }
-        return ResponseEntity.ok(cartService.findAllByUserId(dto.getUserId()));
+        return ResponseEntity.ok(cartService.findAllByUserId(userId));
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody CartDTO dto) {
+    public ResponseEntity<?> create(@Valid @RequestBody CartDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(cartService.insert(dto));
     }
 

@@ -1,27 +1,26 @@
 package org.dainn.dainninventory.dto;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.math.BigDecimal;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartDTO {
+@Builder
+public class ProductSizeDTO {
     private Integer id;
 
     @NotNull(message = "Quantity is required")
     private Integer quantity;
 
-    @NotNull(message = "Product ID is required")
+    @NotNull(message = "Product is required")
     private Integer productId;
 
-    @NotNull(message = "Size ID is required")
+    @NotNull(message = "Size is required")
     private Integer sizeId;
 
-    @NotNull(message = "User ID is required")
-    private Integer userId;
+    private String sizeName;
 }

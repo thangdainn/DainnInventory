@@ -18,7 +18,8 @@ public interface IInventoryRepository extends JpaRepository<InventoryEntity, Int
     @Query("UPDATE InventoryEntity r SET r.status = 0 WHERE r.id IN :ids")
     void deleteAllByIdInBatchCustom(@Param("ids") List<Integer> ids);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE InventoryEntity r SET r.quantity = :quantity WHERE r.product.id = :productId")
     void updateQuantityByProduct_Id(@Param("productId") Integer productId, @Param("quantity") Integer quantity);
+
 }

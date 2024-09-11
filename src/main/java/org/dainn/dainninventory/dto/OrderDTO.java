@@ -54,5 +54,5 @@ public class OrderDTO {
     private Date modifiedDate;
 
     @Valid
-    private List<OrderDetailDTO> detailDTOS = new ArrayList<>();
+    private List<OrderDetailDTO> details = new ArrayList<>();
 }

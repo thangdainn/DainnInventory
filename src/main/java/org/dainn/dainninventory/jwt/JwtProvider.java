@@ -26,7 +26,9 @@ public class JwtProvider {
     public String generateToken(String email, Provider provider) {
         UserDTO userDTO = userService.findByEmailAndProvider(email, provider);
         Map<String, Object> claims = Map.of(
+                "id", userDTO.getId(),
                 "email", userDTO.getEmail(),
+                "name", userDTO.getName(),
                 "provider", userDTO.getProvider().name(),
                 "role", userDTO.getRolesName()
         );

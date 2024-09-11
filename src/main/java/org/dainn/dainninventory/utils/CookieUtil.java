@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 
 public class CookieUtil {
     public static Cookie createRefreshTokenCookie(String refreshToken) {
+        System.out.println("refreshToken: " + refreshToken);
         Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(true);

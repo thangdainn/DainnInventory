@@ -8,6 +8,7 @@ import org.dainn.dainninventory.exception.ErrorCode;
 import org.dainn.dainninventory.mapper.ICartMapper;
 import org.dainn.dainninventory.repository.ICartRepository;
 import org.dainn.dainninventory.repository.IProductRepository;
+import org.dainn.dainninventory.repository.ISizeRepository;
 import org.dainn.dainninventory.repository.IUserRepository;
 import org.dainn.dainninventory.service.ICartService;
 import org.springframework.stereotype.Service;
@@ -22,13 +23,15 @@ public class CartService implements ICartService {
     private final ICartRepository cartRepository;
     private final ICartMapper cartMapper;
     private final IProductRepository productRepository;
+    private final ISizeRepository sizeRepository;
     private final IUserRepository userRepository;
 
     @Transactional
     @Override
     public CartDTO insert(CartDTO dto) {
         CartEntity entity = cartMapper.toEntity(dto);
-        Optional<CartEntity> optional = cartRepository.findByUserIdAndProductId(dto.getUserId(), dto.getProductId());
+        Optional<CartEntity> optional =
+                cartRepository.findByUserIdAndProductIdAndSizeId(dto.getUserId(), dto.getProductId(), dto.getSizeId());
         if (optional.isPresent()) {
             entity = optional.get();
             entity.setQuantity(entity.getQuantity() + dto.getQuantity());
@@ -37,6 +40,8 @@ public class CartService implements ICartService {
                     .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED)));
             entity.setUser(userRepository.findById(dto.getUserId())
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+            entity.setSize(sizeRepository.findById(dto.getSizeId())
+                    .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED)));
         }
         return cartMapper.toDTO(cartRepository.save(entity));
     }

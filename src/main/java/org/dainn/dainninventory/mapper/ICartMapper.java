@@ -3,6 +3,7 @@ package org.dainn.dainninventory.mapper;
 import org.dainn.dainninventory.dto.CartDTO;
 import org.dainn.dainninventory.entity.CartEntity;
 import org.dainn.dainninventory.entity.ProductEntity;
+import org.dainn.dainninventory.entity.SizeEntity;
 import org.dainn.dainninventory.entity.UserEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,6 +16,7 @@ public interface ICartMapper {
 
     @Mapping(target = "productId", source = "product", qualifiedByName = "toProductDTO")
     @Mapping(target = "userId", source = "user", qualifiedByName = "toUserDTO")
+    @Mapping(target = "sizeId", source = "size", qualifiedByName = "toSizeDTO")
     CartDTO toDTO(CartEntity entity);
 
     @Mapping(target = "id", ignore = true)
@@ -31,6 +33,13 @@ public interface ICartMapper {
     default Integer toUserDTO(UserEntity user) {
         if (user != null) {
             return user.getId();
+        }
+        return null;
+    }
+    @Named("toSizeDTO")
+    default Integer toSizeDTO(SizeEntity size) {
+        if (size != null) {
+            return size.getId();
         }
         return null;
     }

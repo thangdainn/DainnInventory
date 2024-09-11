@@ -18,4 +18,7 @@ public class RedisConstant {
     public static final String ORDERS_KEY_PREFIX = "orders";
     public static final String GOODS_RECEIPT_KEY_PREFIX = "goods_receipt";
     public static final String GOODS_RECEIPTS_KEY_PREFIX = "goods_receipts";
+    public static final String SIZE_KEY_PREFIX = "size";
+    public static final String SIZES_KEY_PREFIX = "sizes";
+    public static final String PRODUCT_SIZES_KEY_PREFIX = "product_sizes";
 }
