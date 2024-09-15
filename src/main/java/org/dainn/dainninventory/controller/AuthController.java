@@ -1,5 +1,7 @@
 package org.dainn.dainninventory.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -8,18 +10,23 @@ import org.dainn.dainninventory.controller.request.LoginRequest;
 import org.dainn.dainninventory.controller.request.Oauth2Request;
 import org.dainn.dainninventory.controller.request.RegisterRequest;
 import org.dainn.dainninventory.service.IAuthService;
+import org.dainn.dainninventory.service.ITokenService;
 import org.dainn.dainninventory.service.IUserService;
 import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
     private final IAuthService authService;
     private final IUserService userService;
+    private final ITokenService tokenService;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> get(@Min(1) @PathVariable Integer id) {
@@ -34,6 +41,20 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authService.register(request));
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        String refreshToken = Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals("refresh_token"))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
+        if (refreshToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(tokenService.handleRefreshToken(refreshToken, response));
     }
 
     @PostMapping("/login/oauth2/google")

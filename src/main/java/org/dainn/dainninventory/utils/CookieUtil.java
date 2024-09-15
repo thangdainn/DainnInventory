@@ -7,8 +7,9 @@ public class CookieUtil {
         System.out.println("refreshToken: " + refreshToken);
         Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setSecure(false);
         refreshTokenCookie.setMaxAge(15 * 24 * 60 * 60);
+        refreshTokenCookie.setPath("/");
         return refreshTokenCookie;
     }
 }

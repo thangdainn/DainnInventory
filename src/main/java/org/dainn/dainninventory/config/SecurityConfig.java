@@ -61,9 +61,9 @@ public class SecurityConfig {
     public SecurityFilterChain authSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .securityMatcher(new AntPathRequestMatcher("/auth/**"))
+                .securityMatcher(new AntPathRequestMatcher("/api/auth/**"))
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/auth/**")
+                        .requestMatchers("/api/auth/**")
                         .permitAll()
                         .anyRequest().authenticated()
                 )
@@ -73,20 +73,6 @@ public class SecurityConfig {
 
     @Bean
     @Order(2)
-    public SecurityFilterChain refreshTokenSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .securityMatcher(new AntPathRequestMatcher("/refresh-token"))
-                .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/refresh-token")
-                        .permitAll()
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        return http.build();
-    }
-    @Bean
-    @Order(3)
     public SecurityFilterChain apiPaymentSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -100,7 +86,7 @@ public class SecurityConfig {
         return http.build();
     }
     @Bean
-    @Order(4)
+    @Order(3)
     public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -110,13 +96,13 @@ public class SecurityConfig {
                         .permitAll()
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-//                .addFilterBefore(new JwtAuthenticationFilter(exceptionResolver, customUserDetailService), UsernamePasswordAuthenticationFilter.class);
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(new JwtAuthenticationFilter(exceptionResolver, customUserDetailService), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
     @Bean
-    @Order(5)
+    @Order(4)
     public SecurityFilterChain logoutSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
