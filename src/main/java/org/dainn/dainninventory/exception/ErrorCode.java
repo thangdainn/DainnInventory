@@ -50,7 +50,7 @@ public enum ErrorCode {
     REFRESH_TOKEN_EXPIRED("Refresh token expired", HttpStatus.BAD_REQUEST),
 
     CART_ITEM_NOT_EXISTED("Cart item not existed", HttpStatus.NOT_FOUND),
-    ;
+    GOOGLE_LOGIN_FAILED("Authentication with Google fail", HttpStatus.BAD_REQUEST),;
     ErrorCode(String message, HttpStatusCode statusCode) {
         this.message = message;
         this.statusCode = statusCode;

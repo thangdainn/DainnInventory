@@ -7,13 +7,12 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.controller.request.LoginRequest;
-import org.dainn.dainninventory.controller.request.Oauth2Request;
 import org.dainn.dainninventory.controller.request.RegisterRequest;
+import org.dainn.dainninventory.controller.response.JwtResponse;
+import org.dainn.dainninventory.dto.OAuth2TokenDTO;
 import org.dainn.dainninventory.service.IAuthService;
 import org.dainn.dainninventory.service.ITokenService;
 import org.dainn.dainninventory.service.IUserService;
-import org.dainn.dainninventory.utils.enums.Provider;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,21 +57,10 @@ public class AuthController {
     }
 
     @PostMapping("/login/oauth2/google")
-    public ResponseEntity<?> handleGoogleLogin(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                               @Valid @RequestBody Oauth2Request request,
-                                               HttpServletResponse response) {
-        return ResponseEntity.ok(authService.loginOauth2(authorizationHeader, request, Provider.google, response));
+    public ResponseEntity<?> googleLogin(@RequestBody OAuth2TokenDTO oAuth2Token, HttpServletResponse response){
+
+        JwtResponse jwt = authService.loginGoogle(oAuth2Token, response);
+        return jwt != null ? ResponseEntity.ok(jwt) : ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
-    @PostMapping("/login/oauth2/facebook")
-    public ResponseEntity<?> handleFacebookLogin(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                               @Valid @RequestBody Oauth2Request request,
-                                               HttpServletResponse response) {
-        return ResponseEntity.ok(authService.loginOauth2(authorizationHeader, request, Provider.google, response));
-    }
-    @PostMapping("/login/oauth2/github")
-    public ResponseEntity<?> handleGithubLogin(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                               @Valid @RequestBody Oauth2Request request,
-                                               HttpServletResponse response) {
-        return ResponseEntity.ok(authService.loginOauth2(authorizationHeader, request, Provider.google, response));
-    }
+
 }
