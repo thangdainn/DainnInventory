@@ -9,7 +9,6 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OAuth2TokenDTO {
-    private String token;
+public class DeviceInfoDTO {
     private String deviceInfo;
 }

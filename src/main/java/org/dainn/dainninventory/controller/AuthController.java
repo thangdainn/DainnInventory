@@ -1,6 +1,5 @@
 package org.dainn.dainninventory.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -9,15 +8,13 @@ import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.controller.request.LoginRequest;
 import org.dainn.dainninventory.controller.request.RegisterRequest;
 import org.dainn.dainninventory.controller.response.JwtResponse;
-import org.dainn.dainninventory.dto.OAuth2TokenDTO;
+import org.dainn.dainninventory.dto.DeviceInfoDTO;
 import org.dainn.dainninventory.service.IAuthService;
 import org.dainn.dainninventory.service.ITokenService;
 import org.dainn.dainninventory.service.IUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -44,23 +41,13 @@ public class AuthController {
 
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
-        Cookie[] cookies = request.getCookies();
-        String refreshToken = Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals("refresh_token"))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
-        if (refreshToken == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        String refreshToken = tokenService.getRefreshTokenFromReq(request);
         return ResponseEntity.ok(tokenService.handleRefreshToken(refreshToken, response));
     }
 
     @PostMapping("/login/oauth2/google")
-    public ResponseEntity<?> googleLogin(@RequestBody OAuth2TokenDTO oAuth2Token, HttpServletResponse response){
-
-        JwtResponse jwt = authService.loginGoogle(oAuth2Token, response);
-        return jwt != null ? ResponseEntity.ok(jwt) : ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public ResponseEntity<?> googleLogin(HttpServletRequest request, @RequestBody DeviceInfoDTO deviceInfo, HttpServletResponse response){
+        return ResponseEntity.ok(authService.loginGoogle(request, deviceInfo, response));
     }
 
 }

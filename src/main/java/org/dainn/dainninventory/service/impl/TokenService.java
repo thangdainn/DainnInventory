@@ -1,5 +1,7 @@
 package org.dainn.dainninventory.service.impl;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.controller.response.JwtResponse;
@@ -16,6 +18,7 @@ import org.dainn.dainninventory.utils.CookieUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Date;
 
 @Service
@@ -33,6 +36,16 @@ public class TokenService implements ITokenService {
         tokenEntity.setUser(userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
         return tokenMapper.toDTO(tokenRepository.save(tokenEntity));
+    }
+
+    @Override
+    public String getRefreshTokenFromReq(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals("refresh_token"))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
     }
 
     @Transactional

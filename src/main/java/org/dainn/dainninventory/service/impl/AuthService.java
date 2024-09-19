@@ -4,13 +4,14 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.controller.request.LoginRequest;
 import org.dainn.dainninventory.controller.request.RegisterRequest;
 import org.dainn.dainninventory.controller.response.JwtResponse;
-import org.dainn.dainninventory.dto.OAuth2TokenDTO;
+import org.dainn.dainninventory.dto.DeviceInfoDTO;
 import org.dainn.dainninventory.dto.TokenDTO;
 import org.dainn.dainninventory.dto.UserDTO;
 import org.dainn.dainninventory.entity.RoleEntity;
@@ -29,8 +30,10 @@ import org.dainn.dainninventory.utils.constant.JwtConstant;
 import org.dainn.dainninventory.utils.constant.RoleConstant;
 import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.Date;
@@ -72,12 +75,13 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public JwtResponse loginGoogle(OAuth2TokenDTO oAuth2TokenDTO, HttpServletResponse response) {
+    public JwtResponse loginGoogle(HttpServletRequest request, DeviceInfoDTO deviceInfo, HttpServletResponse response) {
         try {
+            String token = getTokenFromRequest(request);
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
                     .setAudience(Collections.singleton(googleClientId))
                     .build();
-            GoogleIdToken idToken = verifier.verify(oAuth2TokenDTO.getToken());
+            GoogleIdToken idToken = verifier.verify(token);
             GoogleIdToken.Payload payload = idToken.getPayload();
             String email = payload.getEmail();
             String name = (String) payload.get("name");
@@ -97,7 +101,7 @@ public class AuthService implements IAuthService {
             userEntity = userRepository.save(userEntity);
             String accessToken = jwtProvider.generateToken(userEntity.getEmail(), Provider.google);
             String refreshToken = jwtProvider.generateRefreshToken();
-            TokenDTO tokenDTO = createTokenDTO(refreshToken, userEntity.getId(), oAuth2TokenDTO.getDeviceInfo());
+            TokenDTO tokenDTO = createTokenDTO(refreshToken, userEntity.getId(), deviceInfo.getDeviceInfo());
             tokenService.insert(tokenDTO);
             response.addCookie(CookieUtil.createRefreshTokenCookie(refreshToken));
             return new JwtResponse(accessToken);
@@ -113,5 +117,13 @@ public class AuthService implements IAuthService {
                 .refreshTokenExpirationDate(new Date(new Date().getTime() + JwtConstant.JWT_EXPIRATION_REFRESH))
                 .userId(userId)
                 .build();
+    }
+
+    private String getTokenFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 }
