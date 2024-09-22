@@ -24,4 +24,7 @@ public class CartDTO {
 
     @NotNull(message = "User ID is required")
     private Integer userId;
+
+    private ProductDTO product;
+    private SizeDTO size;
 }

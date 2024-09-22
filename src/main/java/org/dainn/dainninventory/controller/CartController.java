@@ -17,7 +17,7 @@ import java.util.List;
 public class CartController {
     private final ICartService cartService;
 
-    @PostMapping("/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getAllByUserId(@PathVariable(name = "id") Integer userId) {
         if (userId == null) {
             return ResponseEntity.badRequest().body("User Id is required");

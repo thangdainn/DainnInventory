@@ -11,6 +11,8 @@ import org.dainn.dainninventory.repository.IProductRepository;
 import org.dainn.dainninventory.repository.ISizeRepository;
 import org.dainn.dainninventory.repository.IUserRepository;
 import org.dainn.dainninventory.service.ICartService;
+import org.dainn.dainninventory.service.IProductService;
+import org.dainn.dainninventory.service.ISizeService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,8 @@ public class CartService implements ICartService {
     private final IProductRepository productRepository;
     private final ISizeRepository sizeRepository;
     private final IUserRepository userRepository;
+    private final IProductService productService;
+    private final ISizeService sizeService;
 
     @Transactional
     @Override
@@ -53,8 +57,6 @@ public class CartService implements ICartService {
                 .orElseThrow(() -> new AppException(ErrorCode.CART_ITEM_NOT_EXISTED));
         entity = cartMapper.updateEntity(entity, dto);
         return cartMapper.toDTO(cartRepository.save(entity));
-
-
     }
 
     @Transactional
@@ -77,6 +79,11 @@ public class CartService implements ICartService {
     @Override
     public List<CartDTO> findAllByUserId(Integer userId) {
         return cartRepository.findAllByUserId(userId)
-                .stream().map(cartMapper::toDTO).toList();
+                .stream().map((entity) -> {
+                    CartDTO dto = cartMapper.toDTO(entity);
+                    dto.setProduct(productService.findById(dto.getProductId()));
+                    dto.setSize(sizeService.findById(dto.getSizeId()));
+                    return dto;
+                }).toList();
     }
 }

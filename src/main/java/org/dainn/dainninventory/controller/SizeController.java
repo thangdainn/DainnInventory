@@ -33,14 +33,19 @@ public class SizeController {
         return ResponseEntity.ok("");
     }
 
-    @GetMapping(value = "/product-code")
+    @GetMapping(value = "/quantity-code")
     public ResponseEntity<?> getAllByProductCode(@RequestParam(name = "code") String code) {
         return ResponseEntity.ok(productSizeService.findAllByProductCode(code));
     }
 
+
     @GetMapping(value = "/{id}")
     public ResponseEntity<?> get(@Min(1) @PathVariable(name = "id") Integer id) {
         return ResponseEntity.ok(sizeService.findById(id));
+    }
+    @GetMapping(value = "/quantity")
+    public ResponseEntity<?> getQuantity(@RequestParam(name = "productId") Integer productId, @RequestParam(name = "sizeId") Integer sizeId) {
+        return ResponseEntity.ok(productSizeService.findByProductIdAndSizeId(productId, sizeId));
     }
 
     @PostMapping
