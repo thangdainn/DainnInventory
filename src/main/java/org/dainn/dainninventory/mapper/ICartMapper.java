@@ -2,45 +2,19 @@ package org.dainn.dainninventory.mapper;
 
 import org.dainn.dainninventory.dto.CartDTO;
 import org.dainn.dainninventory.entity.CartEntity;
-import org.dainn.dainninventory.entity.ProductEntity;
-import org.dainn.dainninventory.entity.SizeEntity;
-import org.dainn.dainninventory.entity.UserEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface ICartMapper {
     CartEntity toEntity(CartDTO request);
 
-    @Mapping(target = "productId", source = "product", qualifiedByName = "toProductDTO")
-    @Mapping(target = "userId", source = "user", qualifiedByName = "toUserDTO")
-    @Mapping(target = "sizeId", source = "size", qualifiedByName = "toSizeDTO")
+    @Mapping(target = "productId", source = "product.id")
+    @Mapping(target = "userId", source = "user.id")
+    @Mapping(target = "sizeId", source = "size.id")
     CartDTO toDTO(CartEntity entity);
 
     @Mapping(target = "id", ignore = true)
     CartEntity updateEntity(@MappingTarget CartEntity entity, CartDTO request);
-
-    @Named("toProductDTO")
-    default Integer toProductDTO(ProductEntity product) {
-        if (product != null) {
-            return product.getId();
-        }
-        return null;
-    }
-    @Named("toUserDTO")
-    default Integer toUserDTO(UserEntity user) {
-        if (user != null) {
-            return user.getId();
-        }
-        return null;
-    }
-    @Named("toSizeDTO")
-    default Integer toSizeDTO(SizeEntity size) {
-        if (size != null) {
-            return size.getId();
-        }
-        return null;
-    }
 }
