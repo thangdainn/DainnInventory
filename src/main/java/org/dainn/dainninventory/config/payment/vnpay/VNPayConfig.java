@@ -1,4 +1,4 @@
-package org.dainn.dainninventory.config;
+package org.dainn.dainninventory.config.payment.vnpay;
 
 import lombok.Getter;
 import org.dainn.dainninventory.utils.VNPay;

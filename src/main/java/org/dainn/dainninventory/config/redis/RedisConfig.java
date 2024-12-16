@@ -1,4 +1,4 @@
-package org.dainn.dainninventory.config;
+package org.dainn.dainninventory.config.redis;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

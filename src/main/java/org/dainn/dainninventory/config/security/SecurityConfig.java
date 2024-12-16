@@ -1,8 +1,7 @@
-package org.dainn.dainninventory.config;
+package org.dainn.dainninventory.config.security;
 
-import org.dainn.dainninventory.jwt.JwtAuthenticationFilter;
-import org.dainn.dainninventory.service.security.CustomUserDetailService;
-import org.dainn.dainninventory.service.security.LogoutHandleService;
+import lombok.RequiredArgsConstructor;
+import org.dainn.dainninventory.filter.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -26,12 +25,13 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
     private final CustomUserDetailService customUserDetailService;
-
-    public SecurityConfig(CustomUserDetailService customUserDetailService) {
-        this.customUserDetailService = customUserDetailService;
-    }
+    private final LogoutHandleService logoutHandleService;
+//    public SecurityConfig(CustomUserDetailService customUserDetailService) {
+//        this.customUserDetailService = customUserDetailService;
+//    }
     @Bean
     public UserDetailsService userDetailsService() {
         return customUserDetailService;
@@ -42,10 +42,10 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public LogoutHandleService logoutHandlerService() {
-        return new LogoutHandleService();
-    }
+//    @Bean
+//    public LogoutHandleService logoutHandlerService() {
+//        return new LogoutHandleService();
+//    }
 
     @Bean
     public RestTemplate restTemplate() {
@@ -92,7 +92,22 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .securityMatcher(new AntPathRequestMatcher("/api/**"))
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/api/**")
+//                        .requestMatchers("/api/**")
+//                        .permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(new JwtAuthenticationFilter(exceptionResolver, customUserDetailService), UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
+    @Bean
+    @Order(4)
+    public SecurityFilterChain wsSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .securityMatcher(new AntPathRequestMatcher("/ws/**"))
+                .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers("/ws/**")
                         .permitAll()
                         .anyRequest().authenticated()
                 )
@@ -102,7 +117,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Order(4)
+    @Order(5)
     public SecurityFilterChain logoutSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -113,7 +128,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .logout((logout) -> logout
                         .logoutUrl("/logout")
-                        .addLogoutHandler(logoutHandlerService())
+                        .addLogoutHandler(logoutHandleService)
                         .logoutSuccessHandler(((request, response, authentication) -> SecurityContextHolder.clearContext()))
                 );
 

@@ -1,4 +1,4 @@
-package org.dainn.dainninventory.config;
+package org.dainn.dainninventory.config.jpa;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

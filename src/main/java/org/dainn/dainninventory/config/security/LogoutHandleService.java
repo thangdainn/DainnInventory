@@ -1,26 +1,21 @@
-package org.dainn.dainninventory.service.security;
+package org.dainn.dainninventory.config.security;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.repository.ITokenRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 @Service
+@RequiredArgsConstructor
 public class LogoutHandleService implements LogoutHandler {
-    @Autowired
-    private ITokenRepository tokenRepository;
+    private final ITokenRepository tokenRepository;
 
     @Transactional
     @Override

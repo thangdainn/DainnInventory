@@ -1,7 +1,8 @@
-package org.dainn.dainninventory.service.security;
+package org.dainn.dainninventory.config.security;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.dainn.dainninventory.entity.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,14 +17,17 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CustomUserDetail implements UserDetails {
-    private String username;
+    @Getter
+    private Integer id;
+    private String email;
     private String password;
     private String name;
     private List<GrantedAuthority> authorities;
 
 
     public CustomUserDetail(UserEntity userEntity) {
-        username = userEntity.getEmail();
+        id = userEntity.getId();
+        email = userEntity.getEmail();
         password = userEntity.getPassword();
         name = userEntity.getName();
         authorities = userEntity.getRoles()
@@ -31,6 +35,7 @@ public class CustomUserDetail implements UserDetails {
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
@@ -43,7 +48,7 @@ public class CustomUserDetail implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
 
     @Override
