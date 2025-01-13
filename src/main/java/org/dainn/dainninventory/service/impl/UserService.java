@@ -1,6 +1,7 @@
 package org.dainn.dainninventory.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.controller.request.UserPageRequest;
 import org.dainn.dainninventory.controller.request.UserRequest;
@@ -9,6 +10,7 @@ import org.dainn.dainninventory.entity.RoleEntity;
 import org.dainn.dainninventory.entity.UserEntity;
 import org.dainn.dainninventory.exception.AppException;
 import org.dainn.dainninventory.exception.ErrorCode;
+import org.dainn.dainninventory.filter.JwtProvider;
 import org.dainn.dainninventory.mapper.IUserMapper;
 import org.dainn.dainninventory.repository.IRoleRepository;
 import org.dainn.dainninventory.repository.IUserRepository;
@@ -23,6 +25,7 @@ import org.dainn.dainninventory.utils.constant.RoleConstant;
 import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +43,7 @@ public class UserService implements IUserService {
     private final IUserMapper userMapper;
     private final IRoleRepository roleRepository;
     private final IBaseRedisService baseRedisService;
+    private final JwtProvider jwtProvider;
 
     @Transactional
     @Override
@@ -121,6 +125,26 @@ public class UserService implements IUserService {
             baseRedisService.setCache(key, dto);
         }
         return dto;
+    }
+
+    @Override
+    public UserDTO findMyInfo(HttpServletRequest request) {
+        String jwt = getJwtFromRequest(request);
+        if (!StringUtils.hasText(jwt) || !jwtProvider.validateToken(jwt)) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
+        String email = jwtProvider.getEmailFromJwt(jwt);
+        String provider = jwtProvider.getProviderFromJwt(jwt);
+        return userMapper.toDTO(userRepository.findByEmailAndProviderAndStatus(email, Provider.valueOf(provider), 1)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+    }
+
+    private String getJwtFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 
     @Override

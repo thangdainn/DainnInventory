@@ -9,7 +9,7 @@ import org.dainn.dainninventory.dto.TokenDTO;
 import org.dainn.dainninventory.entity.TokenEntity;
 import org.dainn.dainninventory.exception.AppException;
 import org.dainn.dainninventory.exception.ErrorCode;
-import org.dainn.dainninventory.jwt.JwtProvider;
+import org.dainn.dainninventory.filter.JwtProvider;
 import org.dainn.dainninventory.mapper.ITokenMapper;
 import org.dainn.dainninventory.repository.ITokenRepository;
 import org.dainn.dainninventory.repository.IUserRepository;

@@ -1,5 +1,6 @@
 package org.dainn.dainninventory.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.dainn.dainninventory.controller.request.UserPageRequest;
 import org.dainn.dainninventory.controller.request.UserRequest;
 import org.dainn.dainninventory.dto.UserDTO;
@@ -14,6 +15,7 @@ public interface IUserService {
     UserDTO update(UserRequest userRequest);
     void delete(List<Integer> ids);
     UserDTO findById(Integer id);
+    UserDTO findMyInfo(HttpServletRequest request);
     UserDTO findByEmailAndProvider(String email, Provider provider);
     List<UserDTO> findAll();
     List<UserDTO> findAll(Integer status);
