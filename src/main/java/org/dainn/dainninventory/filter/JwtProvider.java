@@ -1,4 +1,4 @@
-package org.dainn.dainninventory.jwt;
+package org.dainn.dainninventory.filter;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

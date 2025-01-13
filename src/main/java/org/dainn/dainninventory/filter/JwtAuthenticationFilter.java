@@ -1,10 +1,10 @@
-package org.dainn.dainninventory.jwt;
+package org.dainn.dainninventory.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
-import org.dainn.dainninventory.service.security.CustomUserDetailService;
+import org.dainn.dainninventory.config.security.CustomUserDetailService;
 import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,16 +37,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,@NonNull FilterChain filterChain) {
         try {
             String jwt = getJwtFromRequest(request);
-            if (StringUtils.hasText(jwt) && jwtProvider.validateToken(jwt)) {
-                String userName = jwtProvider.getEmailFromJwt(jwt);
-                String provider = jwtProvider.getProviderFromJwt(jwt);
-                UserDetails userDetails = customUserDetailService.loadUserByUsernameAndProvider(userName, Provider.valueOf(provider));
-                if (userDetails != null) {
-                    UsernamePasswordAuthenticationToken authenticationToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                }
+            if (!StringUtils.hasText(jwt) || !jwtProvider.validateToken(jwt)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+            String email = jwtProvider.getEmailFromJwt(jwt);
+            String provider = jwtProvider.getProviderFromJwt(jwt);
+            UserDetails userDetails = customUserDetailService.loadUserByUsernameAndProvider(email, Provider.valueOf(provider));
+            if (userDetails != null) {
+                UsernamePasswordAuthenticationToken authenticationToken =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
             filterChain.doFilter(request, response);
         } catch (Exception e) {
