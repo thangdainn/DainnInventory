@@ -3,6 +3,7 @@ package org.dainn.dainninventory.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.dainn.dainninventory.config.endpoint.Endpoint;
 import org.dainn.dainninventory.controller.request.RolePageRequest;
 import org.dainn.dainninventory.controller.response.PageResponse;
 import org.dainn.dainninventory.dto.RoleDTO;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/roles")
+@RequestMapping(Endpoint.Role.BASE)
 @RequiredArgsConstructor
 public class RoleController {
     private final IRoleService roleService;
@@ -39,9 +40,9 @@ public class RoleController {
                 .build());
     }
 
-    @GetMapping(value = "/{name}")
+    @GetMapping(Endpoint.Role.NAME)
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> get(@PathVariable(name = "name") String name) {
+    public ResponseEntity<?> get(@PathVariable String name) {
         return ResponseEntity.ok(roleService.findByName(name));
     }
 
@@ -51,9 +52,9 @@ public class RoleController {
         return ResponseEntity.status(HttpStatus.CREATED).body(roleService.insert(dto));
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(Endpoint.Role.ID)
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> update(@Min(1) @PathVariable(name = "id") Integer id, @Valid @RequestBody RoleDTO dto) {
+    public ResponseEntity<?> update(@Min(1) @PathVariable Integer id, @Valid @RequestBody RoleDTO dto) {
         dto.setId(id);
         return ResponseEntity.ok(roleService.update(dto));
     }

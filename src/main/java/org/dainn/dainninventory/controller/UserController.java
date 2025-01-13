@@ -3,6 +3,7 @@ package org.dainn.dainninventory.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.dainn.dainninventory.config.endpoint.Endpoint;
 import org.dainn.dainninventory.controller.request.UserPageRequest;
 import org.dainn.dainninventory.controller.request.UserRequest;
 import org.dainn.dainninventory.controller.response.PageResponse;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping(Endpoint.User.BASE)
 @RequiredArgsConstructor
 public class UserController {
     private final IUserService userService;
@@ -38,23 +39,27 @@ public class UserController {
                 .build());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(Endpoint.User.ID)
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> get(@Min(1) @PathVariable Integer id) {
         return ResponseEntity.ok(userService.findById(id));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> create(@Valid @RequestBody UserRequest dto) {
         return ResponseEntity.ok(userService.insert(dto));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(Endpoint.User.ID)
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> update(@PathVariable Integer id, @Valid @RequestBody UserRequest dto) {
         dto.setId(id);
         return ResponseEntity.ok(userService.update(dto));
     }
 
     @DeleteMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> delete(@RequestBody List<Integer> ids) {
         userService.delete(ids);
         return ResponseEntity.ok("Delete Successfully");

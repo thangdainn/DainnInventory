@@ -3,6 +3,7 @@ package org.dainn.dainninventory.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.dainn.dainninventory.config.endpoint.Endpoint;
 import org.dainn.dainninventory.controller.request.CategoryPageRequest;
 import org.dainn.dainninventory.controller.response.PageResponse;
 import org.dainn.dainninventory.dto.CategoryDTO;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping(Endpoint.Category.BASE)
 @RequiredArgsConstructor
 public class CategoryController {
     private final ICategoryService categoryService;
@@ -38,8 +39,9 @@ public class CategoryController {
                 .build());
     }
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<?> get(@Min(1) @PathVariable(name = "id") Integer id) {
+    @GetMapping(Endpoint.Category.ID)
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> get(@Min(1) @PathVariable Integer id) {
         return ResponseEntity.ok(categoryService.findById(id));
     }
 
@@ -49,9 +51,9 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.insert(dto));
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(Endpoint.Category.ID)
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> update(@Min(1) @PathVariable(name = "id") Integer id,
+    public ResponseEntity<?> update(@Min(1) @PathVariable Integer id,
                                     @Valid @RequestBody CategoryDTO dto) {
         dto.setId(id);
         return ResponseEntity.ok(categoryService.update(dto));

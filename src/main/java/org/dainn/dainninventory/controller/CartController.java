@@ -2,6 +2,7 @@ package org.dainn.dainninventory.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.dainn.dainninventory.config.endpoint.Endpoint;
 import org.dainn.dainninventory.dto.CartDTO;
 import org.dainn.dainninventory.service.ICartService;
 import org.springframework.http.HttpStatus;
@@ -11,14 +12,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin("*")
-@RequestMapping("/api/carts")
+//@CrossOrigin("*")
+@RequestMapping(Endpoint.Cart.BASE)
 @RequiredArgsConstructor
 public class CartController {
     private final ICartService cartService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getAllByUserId(@PathVariable(name = "id") Integer userId) {
+    @GetMapping(Endpoint.Cart.USER_ID)
+    public ResponseEntity<?> getAllByUserId(@PathVariable Integer userId) {
         if (userId == null) {
             return ResponseEntity.badRequest().body("User Id is required");
         }
@@ -38,6 +39,6 @@ public class CartController {
     @DeleteMapping
     public ResponseEntity<?> delete(@RequestBody List<Integer> ids) {
         cartService.deleteCart(ids);
-        return ResponseEntity.ok("Delete Successfully");
+        return ResponseEntity.ok().build();
     }
 }

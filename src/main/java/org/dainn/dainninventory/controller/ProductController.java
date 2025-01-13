@@ -3,6 +3,7 @@ package org.dainn.dainninventory.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.dainn.dainninventory.config.endpoint.Endpoint;
 import org.dainn.dainninventory.controller.request.ProductPageRequest;
 import org.dainn.dainninventory.controller.request.ProductRequest;
 import org.dainn.dainninventory.controller.response.PageResponse;
@@ -18,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping(Endpoint.Product.BASE)
 @RequiredArgsConstructor
 public class ProductController {
     private final IProductService productService;
@@ -38,7 +39,7 @@ public class ProductController {
                 .build());
     }
 
-    @GetMapping("/{code}")
+    @GetMapping(Endpoint.Product.CODE)
     public ResponseEntity<?> get(@PathVariable String code) {
         return ResponseEntity.ok(productService.findByCode(code));
     }
@@ -51,7 +52,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.insert(dto, mainImg, subImg));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(Endpoint.Product.ID)
     @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     public ResponseEntity<?> update(@Min(1) @PathVariable Integer id,
                                     @Valid @RequestPart("product") ProductRequest dto,

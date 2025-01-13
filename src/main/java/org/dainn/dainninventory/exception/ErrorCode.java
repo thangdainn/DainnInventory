@@ -46,6 +46,7 @@ public enum ErrorCode {
     EMAIL_IS_INCORRECT("Email is incorrect", HttpStatus.BAD_REQUEST),
     PASSWORD_IS_INCORRECT("Password is incorrect", HttpStatus.BAD_REQUEST),
 
+    INVALID_TOKEN("Token is invalid", HttpStatus.BAD_REQUEST),
     REFRESH_NOT_EXISTED("Refresh token not existed", HttpStatus.BAD_REQUEST),
     REFRESH_TOKEN_EXPIRED("Refresh token expired", HttpStatus.BAD_REQUEST),
 

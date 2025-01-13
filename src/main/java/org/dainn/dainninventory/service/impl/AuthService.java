@@ -18,7 +18,7 @@ import org.dainn.dainninventory.entity.RoleEntity;
 import org.dainn.dainninventory.entity.UserEntity;
 import org.dainn.dainninventory.exception.AppException;
 import org.dainn.dainninventory.exception.ErrorCode;
-import org.dainn.dainninventory.jwt.JwtProvider;
+import org.dainn.dainninventory.filter.JwtProvider;
 import org.dainn.dainninventory.mapper.IUserMapper;
 import org.dainn.dainninventory.repository.IRoleRepository;
 import org.dainn.dainninventory.repository.IUserRepository;

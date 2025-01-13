@@ -3,6 +3,7 @@ package org.dainn.dainninventory.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.dainn.dainninventory.config.endpoint.Endpoint;
 import org.dainn.dainninventory.controller.request.BrandPageRequest;
 import org.dainn.dainninventory.controller.response.PageResponse;
 import org.dainn.dainninventory.dto.BrandDTO;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/brands")
+@RequestMapping(Endpoint.Brand.BASE)
 @RequiredArgsConstructor
 public class BrandController {
     private final IBrandService brandService;
@@ -38,8 +39,8 @@ public class BrandController {
                 .build());
     }
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<?> get(@Min(1) @PathVariable(name = "id") Integer id) {
+    @GetMapping(Endpoint.Brand.ID)
+    public ResponseEntity<?> get(@Min(1) @PathVariable Integer id) {
         return ResponseEntity.ok(brandService.findById(id));
     }
 
@@ -49,9 +50,9 @@ public class BrandController {
         return ResponseEntity.status(HttpStatus.CREATED).body(brandService.insert(brandDTO));
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(Endpoint.Brand.ID)
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> update(@Min(1) @PathVariable(name = "id") Integer id,
+    public ResponseEntity<?> update(@Min(1) @PathVariable Integer id,
                                     @Valid @RequestBody BrandDTO brandDTO) {
         brandDTO.setId(id);
         return ResponseEntity.ok(brandService.update(brandDTO));

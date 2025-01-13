@@ -3,6 +3,7 @@ package org.dainn.dainninventory.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.dainn.dainninventory.config.endpoint.Endpoint;
 import org.dainn.dainninventory.controller.request.SizePageRequest;
 import org.dainn.dainninventory.dto.SizeDTO;
 import org.dainn.dainninventory.service.IProductSizeService;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/sizes")
+@RequestMapping(Endpoint.Size.BASE)
 @RequiredArgsConstructor
 public class SizeController {
     private final ISizeService sizeService;
@@ -33,17 +34,17 @@ public class SizeController {
         return ResponseEntity.ok("");
     }
 
-    @GetMapping(value = "/quantity-code")
+    @GetMapping(Endpoint.Size.QUANTITY_CODE)
     public ResponseEntity<?> getAllByProductCode(@RequestParam(name = "code") String code) {
         return ResponseEntity.ok(productSizeService.findAllByProductCode(code));
     }
 
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<?> get(@Min(1) @PathVariable(name = "id") Integer id) {
+    @GetMapping(Endpoint.Size.ID)
+    public ResponseEntity<?> get(@Min(1) @PathVariable Integer id) {
         return ResponseEntity.ok(sizeService.findById(id));
     }
-    @GetMapping(value = "/quantity")
+    @GetMapping(Endpoint.Size.QUANTITY)
     public ResponseEntity<?> getQuantity(@RequestParam(name = "productId") Integer productId, @RequestParam(name = "sizeId") Integer sizeId) {
         return ResponseEntity.ok(productSizeService.findByProductIdAndSizeId(productId, sizeId));
     }
@@ -54,7 +55,7 @@ public class SizeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(sizeService.insert(dto));
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(Endpoint.Size.ID)
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> update(@Min(1) @PathVariable(name = "id") Integer id,
                                     @Valid @RequestBody SizeDTO dto) {
