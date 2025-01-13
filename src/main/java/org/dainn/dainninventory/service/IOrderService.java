@@ -11,8 +11,8 @@ import java.util.List;
 
 public interface IOrderService {
     OrderDTO insert(OrderDTO dto);
-    int updateStatus(Integer id, OrderStatus status);
-    int updatePaid(Integer id);
+    void updateStatus(Integer id, OrderStatus status);
+    void updateIsPaid(Integer id);
     OrderDTO findById(Integer id);
     List<OrderDTO> findAll();
     Page<OrderDTO> findWithSpec(OrderPageRequest request);
