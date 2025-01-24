@@ -9,6 +9,7 @@ import org.dainn.dainninventory.controller.request.ProductRequest;
 import org.dainn.dainninventory.controller.response.PageResponse;
 import org.dainn.dainninventory.dto.ProductDTO;
 import org.dainn.dainninventory.service.IProductService;
+import org.dainn.dainninventory.service.IProductSizeService;
 import org.dainn.dainninventory.utils.ValidateString;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
     private final IProductService productService;
+    private final IProductSizeService productSizeService;
 
     @GetMapping
     public ResponseEntity<?> getAll(@ModelAttribute ProductPageRequest request) {
@@ -42,6 +44,16 @@ public class ProductController {
     @GetMapping(Endpoint.Product.CODE)
     public ResponseEntity<?> get(@PathVariable String code) {
         return ResponseEntity.ok(productService.findByCode(code));
+    }
+
+    @GetMapping(Endpoint.Product.STOCK)
+    public ResponseEntity<?> getQuantity(@RequestParam(name = "productId") Integer productId, @RequestParam(name = "sizeId") Integer sizeId) {
+        return ResponseEntity.ok(productSizeService.findByProductIdAndSizeId(productId, sizeId));
+    }
+
+    @GetMapping(Endpoint.Product.STOCK_CODE)
+    public ResponseEntity<?> getAllByProductCode(@PathVariable(name = "code") String code) {
+        return ResponseEntity.ok(productSizeService.findAllByProductCode(code));
     }
 
     @PostMapping

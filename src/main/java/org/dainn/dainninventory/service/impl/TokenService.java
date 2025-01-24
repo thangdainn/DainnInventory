@@ -11,6 +11,7 @@ import org.dainn.dainninventory.exception.AppException;
 import org.dainn.dainninventory.exception.ErrorCode;
 import org.dainn.dainninventory.filter.JwtProvider;
 import org.dainn.dainninventory.mapper.ITokenMapper;
+import org.dainn.dainninventory.mapper.IUserMapper;
 import org.dainn.dainninventory.repository.ITokenRepository;
 import org.dainn.dainninventory.repository.IUserRepository;
 import org.dainn.dainninventory.service.ITokenService;
@@ -27,6 +28,7 @@ public class TokenService implements ITokenService {
     private final ITokenRepository tokenRepository;
     private final IUserRepository userRepository;
     private final ITokenMapper tokenMapper;
+    private final IUserMapper userMapper;
     private final JwtProvider jwtProvider;
 
     @Transactional
@@ -38,30 +40,30 @@ public class TokenService implements ITokenService {
         return tokenMapper.toDTO(tokenRepository.save(tokenEntity));
     }
 
-    @Override
-    public String getRefreshTokenFromReq(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals("refresh_token"))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
-    }
-
     @Transactional
     @Override
-    public JwtResponse handleRefreshToken(String refreshToken, HttpServletResponse response) {
+    public JwtResponse handleRefreshToken(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = getRefreshTokenFromReq(request);
         TokenEntity tokenEntity = tokenRepository.findByRefreshToken(refreshToken)
                 .orElseThrow(() -> new AppException(ErrorCode.REFRESH_NOT_EXISTED));
         if (tokenEntity.getRefreshTokenExpirationDate().before(new Date())) {
             tokenRepository.deleteById(tokenEntity.getId());
             throw new AppException(ErrorCode.REFRESH_TOKEN_EXPIRED);
         }
-        String accessToken = jwtProvider.generateToken(tokenEntity.getUser().getEmail(), tokenEntity.getUser().getProvider());
+        String accessToken = jwtProvider.generateToken(userMapper.toDTO(tokenEntity.getUser()));
         String refreshTokenNew = jwtProvider.generateRefreshToken();
         tokenRepository.updateRefreshToken(refreshTokenNew, tokenEntity.getId());
         response.addCookie(CookieUtil.createRefreshTokenCookie(refreshTokenNew));
         return new JwtResponse(accessToken);
+    }
+
+    private String getRefreshTokenFromReq(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals("refresh_token"))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
     }
 
     @Transactional

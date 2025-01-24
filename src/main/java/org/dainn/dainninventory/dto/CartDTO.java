@@ -10,8 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartDTO {
-    private Integer id;
+public class CartDTO extends AbstractDTO {
 
     @NotNull(message = "Quantity is required")
     private Integer quantity;
@@ -24,6 +23,8 @@ public class CartDTO {
 
     @NotNull(message = "User ID is required")
     private Integer userId;
+
+    private Integer stock;
 
     private ProductDTO product;
     private SizeDTO size;

@@ -26,7 +26,6 @@ import org.dainn.dainninventory.service.IAuthService;
 import org.dainn.dainninventory.service.ITokenService;
 import org.dainn.dainninventory.service.IUserService;
 import org.dainn.dainninventory.utils.CookieUtil;
-import org.dainn.dainninventory.utils.constant.JwtConstant;
 import org.dainn.dainninventory.utils.constant.RoleConstant;
 import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,6 +50,9 @@ public class AuthService implements IAuthService {
     private final PasswordEncoder encoder;
     private final JwtProvider jwtProvider;
 
+    @Value("${jwt.refresh.expiration}")
+    private Long expirationRefresh;
+
     @Value("${google.clientId}")
     String googleClientId;
 
@@ -61,7 +63,7 @@ public class AuthService implements IAuthService {
         if (!encoder.matches(request.getPassword(), userEntity.getPassword())) {
             throw new AppException(ErrorCode.PASSWORD_IS_INCORRECT);
         }
-        String accessToken = jwtProvider.generateToken(userEntity.getEmail(), Provider.local);
+        String accessToken = jwtProvider.generateToken(userMapper.toDTO(userEntity));
         String refreshToken = jwtProvider.generateRefreshToken();
         TokenDTO tokenDTO = createTokenDTO(refreshToken, userEntity.getId(), request.getDeviceInfo());
         tokenService.insert(tokenDTO);
@@ -97,9 +99,10 @@ public class AuthService implements IAuthService {
                 userEntity.setRoles(List.of(roleEntity));
             } else {
                 userEntity = optional.get();
+                userEntity.setName(name);
             }
             userEntity = userRepository.save(userEntity);
-            String accessToken = jwtProvider.generateToken(userEntity.getEmail(), Provider.google);
+            String accessToken = jwtProvider.generateToken(userMapper.toDTO(userEntity));
             String refreshToken = jwtProvider.generateRefreshToken();
             TokenDTO tokenDTO = createTokenDTO(refreshToken, userEntity.getId(), deviceInfo.getDeviceInfo());
             tokenService.insert(tokenDTO);
@@ -114,7 +117,7 @@ public class AuthService implements IAuthService {
         return TokenDTO.builder()
                 .deviceInfo(deviceInfo)
                 .refreshToken(refreshToken)
-                .refreshTokenExpirationDate(new Date(new Date().getTime() + JwtConstant.JWT_EXPIRATION_REFRESH))
+                .refreshTokenExpirationDate(new Date(new Date().getTime() + expirationRefresh))
                 .userId(userId)
                 .build();
     }

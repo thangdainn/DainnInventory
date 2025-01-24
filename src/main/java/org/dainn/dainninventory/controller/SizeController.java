@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.config.endpoint.Endpoint;
 import org.dainn.dainninventory.controller.request.SizePageRequest;
 import org.dainn.dainninventory.dto.SizeDTO;
-import org.dainn.dainninventory.service.IProductSizeService;
 import org.dainn.dainninventory.service.ISizeService;
 import org.dainn.dainninventory.utils.ValidateString;
 import org.springframework.http.HttpStatus;
@@ -21,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SizeController {
     private final ISizeService sizeService;
-    private final IProductSizeService productSizeService;
+
 
     @GetMapping
     public ResponseEntity<?> getAll(@ModelAttribute SizePageRequest request) {
@@ -34,19 +33,9 @@ public class SizeController {
         return ResponseEntity.ok("");
     }
 
-    @GetMapping(Endpoint.Size.QUANTITY_CODE)
-    public ResponseEntity<?> getAllByProductCode(@RequestParam(name = "code") String code) {
-        return ResponseEntity.ok(productSizeService.findAllByProductCode(code));
-    }
-
-
     @GetMapping(Endpoint.Size.ID)
     public ResponseEntity<?> get(@Min(1) @PathVariable Integer id) {
         return ResponseEntity.ok(sizeService.findById(id));
-    }
-    @GetMapping(Endpoint.Size.QUANTITY)
-    public ResponseEntity<?> getQuantity(@RequestParam(name = "productId") Integer productId, @RequestParam(name = "sizeId") Integer sizeId) {
-        return ResponseEntity.ok(productSizeService.findByProductIdAndSizeId(productId, sizeId));
     }
 
     @PostMapping

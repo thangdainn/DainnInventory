@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.entity.UserEntity;
 import org.dainn.dainninventory.repository.IRoleRepository;
 import org.dainn.dainninventory.repository.IUserRepository;
-import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,23 +23,17 @@ public class CustomUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<UserEntity> userEntities = userRepository.findByEmailAndStatus(email, 1);
+        return null;
+    }
+    public UserDetails loadUserById(Integer id) throws UsernameNotFoundException {
+        Optional<UserEntity> userEntities = userRepository.findById(id);
         if (userEntities.isPresent()) {
             UserEntity user = userEntities.get();
             user.setRoles(roleRepository.findByUsers(List.of(user)));
             return new CustomUserDetail(user);
         } else {
-            return new CustomUserDetail(null ,email, "", "", new ArrayList<>());
+            return new CustomUserDetail(null, "", "", "", new ArrayList<>());
         }
     }
-    public UserDetails loadUserByUsernameAndProvider(String email, Provider provider) throws UsernameNotFoundException {
-        Optional<UserEntity> userEntities = userRepository.findByEmailAndProviderAndStatus(email, provider, 1);
-        if (userEntities.isPresent()) {
-            UserEntity user = userEntities.get();
-            user.setRoles(roleRepository.findByUsers(List.of(user)));
-            return new CustomUserDetail(user);
-        } else {
-            return new CustomUserDetail(null, email, "", "", new ArrayList<>());
-        }
-    }
+
 }

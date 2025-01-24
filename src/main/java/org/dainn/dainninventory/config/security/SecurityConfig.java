@@ -2,11 +2,13 @@ package org.dainn.dainninventory.config.security;
 
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.filter.JwtAuthenticationFilter;
+import org.dainn.dainninventory.filter.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,6 +24,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -29,6 +33,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 public class SecurityConfig {
     private final CustomUserDetailService customUserDetailService;
     private final LogoutHandleService logoutHandleService;
+    private final JwtProvider jwtProvider;
 //    public SecurityConfig(CustomUserDetailService customUserDetailService) {
 //        this.customUserDetailService = customUserDetailService;
 //    }
@@ -76,9 +81,9 @@ public class SecurityConfig {
     public SecurityFilterChain apiPaymentSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .securityMatcher(new AntPathRequestMatcher("/api/payment/**"))
+                .securityMatcher(new AntPathRequestMatcher("/api/payments/**"))
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/api/payment/**")
+                        .requestMatchers("/api/payments/**")
                         .permitAll()
                         .anyRequest().authenticated()
                 )
@@ -92,12 +97,14 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .securityMatcher(new AntPathRequestMatcher("/api/**"))
                 .authorizeHttpRequests((requests) -> requests
-//                        .requestMatchers("/api/**")
-//                        .permitAll()
+                        .requestMatchers(antMatcher(HttpMethod.GET, "/api/products/**")).permitAll()
+                        .requestMatchers(antMatcher(HttpMethod.GET, "/api/categories/**")).permitAll()
+                        .requestMatchers(antMatcher(HttpMethod.GET, "/api/brands/**")).permitAll()
+                        .requestMatchers(antMatcher(HttpMethod.GET, "/api/sizes/**")).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new JwtAuthenticationFilter(exceptionResolver, customUserDetailService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(exceptionResolver, customUserDetailService, jwtProvider), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
     @Bean
@@ -112,7 +119,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new JwtAuthenticationFilter(exceptionResolver, customUserDetailService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(exceptionResolver, customUserDetailService, jwtProvider), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

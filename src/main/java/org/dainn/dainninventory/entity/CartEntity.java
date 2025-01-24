@@ -12,10 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "carts")
-public class CartEntity{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class CartEntity extends BaseEntity{
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;

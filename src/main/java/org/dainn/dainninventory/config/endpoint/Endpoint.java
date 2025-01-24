@@ -41,7 +41,7 @@ public class Endpoint {
 
     public static final class Cart {
         public static final String BASE = API_PREFIX + "/carts";
-        public static final String USER_ID = "/users/{userId}";
+        public static final String COUNT = "/count";
     }
 
     public static final class Order {
@@ -51,7 +51,7 @@ public class Endpoint {
     }
 
     public static final class Payment {
-        public static final String BASE = API_PREFIX + "/payment";
+        public static final String BASE = API_PREFIX + "/payments";
         public static final String VN_PAY = "/vnp";
         public static final String MOMO = "/momo";
         public static final String VN_PAY_CALLBACK = "/vnp-callback";
@@ -63,13 +63,14 @@ public class Endpoint {
         public static final String BASE = API_PREFIX + "/products";
         public static final String ID = "/{id}";
         public static final String CODE = "/{code}";
+        public static final String STOCK = "/stock";
+        public static final String STOCK_CODE = "/stock/{code}";
     }
 
     public static final class Size {
         public static final String BASE = API_PREFIX + "/sizes";
         public static final String ID = "/{id}";
-        public static final String QUANTITY = "/quantity";
-        public static final String QUANTITY_CODE = "/quantity-code";
+
 
 
     }

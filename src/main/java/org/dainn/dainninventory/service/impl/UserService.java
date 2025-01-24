@@ -116,15 +116,8 @@ public class UserService implements IUserService {
 
     @Override
     public UserDTO findById(Integer id) {
-        String key = RedisConstant.USER_KEY_PREFIX + "::id:" + id;
-        UserDTO dto = baseRedisService.getCache(key, new TypeReference<UserDTO>() {
-        });
-        if (dto == null) {
-            dto = userMapper.toDTO(userRepository.findById(id)
-                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
-            baseRedisService.setCache(key, dto);
-        }
-        return dto;
+        return userMapper.toDTO(userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
     @Override
@@ -133,9 +126,8 @@ public class UserService implements IUserService {
         if (!StringUtils.hasText(jwt) || !jwtProvider.validateToken(jwt)) {
             throw new AppException(ErrorCode.INVALID_TOKEN);
         }
-        String email = jwtProvider.getEmailFromJwt(jwt);
-        String provider = jwtProvider.getProviderFromJwt(jwt);
-        return userMapper.toDTO(userRepository.findByEmailAndProviderAndStatus(email, Provider.valueOf(provider), 1)
+        Integer userId = jwtProvider.extractId(jwt);
+        return userMapper.toDTO(userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
@@ -149,15 +141,8 @@ public class UserService implements IUserService {
 
     @Override
     public UserDTO findByEmailAndProvider(String email, Provider provider) {
-        String key = RedisConstant.USER_KEY_PREFIX + "::email:" + email + "::provider:" + provider;
-        UserDTO dto = baseRedisService.getCache(key, new TypeReference<UserDTO>() {
-        });
-        if (dto == null) {
-            dto = userMapper.toDTO(userRepository.findByEmailAndProviderAndStatus(email, provider, 1)
+        return userMapper.toDTO(userRepository.findByEmailAndProviderAndStatus(email, provider, 1)
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
-            baseRedisService.setCache(key, dto);
-        }
-        return dto;
     }
 
 

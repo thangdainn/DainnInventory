@@ -16,5 +16,7 @@ public interface ICartMapper {
     CartDTO toDTO(CartEntity entity);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "modifiedDate", ignore = true)
     CartEntity updateEntity(@MappingTarget CartEntity entity, CartDTO request);
 }

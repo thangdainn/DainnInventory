@@ -39,8 +39,7 @@ public class AuthController {
 
     @PostMapping(Endpoint.Auth.REFRESH_TOKEN)
     public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = tokenService.getRefreshTokenFromReq(request);
-        return ResponseEntity.ok(tokenService.handleRefreshToken(refreshToken, response));
+        return ResponseEntity.ok(tokenService.handleRefreshToken(request, response));
     }
 
     @PostMapping(Endpoint.Auth.LOGIN_GOOGLE)
