@@ -1,4 +1,4 @@
-package org.dainn.dainninventory.controller.request;
+package org.dainn.dainninventory.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginRequest {
+public class LoginDTO {
     @NotBlank(message = "Email is required")
     @Email(message = "Email is invalid")
     private String email;

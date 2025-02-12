@@ -21,4 +21,6 @@ public class RedisConstant {
     public static final String SIZE_KEY_PREFIX = "size";
     public static final String SIZES_KEY_PREFIX = "sizes";
     public static final String PRODUCT_SIZES_KEY_PREFIX = "product_sizes";
+    public static final String OTP_KEY_PREFIX = "otp";
+    public static final long OTP_EXPIRATION = 300;
 }

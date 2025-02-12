@@ -8,7 +8,5 @@ import org.dainn.dainninventory.dto.TokenDTO;
 public interface ITokenService {
     TokenDTO insert(TokenDTO dto);
     JwtResponse handleRefreshToken(HttpServletRequest request, HttpServletResponse response);
-    void deleteByUserIdAndDeviceInfo(Integer userId, String deviceInfo);
-    TokenDTO findByRefreshToken(String refreshToken);
-
+    void deleteByUserId(Integer userId);
 }

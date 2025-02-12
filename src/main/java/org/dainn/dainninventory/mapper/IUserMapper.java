@@ -1,6 +1,6 @@
 package org.dainn.dainninventory.mapper;
 
-import org.dainn.dainninventory.controller.request.RegisterRequest;
+import org.dainn.dainninventory.dto.auth.RegisterDTO;
 import org.dainn.dainninventory.controller.request.UserRequest;
 import org.dainn.dainninventory.dto.UserDTO;
 import org.dainn.dainninventory.entity.RoleEntity;
@@ -16,7 +16,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface IUserMapper {
     UserEntity toEntity(UserDTO request);
-    UserRequest toUserRequest(RegisterRequest request);
+    UserRequest toUserRequest(RegisterDTO request);
     UserRequest toUserRequest(UserDTO dto);
 
     UserDTO toDTO(UserRequest userRequest);

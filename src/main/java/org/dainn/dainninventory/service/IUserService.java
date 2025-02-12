@@ -14,6 +14,7 @@ public interface IUserService {
     UserDTO insert(UserRequest userRequest);
     UserDTO update(UserRequest userRequest);
     void delete(List<Integer> ids);
+    boolean checkEmailAndProvider(String email, Provider provider);
     UserDTO findById(Integer id);
     UserDTO findMyInfo(HttpServletRequest request);
     UserDTO findByEmailAndProvider(String email, Provider provider);

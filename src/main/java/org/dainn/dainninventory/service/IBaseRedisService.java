@@ -9,5 +9,5 @@ public interface IBaseRedisService {
     void flushDb();
     void setCache(String key, Object value);
     <T> T getCache(String key, TypeReference<T> type);
-
+    void delete(String key);
 }

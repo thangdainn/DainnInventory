@@ -87,8 +87,8 @@ public class UserService implements IUserService {
         baseRedisService.setCache(key, userDTO);
         return userDTO;
     }
-
-    private boolean checkEmailAndProvider(String email, Provider provider) {
+    @Override
+    public boolean checkEmailAndProvider(String email, Provider provider) {
         return userRepository.existsByEmailAndProvider(email, provider);
     }
 
@@ -149,7 +149,7 @@ public class UserService implements IUserService {
     @Override
     public List<UserDTO> findAll() {
         String key = RedisConstant.USERS_KEY_PREFIX;
-        List<UserDTO> list = baseRedisService.getCache(key, new TypeReference<List<UserDTO>>() {
+        List<UserDTO> list = baseRedisService.getCache(key, new TypeReference<>() {
         });
         if (list == null) {
             list = userRepository.findAll()
@@ -163,7 +163,7 @@ public class UserService implements IUserService {
     @Override
     public List<UserDTO> findAll(Integer status) {
         String key = RedisConstant.USERS_KEY_PREFIX + "::status:" + status;
-        List<UserDTO> list = baseRedisService.getCache(key, new TypeReference<List<UserDTO>>() {
+        List<UserDTO> list = baseRedisService.getCache(key, new TypeReference<>() {
         });
         if (list == null) {
             list = userRepository.findAllByStatus(status)
@@ -178,7 +178,7 @@ public class UserService implements IUserService {
         String key = RedisConstant.USERS_KEY_PREFIX + "::page:" + request.getPage() + "::size:" + request.getSize()
                 + "::sort:" + request.getSortBy() + "::dir:" + request.getSortDir() + "::keyword:" + request.getKeyword()
                 + "::provider:" + request.getProvider() + "::status:" + request.getStatus() + "::roleId:" + request.getRoleId();
-        Page<UserDTO> pageDTO = baseRedisService.getCache(key, new TypeReference<Page<UserDTO>>() {
+        Page<UserDTO> pageDTO = baseRedisService.getCache(key, new TypeReference<>() {
         });
         if (pageDTO != null) {
             return pageDTO;

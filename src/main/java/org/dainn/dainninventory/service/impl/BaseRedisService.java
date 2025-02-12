@@ -80,4 +80,9 @@ public class BaseRedisService implements IBaseRedisService {
         }
         return null;
     }
+
+    @Override
+    public void delete(String key) {
+        redisTemplate.delete(key);
+    }
 }

@@ -13,6 +13,8 @@ public class Endpoint {
         public static final String FORGOT_PASSWORD = "/forgot-password";
         public static final String SEND_OTP = "/send-otp";
         public static final String VERIFY_OTP = "/verify-otp";
+        public static final String CHECK_EMAIL_EXISTS = "/check-email";
+
 
     }
 

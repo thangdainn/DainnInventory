@@ -5,12 +5,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.config.endpoint.Endpoint;
-import org.dainn.dainninventory.controller.request.LoginRequest;
-import org.dainn.dainninventory.controller.request.RegisterRequest;
+import org.dainn.dainninventory.dto.auth.*;
 import org.dainn.dainninventory.dto.DeviceInfoDTO;
 import org.dainn.dainninventory.service.IAuthService;
+import org.dainn.dainninventory.service.IOtpService;
 import org.dainn.dainninventory.service.ITokenService;
 import org.dainn.dainninventory.service.IUserService;
+import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ public class AuthController {
     private final IAuthService authService;
     private final IUserService userService;
     private final ITokenService tokenService;
+    private final IOtpService otpService;
 
     @GetMapping(Endpoint.Auth.ME)
     public ResponseEntity<?> getMe(HttpServletRequest request) {
@@ -28,12 +30,12 @@ public class AuthController {
     }
 
     @PostMapping(Endpoint.Auth.LOGIN)
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO request, HttpServletResponse response) {
         return ResponseEntity.ok(authService.login(request, response));
     }
 
     @PostMapping(Endpoint.Auth.REGISTER)
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO request) {
         return ResponseEntity.ok(authService.register(request));
     }
 
@@ -47,4 +49,25 @@ public class AuthController {
         return ResponseEntity.ok(authService.loginGoogle(request, deviceInfo, response));
     }
 
+    @PostMapping(Endpoint.Auth.SEND_OTP)
+    public ResponseEntity<?> sendOtp(@RequestBody OtpDTO dto) {
+        otpService.sendOtp(dto.getEmail());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(Endpoint.Auth.VERIFY_OTP)
+    public ResponseEntity<?> verifyOtp(@RequestBody OtpDTO dto) {
+        return ResponseEntity.ok(otpService.verifyOtp(dto));
+    }
+
+    @PostMapping(Endpoint.Auth.CHECK_EMAIL_EXISTS)
+    public ResponseEntity<?> checkEmailExists(@RequestBody OtpDTO dto) {
+        return ResponseEntity.ok(userService.checkEmailAndProvider(dto.getEmail(), Provider.local));
+    }
+
+    @PostMapping(Endpoint.Auth.FORGOT_PASSWORD)
+    public ResponseEntity<?> forgotPassword(@RequestBody ResetPassword dto) {
+        authService.forgotPassword(dto);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -8,12 +8,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.dainn.dainninventory.controller.request.LoginRequest;
-import org.dainn.dainninventory.controller.request.RegisterRequest;
+import org.dainn.dainninventory.dto.auth.LoginDTO;
+import org.dainn.dainninventory.dto.auth.RegisterDTO;
 import org.dainn.dainninventory.controller.response.JwtResponse;
 import org.dainn.dainninventory.dto.DeviceInfoDTO;
 import org.dainn.dainninventory.dto.TokenDTO;
 import org.dainn.dainninventory.dto.UserDTO;
+import org.dainn.dainninventory.dto.auth.ResetPassword;
 import org.dainn.dainninventory.entity.RoleEntity;
 import org.dainn.dainninventory.entity.UserEntity;
 import org.dainn.dainninventory.exception.AppException;
@@ -57,7 +58,7 @@ public class AuthService implements IAuthService {
     String googleClientId;
 
     @Override
-    public JwtResponse login(LoginRequest request, HttpServletResponse response) {
+    public JwtResponse login(LoginDTO request, HttpServletResponse response) {
         UserEntity userEntity = userRepository.findByEmailAndProviderAndStatus(request.getEmail(), Provider.local, 1)
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_IS_INCORRECT));
         if (!encoder.matches(request.getPassword(), userEntity.getPassword())) {
@@ -72,7 +73,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public UserDTO register(@Valid RegisterRequest request) {
+    public UserDTO register(@Valid RegisterDTO request) {
         return userService.insert(userMapper.toUserRequest(request));
     }
 
@@ -111,6 +112,15 @@ public class AuthService implements IAuthService {
         } catch (Exception e) {
             throw new AppException(ErrorCode.GOOGLE_LOGIN_FAILED);
         }
+    }
+
+    @Override
+    public void forgotPassword(ResetPassword dto) {
+        UserEntity userEntity = userRepository.findByEmailAndProviderAndStatus(dto.getEmail(), Provider.local, 1)
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_IS_INCORRECT));
+        userEntity.setPassword(encoder.encode(dto.getPassword()));
+        userRepository.save(userEntity);
+        tokenService.deleteByUserId(userEntity.getId());
     }
 
     private TokenDTO createTokenDTO(String refreshToken, Integer userId, String deviceInfo) {

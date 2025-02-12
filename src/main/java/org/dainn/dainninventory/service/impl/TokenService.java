@@ -66,15 +66,9 @@ public class TokenService implements ITokenService {
                 .orElse(null);
     }
 
+    @Override
     @Transactional
-    @Override
-    public void deleteByUserIdAndDeviceInfo(Integer userId, String deviceInfo) {
-        tokenRepository.deleteByUser_IdAndDeviceInfo(userId, deviceInfo);
-    }
-
-    @Override
-    public TokenDTO findByRefreshToken(String refreshToken) {
-        return tokenMapper.toDTO(tokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new AppException(ErrorCode.REFRESH_NOT_EXISTED)));
+    public void deleteByUserId(Integer userId) {
+        tokenRepository.deleteByUser_Id(userId);
     }
 }
