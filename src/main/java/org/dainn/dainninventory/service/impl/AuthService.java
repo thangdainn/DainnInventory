@@ -8,12 +8,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.dainn.dainninventory.dto.response.JwtResponse;
+import org.dainn.dainninventory.dto.device.DeviceInfoDTO;
+import org.dainn.dainninventory.dto.token.TokenDTO;
+import org.dainn.dainninventory.dto.user.UserDTO;
 import org.dainn.dainninventory.dto.auth.LoginDTO;
 import org.dainn.dainninventory.dto.auth.RegisterDTO;
-import org.dainn.dainninventory.controller.response.JwtResponse;
-import org.dainn.dainninventory.dto.DeviceInfoDTO;
-import org.dainn.dainninventory.dto.TokenDTO;
-import org.dainn.dainninventory.dto.UserDTO;
 import org.dainn.dainninventory.dto.auth.ResetPassword;
 import org.dainn.dainninventory.entity.RoleEntity;
 import org.dainn.dainninventory.entity.UserEntity;
@@ -37,7 +37,6 @@ import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -97,7 +96,7 @@ public class AuthService implements IAuthService {
                 userEntity.setProvider(Provider.google);
                 RoleEntity roleEntity = roleRepository.findByName(RoleConstant.PREFIX_ROLE + "USER")
                         .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
-                userEntity.setRoles(List.of(roleEntity));
+                userEntity.setRole(roleEntity);
             } else {
                 userEntity = optional.get();
                 userEntity.setName(name);

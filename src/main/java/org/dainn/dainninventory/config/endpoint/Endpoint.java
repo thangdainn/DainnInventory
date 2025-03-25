@@ -5,7 +5,7 @@ public class Endpoint {
 
     public static final class Auth {
         public static final String BASE = API_PREFIX + "/auth";
-        public static final String ME = "/me";
+
         public static final String LOGIN = "/login";
         public static final String LOGIN_GOOGLE = "/login/oauth2/google";
         public static final String REGISTER = "/register";
@@ -15,12 +15,13 @@ public class Endpoint {
         public static final String VERIFY_OTP = "/verify-otp";
         public static final String CHECK_EMAIL_EXISTS = "/check-email";
 
-
     }
 
     public static final class User {
         public static final String BASE = API_PREFIX + "/users";
         public static final String ID = "/{id}";
+        public static final String ME = "/me";
+        public static final String PROFILE = "/profile";
     }
 
     public static final class Role {
@@ -49,7 +50,9 @@ public class Endpoint {
     public static final class Order {
         public static final String BASE = API_PREFIX + "/orders";
         public static final String ID = "/{id}";
+        public static final String STATUS = "/status";
         public static final String MY_ORDER = "/me";
+        public static final String PRODUCT = "/products/{id}";
     }
 
     public static final class Payment {
@@ -67,13 +70,25 @@ public class Endpoint {
         public static final String CODE = "/{code}";
         public static final String STOCK = "/stock";
         public static final String STOCK_CODE = "/stock/{code}";
+        public static final String ATTRIBUTES = "/attributes";
     }
 
     public static final class Size {
         public static final String BASE = API_PREFIX + "/sizes";
         public static final String ID = "/{id}";
+    }
 
+    public static final class File {
+        public static final String BASE = API_PREFIX + "/upload";
+    }
 
+    public static final class Analytics {
+        public static final String BASE = API_PREFIX + "/analytics";
+        public static final String STATS = "/stats";
+        public static final String REVENUE = "/revenue";
+        public static final String SALES_BY_CATE = "/sales-by-cate";
+        public static final String TOP_PRODUCT = "/top-products";
+        public static final String RECENT_SALES = "/recent-sales";
 
     }
 }

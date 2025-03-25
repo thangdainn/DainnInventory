@@ -1,7 +1,7 @@
 package org.dainn.dainninventory.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.dainn.dainninventory.dto.MailData;
+import org.dainn.dainninventory.dto.mail.MailData;
 import org.dainn.dainninventory.service.IMailService;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

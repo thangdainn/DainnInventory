@@ -1,7 +1,7 @@
 package org.dainn.dainninventory.service;
 
-import org.dainn.dainninventory.controller.request.CategoryPageRequest;
-import org.dainn.dainninventory.dto.CategoryDTO;
+import org.dainn.dainninventory.dto.category.CategoryPageRequest;
+import org.dainn.dainninventory.dto.category.CategoryDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;

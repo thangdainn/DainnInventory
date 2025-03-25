@@ -1,8 +1,7 @@
 package org.dainn.dainninventory.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.dainn.dainninventory.dto.OrderDetailDTO;
-import org.dainn.dainninventory.entity.InventoryEntity;
+import org.dainn.dainninventory.dto.order.OrderDetailDTO;
 import org.dainn.dainninventory.entity.OrderDetailEntity;
 import org.dainn.dainninventory.entity.OrderEntity;
 import org.dainn.dainninventory.entity.ProductSizeEntity;
@@ -23,7 +22,6 @@ public class OrderDetailService implements IOrderDetailService {
     private final IOrderDetailRepository orderDetailRepository;
     private final IProductRepository productRepository;
     private final ISizeRepository sizeRepository;
-    private final IInventoryRepository inventoryRepository;
     private final IProductSizeRepository productSizeRepository;
     private final IOrderDetailMapper orderDetailMapper;
     private final IBaseRedisService baseRedisService;
@@ -39,12 +37,6 @@ public class OrderDetailService implements IOrderDetailService {
             entity.setSize(sizeRepository.findById(dto.getSizeId())
                     .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED)));
             orderDetailRepository.save(entity);
-            InventoryEntity inventoryEntity = inventoryRepository.findByProductId(dto.getProductId())
-                    .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
-//            inventoryRepository.refresh(inventoryEntity);
-            inventoryRepository.updateQuantityByProduct_Id(
-                    dto.getProductId(), inventoryEntity.getQuantity() - dto.getQuantity());
-            inventoryRepository.flush();
             ProductSizeEntity productSizeEntity = productSizeRepository.findByProduct_IdAndSize_Id(dto.getProductId(), dto.getSizeId())
                     .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_SIZE_NOT_EXISTED));
             productSizeRepository.updateQuantityByProduct_IdAndSize_Id(productSizeEntity.getProduct().getId(),
@@ -59,18 +51,5 @@ public class OrderDetailService implements IOrderDetailService {
     public List<OrderDetailDTO> findByOrderId(Integer orderId) {
         return orderDetailRepository.findByOrder_Id(orderId)
                 .stream().map(orderDetailMapper::toDTO).toList();
-    }
-
-    @Transactional
-    @Override
-    public void deleteByOrderId(Integer orderId) {
-        List<OrderDetailDTO> list = findByOrderId(orderId);
-        for (OrderDetailDTO dto : list) {
-            InventoryEntity inventoryEntity = inventoryRepository.findByProductId(dto.getProductId())
-                    .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
-            inventoryRepository.updateQuantityByProduct_Id(
-                    dto.getProductId(), inventoryEntity.getQuantity() + dto.getQuantity());
-        }
-        baseRedisService.flushDb();
     }
 }

@@ -1,8 +1,7 @@
 package org.dainn.dainninventory.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.dainn.dainninventory.controller.request.BrandPageRequest;
-import org.dainn.dainninventory.dto.BrandDTO;
+import org.dainn.dainninventory.dto.brand.BrandPageRequest;
+import org.dainn.dainninventory.dto.brand.BrandDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;

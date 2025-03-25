@@ -1,7 +1,7 @@
 package org.dainn.dainninventory.service;
 
-import org.dainn.dainninventory.controller.request.CartPageRequest;
-import org.dainn.dainninventory.dto.CartDTO;
+import org.dainn.dainninventory.dto.cart.CartPageRequest;
+import org.dainn.dainninventory.dto.cart.CartDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;

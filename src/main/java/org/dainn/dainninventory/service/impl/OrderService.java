@@ -1,12 +1,11 @@
 package org.dainn.dainninventory.service.impl;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.persistence.criteria.Join;
 import lombok.RequiredArgsConstructor;
-import org.dainn.dainninventory.controller.request.MyOrderPageRequest;
-import org.dainn.dainninventory.controller.request.OrderPageRequest;
-import org.dainn.dainninventory.dto.Order.MyOrderDTO;
-import org.dainn.dainninventory.dto.OrderDTO;
+import org.dainn.dainninventory.dto.order.MyOrderPageRequest;
+import org.dainn.dainninventory.dto.order.OrderPageRequest;
+import org.dainn.dainninventory.dto.order.MyOrderDTO;
+import org.dainn.dainninventory.dto.order.OrderDTO;
 import org.dainn.dainninventory.entity.OrderDetailEntity;
 import org.dainn.dainninventory.entity.OrderEntity;
 import org.dainn.dainninventory.entity.ProductEntity;
@@ -18,20 +17,20 @@ import org.dainn.dainninventory.repository.IUserRepository;
 import org.dainn.dainninventory.repository.specification.SearchOperation;
 import org.dainn.dainninventory.repository.specification.SpecSearchCriteria;
 import org.dainn.dainninventory.repository.specification.SpecificationBuilder;
-import org.dainn.dainninventory.service.IBaseRedisService;
 import org.dainn.dainninventory.service.IOrderDetailService;
 import org.dainn.dainninventory.service.IOrderService;
 import org.dainn.dainninventory.utils.Paging;
-import org.dainn.dainninventory.utils.constant.RedisConstant;
 import org.dainn.dainninventory.utils.enums.OrderStatus;
 import org.dainn.dainninventory.utils.enums.PaymentMethod;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,7 +41,6 @@ public class OrderService implements IOrderService {
     private final IOrderRepository orderRepository;
     private final IOrderDetailService orderDetailService;
     private final IOrderMapper orderMapper;
-    private final IBaseRedisService baseRedisService;
 
     @Transactional
     @Override
@@ -60,8 +58,31 @@ public class OrderService implements IOrderService {
 
     @Transactional
     @Override
-    public void updateStatus(Integer id, OrderStatus status) {
-        orderRepository.updateStatus(id, status);
+    public void updateStatuses(List<Integer> ids, OrderStatus status) {
+        for (Integer id : ids) {
+            OrderEntity order = orderRepository.findById(id)
+                    .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_EXISTED));
+            switch (status) {
+                case CANCELLED:
+                    if (order.getStatus() != OrderStatus.PROCESSING && order.getStatus() != OrderStatus.TO_PAY) {
+                        throw new AppException(ErrorCode.ORDER_STATUS_INVALID);
+                    }
+                    break;
+                case COMPLETED:
+                    if (order.getStatus() != OrderStatus.SHIPPING) {
+                        throw new AppException(ErrorCode.ORDER_STATUS_INVALID);
+                    }
+                    break;
+                case SHIPPING:
+                    if (order.getStatus() != OrderStatus.PROCESSING) {
+                        throw new AppException(ErrorCode.ORDER_STATUS_INVALID);
+                    }
+                    break;
+                default:
+                    throw new AppException(ErrorCode.ORDER_STATUS_INVALID);
+            }
+        }
+        orderRepository.updateStatuses(ids, status);
     }
 
     @Transactional
@@ -73,43 +94,21 @@ public class OrderService implements IOrderService {
 
     @Override
     public OrderDTO findById(Integer id) {
-        String key = RedisConstant.ORDER_KEY_PREFIX + "::id:" + id;
-        OrderDTO dto = baseRedisService.getCache(key, new TypeReference<OrderDTO>() {
-        });
-        if (dto == null) {
-            dto = orderMapper.toDTO(orderRepository.findById(id)
-                    .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_EXISTED)));
-            dto.setDetails(orderDetailService.findByOrderId(id));
-            baseRedisService.setCache(key, dto);
-        }
-        return dto;
+        OrderDTO orderDto = orderMapper.toDTO(orderRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_EXISTED)));
+        orderDto.setDetails(orderDetailService.findByOrderId(id));
+        return orderDto;
     }
 
 
     @Override
     public List<OrderDTO> findAll() {
-        String key = RedisConstant.ORDERS_KEY_PREFIX;
-        List<OrderDTO> list = baseRedisService.getCache(key, new TypeReference<List<OrderDTO>>() {
-        });
-        if (list == null) {
-            list = orderRepository.findAll()
-                    .stream().map(orderMapper::toDTO).toList();
-            baseRedisService.setCache(key, list);
-        }
-        return list;
+        return orderRepository.findAll()
+                .stream().map(orderMapper::toDTO).toList();
     }
 
     @Override
     public Page<OrderDTO> findWithSpec(OrderPageRequest request) {
-        String key = RedisConstant.PRODUCTS_KEY_PREFIX + "::page:" + request.getPage() + "::size:" + request.getSize()
-                + "::sort:" + request.getSortBy() + "::dir:" + request.getSortDir() + "::keyword:" + request.getKeyword()
-                + "::fromDate:" + request.getFromDate() + "::toDate:" + request.getToDate() + "::status:" + request.getStatus()
-                + "::userId:" + request.getUserId();
-        Page<OrderDTO> pageDTO = baseRedisService.getCache(key, new TypeReference<Page<OrderDTO>>() {
-        });
-        if (pageDTO != null) {
-            return pageDTO;
-        }
         SpecificationBuilder<OrderEntity> builder = new SpecificationBuilder<>();
         Page<OrderEntity> page;
         Specification<OrderEntity> spec;
@@ -144,9 +143,7 @@ public class OrderService implements IOrderService {
             return page.map(orderMapper::toDTO);
         }
         page = orderRepository.findAll(Objects.requireNonNull(spec), Paging.getPageable(request));
-        pageDTO = page.map(orderMapper::toDTO);
-        baseRedisService.setCache(key, pageDTO);
-        return pageDTO;
+        return page.map(orderMapper::toDTO);
     }
 
     @Override
@@ -186,5 +183,12 @@ public class OrderService implements IOrderService {
                 .map(orderMapper::toMyOrderDTO);
         page.forEach(myOrderDTO -> myOrderDTO.setDetails(orderDetailService.findByOrderId(myOrderDTO.getId())));
         return page;
+    }
+
+    @Override
+    public List<OrderDTO> findByProductId(Integer id, Date startDate, Date endDate) {
+        Sort sort = Sort.by(Sort.Order.desc("orderDate"));
+        return orderRepository.findAllByProductId(id, startDate, endDate, sort)
+                .stream().map(orderMapper::toDTO).toList();
     }
 }

@@ -3,7 +3,8 @@ package org.dainn.dainninventory.service.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dainn.dainninventory.dto.SizeDTO;
+import org.dainn.dainninventory.dto.size.SizePageRequest;
+import org.dainn.dainninventory.dto.size.SizeDTO;
 import org.dainn.dainninventory.entity.SizeEntity;
 import org.dainn.dainninventory.exception.AppException;
 import org.dainn.dainninventory.exception.ErrorCode;
@@ -11,9 +12,12 @@ import org.dainn.dainninventory.mapper.ISizeMapper;
 import org.dainn.dainninventory.repository.ISizeRepository;
 import org.dainn.dainninventory.service.IBaseRedisService;
 import org.dainn.dainninventory.service.ISizeService;
+import org.dainn.dainninventory.utils.Paging;
 import org.dainn.dainninventory.utils.constant.RedisConstant;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -35,6 +39,7 @@ public class SizeService implements ISizeService {
         SizeEntity sizeEntity = sizeMapper.toEntity(dto);
         dto = sizeMapper.toDTO(sizeRepository.save(sizeEntity));
         String key = RedisConstant.SIZE_KEY_PREFIX + "::id:" + dto.getId();
+        baseRedisService.flushDb();
         baseRedisService.setCache(key, dto);
         return dto;
     }
@@ -62,7 +67,7 @@ public class SizeService implements ISizeService {
     @Override
     public SizeDTO findById(Integer id) {
         String key = RedisConstant.SIZE_KEY_PREFIX + "::id:" + id;
-        SizeDTO sizeDTO = baseRedisService.getCache(key, new TypeReference<SizeDTO>() {});
+        SizeDTO sizeDTO = baseRedisService.getCache(key, new TypeReference<>() {});
         if (sizeDTO == null) {
             sizeDTO = sizeMapper.toDTO(sizeRepository.findById(id)
                     .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED)));
@@ -74,7 +79,7 @@ public class SizeService implements ISizeService {
     @Override
     public SizeDTO findByName(String name) {
         String key = RedisConstant.SIZE_KEY_PREFIX + "::name:" + name;
-        SizeDTO sizeDTO = baseRedisService.getCache(key, new TypeReference<SizeDTO>() {});
+        SizeDTO sizeDTO = baseRedisService.getCache(key, new TypeReference<>() {});
         if (sizeDTO == null) {
             sizeDTO = sizeMapper.toDTO(sizeRepository.findByName(name)
                     .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED)));
@@ -86,7 +91,7 @@ public class SizeService implements ISizeService {
     @Override
     public List<SizeDTO> findAll() {
         String key = RedisConstant.SIZES_KEY_PREFIX;
-        List<SizeDTO> list = baseRedisService.getCache(key, new TypeReference<List<SizeDTO>>() {});
+        List<SizeDTO> list = baseRedisService.getCache(key, new TypeReference<>() {});
         if (list == null) {
             list = sizeRepository.findAll()
                     .stream().map(sizeMapper::toDTO).toList();
@@ -98,7 +103,7 @@ public class SizeService implements ISizeService {
     @Override
     public List<SizeDTO> findAll(Integer status) {
         String key = RedisConstant.SIZES_KEY_PREFIX + "::status:" + status;
-        List<SizeDTO> list = baseRedisService.getCache(key, new TypeReference<List<SizeDTO>>() {});
+        List<SizeDTO> list = baseRedisService.getCache(key, new TypeReference<>() {});
         if (list == null) {
             list = sizeRepository.findAllByStatus(status)
                     .stream().map(sizeMapper::toDTO).toList();
@@ -107,20 +112,19 @@ public class SizeService implements ISizeService {
         return list;
     }
 
-
-//    @Override
-//    public Page<SizeDTO> findAllByName(BrandPageRequest request) {
-//        String key = RedisConstant.BRANDS_KEY_PREFIX + "::page:" + request.getPage() + "::size:" + request.getSize()
-//                + "::sort:" + request.getSortBy() + "::dir:" + request.getSortDir()
-//                + "::keyword:" + request.getKeyword() + "::status:" + request.getStatus();
-//        Page<SizeDTO> page = baseRedisService.getCache(key, new TypeReference<Page<SizeDTO>>() {});
-//        if (page == null) {
-//            page = (StringUtils.hasText(request.getKeyword())
-//                    ? sizeRepository.findAllByNameContainingIgnoreCaseAndStatus(request.getKeyword(), request.getStatus(), Paging.getPageable(request))
-//                    : sizeRepository.findAllByStatus(request.getStatus(), Paging.getPageable(request))
-//            ).map(sizeMapper::toDTO);
-//            baseRedisService.setCache(key, page);
-//        }
-//        return page;
-//    }
+    @Override
+    public Page<SizeDTO> findAllByName(SizePageRequest request) {
+        String key = RedisConstant.SIZES_KEY_PREFIX + "::page:" + request.getPage() + "::size:" + request.getSize()
+                + "::sort:" + request.getSortBy() + "::dir:" + request.getSortDir()
+                + "::keyword:" + request.getKeyword() + "::status:" + request.getStatus();
+        Page<SizeDTO> page = baseRedisService.getCache(key, new TypeReference<>() {});
+        if (page == null) {
+            page = (StringUtils.hasText(request.getKeyword())
+                    ? sizeRepository.findAllByNameContainingIgnoreCaseAndStatus(request.getKeyword(), request.getStatus(), Paging.getPageable(request))
+                    : sizeRepository.findAllByStatus(request.getStatus(), Paging.getPageable(request))
+            ).map(sizeMapper::toDTO);
+            baseRedisService.setCache(key, page);
+        }
+        return page;
+    }
 }

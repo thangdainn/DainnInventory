@@ -1,15 +1,13 @@
 package org.dainn.dainninventory.service;
 
-import org.dainn.dainninventory.dto.OrderDetailDTO;
-import org.dainn.dainninventory.dto.ProductSizeDTO;
+import org.dainn.dainninventory.dto.product.ProductSizeDTO;
 
 import java.util.List;
 
 public interface IProductSizeService {
-    void insert(List<ProductSizeDTO> list);
-    void updateQuantity(ProductSizeDTO dto);
+    void save(List<ProductSizeDTO> list);
+    void updateStock(List<ProductSizeDTO> list);
     List<ProductSizeDTO> findAllByProductCode(String code);
     ProductSizeDTO findByProductIdAndSizeId(Integer productId, Integer sizeId);
-//    List<OrderDetailDTO> findByOrderId(Integer orderId);
-//    void deleteByOrderId(Integer orderId);
+    int getStockByProductId(Integer productId);
 }

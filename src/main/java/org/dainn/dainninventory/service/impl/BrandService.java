@@ -3,8 +3,8 @@ package org.dainn.dainninventory.service.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dainn.dainninventory.controller.request.BrandPageRequest;
-import org.dainn.dainninventory.dto.BrandDTO;
+import org.dainn.dainninventory.dto.brand.BrandPageRequest;
+import org.dainn.dainninventory.dto.brand.BrandDTO;
 import org.dainn.dainninventory.entity.BrandEntity;
 import org.dainn.dainninventory.exception.AppException;
 import org.dainn.dainninventory.exception.ErrorCode;
@@ -39,6 +39,7 @@ public class BrandService implements IBrandService {
         BrandEntity brandEntity = brandMapper.toEntity(dto);
         dto = brandMapper.toDTO(brandRepository.save(brandEntity));
         String key = RedisConstant.BRAND_KEY_PREFIX + "::id:" + dto.getId();
+        baseRedisService.flushDb();
         baseRedisService.setCache(key, dto);
         return dto;
     }
@@ -48,6 +49,12 @@ public class BrandService implements IBrandService {
     public BrandDTO update(BrandDTO dto) {
         BrandEntity brandOld = brandRepository.findById(dto.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.BRAND_NOT_EXISTED));
+        if (!brandOld.getName().equalsIgnoreCase(dto.getName())) {
+            brandRepository.findByName(dto.getName())
+                    .ifPresent(brand -> {
+                        throw new AppException(ErrorCode.BRAND_EXISTED);
+                    });
+        }
         BrandEntity brandEntity = brandMapper.updateEntity(brandOld, dto);
         dto = brandMapper.toDTO(brandRepository.save(brandEntity));
         String key = RedisConstant.BRAND_KEY_PREFIX + "::id:" + dto.getId();
@@ -66,7 +73,7 @@ public class BrandService implements IBrandService {
     @Override
     public BrandDTO findById(Integer id) {
         String key = RedisConstant.BRAND_KEY_PREFIX + "::id:" + id;
-        BrandDTO brandDTO = baseRedisService.getCache(key, new TypeReference<BrandDTO>() {});
+        BrandDTO brandDTO = baseRedisService.getCache(key, new TypeReference<>() {});
         if (brandDTO == null) {
             brandDTO = brandMapper.toDTO(brandRepository.findById(id)
                     .orElseThrow(() -> new AppException(ErrorCode.BRAND_NOT_EXISTED)));
@@ -78,7 +85,7 @@ public class BrandService implements IBrandService {
     @Override
     public BrandDTO findByName(String name) {
         String key = RedisConstant.BRAND_KEY_PREFIX + "::name:" + name;
-        BrandDTO brandDTO = baseRedisService.getCache(key, new TypeReference<BrandDTO>() {});
+        BrandDTO brandDTO = baseRedisService.getCache(key, new TypeReference<>() {});
         if (brandDTO == null) {
             brandDTO = brandMapper.toDTO(brandRepository.findByName(name)
                     .orElseThrow(() -> new AppException(ErrorCode.BRAND_NOT_EXISTED)));
@@ -90,7 +97,7 @@ public class BrandService implements IBrandService {
     @Override
     public List<BrandDTO> findAll() {
         String key = RedisConstant.BRANDS_KEY_PREFIX;
-        List<BrandDTO> list = baseRedisService.getCache(key, new TypeReference<List<BrandDTO>>() {});
+        List<BrandDTO> list = baseRedisService.getCache(key, new TypeReference<>() {});
         if (list == null) {
             list = brandRepository.findAll()
                     .stream().map(brandMapper::toDTO).toList();
@@ -102,7 +109,7 @@ public class BrandService implements IBrandService {
     @Override
     public List<BrandDTO> findAll(Integer status) {
         String key = RedisConstant.BRANDS_KEY_PREFIX + "::status:" + status;
-        List<BrandDTO> list = baseRedisService.getCache(key, new TypeReference<List<BrandDTO>>() {});
+        List<BrandDTO> list = baseRedisService.getCache(key, new TypeReference<>() {});
         if (list == null) {
             list = brandRepository.findAllByStatus(status)
                     .stream().map(brandMapper::toDTO).toList();
@@ -116,7 +123,7 @@ public class BrandService implements IBrandService {
         String key = RedisConstant.BRANDS_KEY_PREFIX + "::page:" + request.getPage() + "::size:" + request.getSize()
                 + "::sort:" + request.getSortBy() + "::dir:" + request.getSortDir()
                 + "::keyword:" + request.getKeyword() + "::status:" + request.getStatus();
-        Page<BrandDTO> page = baseRedisService.getCache(key, new TypeReference<Page<BrandDTO>>() {});
+        Page<BrandDTO> page = baseRedisService.getCache(key, new TypeReference<>() {});
         if (page == null) {
             page = (StringUtils.hasText(request.getKeyword())
                     ? brandRepository.findAllByNameContainingIgnoreCaseAndStatus(request.getKeyword(), request.getStatus(), Paging.getPageable(request))

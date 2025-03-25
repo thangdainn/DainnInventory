@@ -1,7 +1,7 @@
 package org.dainn.dainninventory.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.dainn.dainninventory.dto.MailData;
+import org.dainn.dainninventory.dto.mail.MailData;
 import org.dainn.dainninventory.dto.auth.OtpDTO;
 import org.dainn.dainninventory.service.IBaseRedisService;
 import org.dainn.dainninventory.service.IMailService;

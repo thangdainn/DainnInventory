@@ -4,9 +4,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.config.endpoint.Endpoint;
-import org.dainn.dainninventory.controller.request.CategoryPageRequest;
-import org.dainn.dainninventory.controller.response.PageResponse;
-import org.dainn.dainninventory.dto.CategoryDTO;
+import org.dainn.dainninventory.dto.category.CategoryPageRequest;
+import org.dainn.dainninventory.dto.response.PageResponse;
+import org.dainn.dainninventory.dto.category.CategoryDTO;
 import org.dainn.dainninventory.service.ICategoryService;
 import org.dainn.dainninventory.utils.ValidateString;
 import org.springframework.data.domain.Page;
@@ -63,6 +63,6 @@ public class CategoryController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> delete(@RequestBody List<Integer> ids) {
         categoryService.delete(ids);
-        return ResponseEntity.ok("Delete Successfully");
+        return ResponseEntity.ok().build();
     }
 }

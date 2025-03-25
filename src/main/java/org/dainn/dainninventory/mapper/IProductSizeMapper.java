@@ -1,6 +1,6 @@
 package org.dainn.dainninventory.mapper;
 
-import org.dainn.dainninventory.dto.ProductSizeDTO;
+import org.dainn.dainninventory.dto.product.ProductSizeDTO;
 import org.dainn.dainninventory.entity.ProductSizeEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -11,5 +11,6 @@ public interface IProductSizeMapper {
 
     @Mapping(target = "productId", source = "product.id")
     @Mapping(target = "sizeId", source = "size.id")
+    @Mapping(target = "sizeName", source = "size.name")
     ProductSizeDTO toDTO(ProductSizeEntity entity);
 }

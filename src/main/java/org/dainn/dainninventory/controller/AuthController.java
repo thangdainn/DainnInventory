@@ -6,7 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.config.endpoint.Endpoint;
 import org.dainn.dainninventory.dto.auth.*;
-import org.dainn.dainninventory.dto.DeviceInfoDTO;
+import org.dainn.dainninventory.dto.device.DeviceInfoDTO;
 import org.dainn.dainninventory.service.IAuthService;
 import org.dainn.dainninventory.service.IOtpService;
 import org.dainn.dainninventory.service.ITokenService;
@@ -23,11 +23,6 @@ public class AuthController {
     private final IUserService userService;
     private final ITokenService tokenService;
     private final IOtpService otpService;
-
-    @GetMapping(Endpoint.Auth.ME)
-    public ResponseEntity<?> getMe(HttpServletRequest request) {
-        return ResponseEntity.ok(userService.findMyInfo(request));
-    }
 
     @PostMapping(Endpoint.Auth.LOGIN)
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO request, HttpServletResponse response) {
@@ -70,4 +65,6 @@ public class AuthController {
         authService.forgotPassword(dto);
         return ResponseEntity.ok().build();
     }
+
+
 }

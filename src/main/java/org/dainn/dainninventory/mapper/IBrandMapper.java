@@ -1,6 +1,6 @@
 package org.dainn.dainninventory.mapper;
 
-import org.dainn.dainninventory.dto.BrandDTO;
+import org.dainn.dainninventory.dto.brand.BrandDTO;
 import org.dainn.dainninventory.entity.BrandEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

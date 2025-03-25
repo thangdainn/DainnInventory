@@ -1,13 +1,15 @@
 package org.dainn.dainninventory.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.config.endpoint.Endpoint;
-import org.dainn.dainninventory.controller.request.UserPageRequest;
-import org.dainn.dainninventory.controller.request.UserRequest;
-import org.dainn.dainninventory.controller.response.PageResponse;
-import org.dainn.dainninventory.dto.UserDTO;
+import org.dainn.dainninventory.dto.user.UserPageRequest;
+import org.dainn.dainninventory.dto.user.UserRequest;
+import org.dainn.dainninventory.dto.response.PageResponse;
+import org.dainn.dainninventory.dto.user.UserDTO;
+import org.dainn.dainninventory.dto.user.UpdateProfile;
 import org.dainn.dainninventory.service.IUserService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -28,15 +30,18 @@ public class UserController {
         if (request.getPage() == null) {
             return ResponseEntity.ok(userService.findAll(request.getStatus()));
         }
-
         Page<UserDTO> page = userService.findWithSpec(request);
-
         return ResponseEntity.ok(PageResponse.<UserDTO>builder()
                 .page(page.getPageable().getPageNumber())
                 .size(page.getPageable().getPageSize())
                 .totalElements(page.getTotalElements())
                 .data(page.getContent())
                 .build());
+    }
+
+    @GetMapping(Endpoint.User.ME)
+    public ResponseEntity<?> getMe(HttpServletRequest request) {
+        return ResponseEntity.ok(userService.findMyInfo(request));
     }
 
     @GetMapping(Endpoint.User.ID)
@@ -58,10 +63,15 @@ public class UserController {
         return ResponseEntity.ok(userService.update(dto));
     }
 
+    @PutMapping(Endpoint.User.PROFILE)
+    public ResponseEntity<?> updateProfile(@Valid @RequestBody UpdateProfile dto, HttpServletRequest request) {
+        return ResponseEntity.ok(userService.updateProfile(dto, request));
+    }
+
     @DeleteMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> delete(@RequestBody List<Integer> ids) {
         userService.delete(ids);
-        return ResponseEntity.ok("Delete Successfully");
+        return ResponseEntity.ok().build();
     }
 }

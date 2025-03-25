@@ -1,12 +1,12 @@
 package org.dainn.dainninventory.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.dainn.dainninventory.controller.request.UserPageRequest;
-import org.dainn.dainninventory.controller.request.UserRequest;
-import org.dainn.dainninventory.dto.UserDTO;
+import org.dainn.dainninventory.dto.user.UserPageRequest;
+import org.dainn.dainninventory.dto.user.UserRequest;
+import org.dainn.dainninventory.dto.user.UserDTO;
+import org.dainn.dainninventory.dto.user.UpdateProfile;
 import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -17,6 +17,7 @@ public interface IUserService {
     boolean checkEmailAndProvider(String email, Provider provider);
     UserDTO findById(Integer id);
     UserDTO findMyInfo(HttpServletRequest request);
+    UserDTO updateProfile(UpdateProfile dto, HttpServletRequest request);
     UserDTO findByEmailAndProvider(String email, Provider provider);
     List<UserDTO> findAll();
     List<UserDTO> findAll(Integer status);

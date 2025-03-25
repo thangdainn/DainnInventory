@@ -33,7 +33,4 @@ public class SizeEntity extends BaseEntity{
 
     @OneToMany(mappedBy = "size")
     private List<CartEntity> carts = new ArrayList<>();
-
-    @OneToMany(mappedBy = "size")
-    private List<GoodsReceiptDetailEntity> goodsReceiptDetails = new ArrayList<>();
 }

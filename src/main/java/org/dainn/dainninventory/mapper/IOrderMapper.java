@@ -1,7 +1,7 @@
 package org.dainn.dainninventory.mapper;
 
-import org.dainn.dainninventory.dto.Order.MyOrderDTO;
-import org.dainn.dainninventory.dto.OrderDTO;
+import org.dainn.dainninventory.dto.order.MyOrderDTO;
+import org.dainn.dainninventory.dto.order.OrderDTO;
 import org.dainn.dainninventory.entity.OrderEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

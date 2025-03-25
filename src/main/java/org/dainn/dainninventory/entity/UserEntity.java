@@ -26,21 +26,22 @@ public class UserEntity extends BaseEntity{
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "avatar")
+    private String avatar;
+
+    @Column(name = "phone", nullable = false)
+    private String phone;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "provider", nullable = false)
     private Provider provider;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private List<RoleEntity> roles = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")
+    private RoleEntity role;
 
     @OneToMany(mappedBy = "user")
     private List<TokenEntity> tokens = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user")
-    private List<GoodsReceiptEntity> goodsReceipts = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     private List<CartEntity> carts = new ArrayList<>();

@@ -4,9 +4,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.config.endpoint.Endpoint;
-import org.dainn.dainninventory.controller.request.RolePageRequest;
-import org.dainn.dainninventory.controller.response.PageResponse;
-import org.dainn.dainninventory.dto.RoleDTO;
+import org.dainn.dainninventory.dto.role.RolePageRequest;
+import org.dainn.dainninventory.dto.response.PageResponse;
+import org.dainn.dainninventory.dto.role.RoleDTO;
 import org.dainn.dainninventory.service.IRoleService;
 import org.dainn.dainninventory.utils.ValidateString;
 import org.springframework.data.domain.Page;
@@ -19,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(Endpoint.Role.BASE)
+
 @RequiredArgsConstructor
 public class RoleController {
     private final IRoleService roleService;
@@ -47,7 +48,6 @@ public class RoleController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> create(@Valid @RequestBody RoleDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(roleService.insert(dto));
     }
@@ -63,6 +63,6 @@ public class RoleController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> delete(@RequestBody List<Integer> ids) {
         roleService.delete(ids);
-        return ResponseEntity.ok("Delete Successfully");
+        return ResponseEntity.ok().build();
     }
 }

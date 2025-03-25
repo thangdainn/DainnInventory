@@ -2,8 +2,8 @@ package org.dainn.dainninventory.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
-import org.dainn.dainninventory.controller.request.RolePageRequest;
-import org.dainn.dainninventory.dto.RoleDTO;
+import org.dainn.dainninventory.dto.role.RolePageRequest;
+import org.dainn.dainninventory.dto.role.RoleDTO;
 import org.dainn.dainninventory.entity.RoleEntity;
 import org.dainn.dainninventory.exception.AppException;
 import org.dainn.dainninventory.exception.ErrorCode;
@@ -40,6 +40,7 @@ public class RoleService implements IRoleService {
         RoleEntity entity = roleMapper.toEntity(dto);
         dto = roleMapper.toDTO(roleRepository.save(entity));
         String key = RedisConstant.ROLE_KEY_PREFIX + "::id:" + dto.getId();
+        baseRedisService.flushDb();
         baseRedisService.setCache(key, dto);
         return dto;
     }
@@ -50,6 +51,12 @@ public class RoleService implements IRoleService {
         dto.setName(RoleConstant.PREFIX_ROLE + dto.getName().toUpperCase());
         RoleEntity roleOld = roleRepository.findById(dto.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
+        if (!roleOld.getName().equals(dto.getName())) {
+            roleRepository.findByName(dto.getName())
+                    .ifPresent(role -> {
+                        throw new AppException(ErrorCode.ROLE_EXISTED);
+                    });
+        }
         RoleEntity entity = roleMapper.updateEntity(roleOld, dto);
         dto = roleMapper.toDTO(roleRepository.save(entity));
         String key = RedisConstant.ROLE_KEY_PREFIX + "::id:" + dto.getId();
@@ -68,7 +75,7 @@ public class RoleService implements IRoleService {
     @Override
     public RoleDTO findById(Integer id) {
         String key = RedisConstant.ROLE_KEY_PREFIX + "::id:" + id;
-        RoleDTO roleDTO = baseRedisService.getCache(key, new TypeReference<RoleDTO>() {});
+        RoleDTO roleDTO = baseRedisService.getCache(key, new TypeReference<>() {});
         if (roleDTO == null){
             roleDTO = roleMapper.toDTO(roleRepository.findById(id)
                     .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED)));
@@ -80,7 +87,7 @@ public class RoleService implements IRoleService {
     @Override
     public RoleDTO findByName(String name) {
         String key = RedisConstant.ROLE_KEY_PREFIX + "::name:" + name;
-        RoleDTO roleDTO = baseRedisService.getCache(key, new TypeReference<RoleDTO>() {});
+        RoleDTO roleDTO = baseRedisService.getCache(key, new TypeReference<>() {});
         if (roleDTO == null){
             roleDTO = roleMapper.toDTO(roleRepository.findByName(name)
                     .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED)));
@@ -92,7 +99,7 @@ public class RoleService implements IRoleService {
     @Override
     public List<RoleDTO> findAll() {
         String key = RedisConstant.ROLES_KEY_PREFIX;
-        List<RoleDTO> list = baseRedisService.getCache(key, new TypeReference<List<RoleDTO>>() {});
+        List<RoleDTO> list = baseRedisService.getCache(key, new TypeReference<>() {});
         if (list == null){
             list = roleRepository.findAll()
                     .stream().map(roleMapper::toDTO).toList();
@@ -104,7 +111,7 @@ public class RoleService implements IRoleService {
     @Override
     public List<RoleDTO> findAll(Integer status) {
         String key = RedisConstant.ROLES_KEY_PREFIX + "::status:" + status;
-        List<RoleDTO> list = baseRedisService.getCache(key, new TypeReference<List<RoleDTO>>() {});
+        List<RoleDTO> list = baseRedisService.getCache(key, new TypeReference<>() {});
         if (list == null) {
             list = roleRepository.findAllByStatus(status)
                     .stream().map(roleMapper::toDTO).toList();
@@ -118,7 +125,7 @@ public class RoleService implements IRoleService {
         String key = RedisConstant.ROLES_KEY_PREFIX + "::page:" + request.getPage() + "::size:" + request.getSize()
                 + "::sort:" + request.getSortBy() + "::dir:" + request.getSortDir()
                 + "::keyword:" + request.getKeyword() + "::status:" + request.getStatus();
-        Page<RoleDTO> page = baseRedisService.getCache(key, new TypeReference<Page<RoleDTO>>() {});
+        Page<RoleDTO> page = baseRedisService.getCache(key, new TypeReference<>() {});
         if (page == null) {
             page = (StringUtils.hasText(request.getKeyword())
                     ? roleRepository.findAllByNameContainingIgnoreCaseAndStatus(request.getKeyword(), request.getStatus(), Paging.getPageable(request))

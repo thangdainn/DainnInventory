@@ -29,8 +29,8 @@ public class ProductEntity extends BaseEntity{
     @Column(name = "price", nullable = false, precision = 10)
     private BigDecimal price;
 
-    @Column(name = "img_url", nullable = false)
-    private String imgUrl;
+    @Column(name = "image", nullable = false)
+    private String image;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id", nullable = false)

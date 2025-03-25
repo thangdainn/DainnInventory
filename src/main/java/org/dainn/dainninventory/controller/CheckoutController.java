@@ -2,7 +2,7 @@ package org.dainn.dainninventory.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.dainn.dainninventory.dto.OrderDTO;
+import org.dainn.dainninventory.dto.order.OrderDTO;
 import org.dainn.dainninventory.service.IOrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

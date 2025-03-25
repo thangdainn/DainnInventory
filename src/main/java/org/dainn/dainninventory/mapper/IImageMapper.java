@@ -1,6 +1,6 @@
 package org.dainn.dainninventory.mapper;
 
-import org.dainn.dainninventory.dto.ImageDTO;
+import org.dainn.dainninventory.dto.image.ImageDTO;
 import org.dainn.dainninventory.entity.ImageEntity;
 import org.mapstruct.Mapper;
 

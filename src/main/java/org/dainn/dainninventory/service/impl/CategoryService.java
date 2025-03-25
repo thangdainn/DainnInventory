@@ -2,8 +2,8 @@ package org.dainn.dainninventory.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
-import org.dainn.dainninventory.controller.request.CategoryPageRequest;
-import org.dainn.dainninventory.dto.CategoryDTO;
+import org.dainn.dainninventory.dto.category.CategoryPageRequest;
+import org.dainn.dainninventory.dto.category.CategoryDTO;
 import org.dainn.dainninventory.entity.CategoryEntity;
 import org.dainn.dainninventory.exception.AppException;
 import org.dainn.dainninventory.exception.ErrorCode;
@@ -38,6 +38,7 @@ public class CategoryService implements ICategoryService {
         CategoryEntity categoryEntity = categoryMapper.toEntity(dto);
         dto = categoryMapper.toDTO(categoryRepository.save(categoryEntity));
         String key = RedisConstant.CATEGORY_KEY_PREFIX + "::id:" + dto.getId();
+        baseRedisService.flushDb();
         baseRedisService.setCache(key, dto);
         return dto;
     }
@@ -47,6 +48,12 @@ public class CategoryService implements ICategoryService {
     public CategoryDTO update(CategoryDTO dto) {
         CategoryEntity brandOld = categoryRepository.findById(dto.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED));
+        if (!brandOld.getName().equalsIgnoreCase(dto.getName())) {
+            categoryRepository.findByName(dto.getName())
+                    .ifPresent(role -> {
+                        throw new AppException(ErrorCode.CATEGORY_EXISTED);
+                    });
+        }
         CategoryEntity categoryEntity = categoryMapper.updateEntity(brandOld, dto);
         dto = categoryMapper.toDTO(categoryRepository.save(categoryEntity));
 
@@ -66,7 +73,7 @@ public class CategoryService implements ICategoryService {
     @Override
     public CategoryDTO findById(Integer id) {
         String key = RedisConstant.CATEGORY_KEY_PREFIX + "::id:" + id;
-        CategoryDTO dto = baseRedisService.getCache(key, new TypeReference<CategoryDTO>() {});
+        CategoryDTO dto = baseRedisService.getCache(key, new TypeReference<>() {});
         if (dto == null){
             dto = categoryMapper.toDTO(categoryRepository.findById(id)
                     .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED)));
@@ -78,7 +85,7 @@ public class CategoryService implements ICategoryService {
     @Override
     public CategoryDTO findByName(String name) {
         String key = RedisConstant.CATEGORY_KEY_PREFIX + "::name:" + name;
-        CategoryDTO dto = baseRedisService.getCache(key, new TypeReference<CategoryDTO>() {});
+        CategoryDTO dto = baseRedisService.getCache(key, new TypeReference<>() {});
         if (dto == null){
             dto = categoryMapper.toDTO(categoryRepository.findByName(name)
                     .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED)));
@@ -90,7 +97,7 @@ public class CategoryService implements ICategoryService {
     @Override
     public List<CategoryDTO> findAll() {
         String key = RedisConstant.CATEGORIES_KEY_PREFIX;
-        List<CategoryDTO> list = baseRedisService.getCache(key, new TypeReference<List<CategoryDTO>>() {});
+        List<CategoryDTO> list = baseRedisService.getCache(key, new TypeReference<>() {});
         if (list == null){
             list = categoryRepository.findAll()
                     .stream().map(categoryMapper::toDTO).toList();
@@ -102,7 +109,7 @@ public class CategoryService implements ICategoryService {
     @Override
     public List<CategoryDTO> findAll(Integer status) {
         String key = RedisConstant.CATEGORIES_KEY_PREFIX + "::status:" + status;
-        List<CategoryDTO> list = baseRedisService.getCache(key, new TypeReference<List<CategoryDTO>>() {});
+        List<CategoryDTO> list = baseRedisService.getCache(key, new TypeReference<>() {});
         if (list == null) {
             list = categoryRepository.findAllByStatus(status)
                     .stream().map(categoryMapper::toDTO).toList();
@@ -116,7 +123,7 @@ public class CategoryService implements ICategoryService {
         String key = RedisConstant.CATEGORIES_KEY_PREFIX + "::page:" + request.getPage() + "::size:" + request.getSize()
                 + "::sort:" + request.getSortBy() + "::dir:" + request.getSortDir()
                 + "::keyword:" + request.getKeyword() + "::status:" + request.getStatus();
-        Page<CategoryDTO> page = baseRedisService.getCache(key, new TypeReference<Page<CategoryDTO>>() {});
+        Page<CategoryDTO> page = baseRedisService.getCache(key, new TypeReference<>() {});
         if (page == null) {
             page = (StringUtils.hasText(request.getKeyword())
                     ? categoryRepository.findAllByNameContainingIgnoreCaseAndStatus(request.getKeyword(), request.getStatus(), Paging.getPageable(request))

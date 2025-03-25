@@ -20,6 +20,11 @@ public class RegisterDTO {
     @NotBlank(message = "Name is required")
     private String name;
 
+    private String avatar;
+
+    @NotBlank(message = "Name is required")
+    private String phone;
+
     @NotBlank(message = "Password is required")
     private String password;
     private Provider provider = Provider.local;

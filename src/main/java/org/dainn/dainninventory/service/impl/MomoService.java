@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.config.payment.momo.CreateSignature;
 import org.dainn.dainninventory.config.payment.momo.MomoSettings;
-import org.dainn.dainninventory.dto.OrderDTO;
+import org.dainn.dainninventory.dto.order.OrderDTO;
 import org.dainn.dainninventory.dto.momo.ExtraData;
 import org.dainn.dainninventory.dto.momo.MomoCallbackDTO;
 import org.dainn.dainninventory.dto.momo.MomoCreatePaymentDTO;

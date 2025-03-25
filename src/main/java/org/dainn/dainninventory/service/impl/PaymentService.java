@@ -3,7 +3,7 @@ package org.dainn.dainninventory.service.impl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.config.payment.vnpay.VNPayConfig;
-import org.dainn.dainninventory.dto.PaymentDTO;
+import org.dainn.dainninventory.dto.payment.PaymentDTO;
 import org.dainn.dainninventory.service.IPaymentService;
 import org.dainn.dainninventory.utils.VNPayUtil;
 import org.springframework.stereotype.Service;

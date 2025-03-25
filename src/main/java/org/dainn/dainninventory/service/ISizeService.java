@@ -1,8 +1,7 @@
 package org.dainn.dainninventory.service;
 
-import org.dainn.dainninventory.controller.request.BrandPageRequest;
-import org.dainn.dainninventory.dto.ProductSizeDTO;
-import org.dainn.dainninventory.dto.SizeDTO;
+import org.dainn.dainninventory.dto.size.SizePageRequest;
+import org.dainn.dainninventory.dto.size.SizeDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -16,5 +15,5 @@ public interface ISizeService {
     List<SizeDTO> findAll();
 
     List<SizeDTO> findAll(Integer status);
-//    Page<SizeDTO> findAllByName(BrandPageRequest request);
+    Page<SizeDTO> findAllByName(SizePageRequest request);
 }

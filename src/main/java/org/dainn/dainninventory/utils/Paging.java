@@ -6,7 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 
 public class Paging {
-    public static Pageable getPageable(org.dainn.dainninventory.controller.request.PageRequest request) {
+    public static Pageable getPageable(org.dainn.dainninventory.dto.request.PageRequest request) {
         Sort sort;
         if (StringUtils.hasText(request.getSortBy())) {
             sort = request.getSortDir().equalsIgnoreCase(Sort.Direction.ASC.name())

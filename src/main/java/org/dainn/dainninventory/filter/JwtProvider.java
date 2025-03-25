@@ -6,8 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.dainn.dainninventory.dto.UserDTO;
-import org.dainn.dainninventory.utils.enums.Provider;
+import org.dainn.dainninventory.dto.user.UserDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -29,9 +28,8 @@ public class JwtProvider {
         Map<String, Object> claims = Map.of(
                 "id", user.getId(),
                 "email", user.getEmail(),
-                "name", user.getName(),
-                "provider", user.getProvider().name(),
-                "role", user.getRolesName()
+                "avatar", user.getAvatar(),
+                "role", user.getRoleName()
         );
         return Jwts.builder()
                 .setClaims(claims)

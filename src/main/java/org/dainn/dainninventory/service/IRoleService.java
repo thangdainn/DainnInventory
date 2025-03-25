@@ -1,7 +1,7 @@
 package org.dainn.dainninventory.service;
 
-import org.dainn.dainninventory.controller.request.RolePageRequest;
-import org.dainn.dainninventory.dto.RoleDTO;
+import org.dainn.dainninventory.dto.role.RolePageRequest;
+import org.dainn.dainninventory.dto.role.RoleDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;

@@ -5,15 +5,15 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.config.endpoint.Endpoint;
 import org.dainn.dainninventory.config.security.CustomUserDetail;
-import org.dainn.dainninventory.controller.request.MyOrderPageRequest;
-import org.dainn.dainninventory.controller.request.OrderPageRequest;
-import org.dainn.dainninventory.controller.request.OrderStatusRequest;
-import org.dainn.dainninventory.controller.response.PageResponse;
-import org.dainn.dainninventory.dto.Order.MyOrderDTO;
-import org.dainn.dainninventory.dto.OrderDTO;
+import org.dainn.dainninventory.dto.order.MyOrderPageRequest;
+import org.dainn.dainninventory.dto.order.OrderPageRequest;
+import org.dainn.dainninventory.dto.order.OrderStatusRequest;
+import org.dainn.dainninventory.dto.response.PageResponse;
+import org.dainn.dainninventory.dto.order.MyOrderDTO;
+import org.dainn.dainninventory.dto.order.OrderDTO;
+import org.dainn.dainninventory.dto.statistic.AnalyticDTO;
 import org.dainn.dainninventory.service.IOrderService;
 import org.dainn.dainninventory.utils.ValidateString;
-import org.dainn.dainninventory.utils.enums.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,21 +61,19 @@ public class OrderController {
                 .build());
     }
 
+    @GetMapping(Endpoint.Order.PRODUCT)
+    public ResponseEntity<?> getByProductId(@Min(1) @PathVariable Integer id, AnalyticDTO request) {
+        return ResponseEntity.ok(orderService.findByProductId(id, request.getStartDate(), request.getEndDate()));
+    }
+
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody OrderDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.insert(dto));
     }
 
-    @PutMapping(Endpoint.Order.ID)
-    public ResponseEntity<?> update(@Min(1) @PathVariable Integer id,
-                                    @Valid @RequestBody OrderStatusRequest orderStatus) {
-        orderService.updateStatus(id, orderStatus.getStatus());
-        return ResponseEntity.ok("Update success");
-    }
-
-    @DeleteMapping()
-    public ResponseEntity<?> delete(@Valid @RequestBody Integer orderId) {
-        orderService.updateStatus(orderId, OrderStatus.CANCELLED);
-        return ResponseEntity.ok("Delete success");
+    @PutMapping(Endpoint.Order.STATUS)
+    public ResponseEntity<?> updateStatus(@RequestBody OrderStatusRequest orderStatusChange) {
+        orderService.updateStatuses(orderStatusChange.getIds(), orderStatusChange.getStatus());
+        return ResponseEntity.ok().build();
     }
 }

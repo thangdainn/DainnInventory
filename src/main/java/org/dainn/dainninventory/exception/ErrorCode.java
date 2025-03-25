@@ -53,7 +53,8 @@ public enum ErrorCode {
     CART_ITEM_NOT_EXISTED("Cart item not existed", HttpStatus.NOT_FOUND),
     GOOGLE_LOGIN_FAILED("Authentication with Google fail", HttpStatus.BAD_REQUEST),
 
-    INVENTORY_NOT_EXISTED("Inventory not existed", HttpStatus.NOT_FOUND),;
+    INVENTORY_NOT_EXISTED("Inventory not existed", HttpStatus.NOT_FOUND),
+    ORDER_STATUS_INVALID("Fail update status", HttpStatus.BAD_REQUEST),;
     ErrorCode(String message, HttpStatusCode statusCode) {
         this.message = message;
         this.statusCode = statusCode;

@@ -22,4 +22,5 @@ public interface IProductSizeRepository extends JpaRepository<ProductSizeEntity,
                                     @Param("sizeId") Integer sizeId);
 
     List<ProductSizeEntity> findAllByProduct_Code(String code);
+    List<ProductSizeEntity> findAllByProduct_Id(Integer productId);
 }

@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -30,10 +29,7 @@ public class CustomUserDetail implements UserDetails {
         email = userEntity.getEmail();
         password = userEntity.getPassword();
         name = userEntity.getName();
-        authorities = userEntity.getRoles()
-                .stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .collect(Collectors.toList());
+        authorities = List.of(new SimpleGrantedAuthority(userEntity.getRole().getName()));
     }
 
     @Override

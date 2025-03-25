@@ -29,7 +29,6 @@ public class CustomUserDetailService implements UserDetailsService {
         Optional<UserEntity> userEntities = userRepository.findById(id);
         if (userEntities.isPresent()) {
             UserEntity user = userEntities.get();
-            user.setRoles(roleRepository.findByUsers(List.of(user)));
             return new CustomUserDetail(user);
         } else {
             return new CustomUserDetail(null, "", "", "", new ArrayList<>());

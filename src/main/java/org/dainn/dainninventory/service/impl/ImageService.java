@@ -2,7 +2,7 @@ package org.dainn.dainninventory.service.impl;
 
 import com.cloudinary.Cloudinary;
 import lombok.RequiredArgsConstructor;
-import org.dainn.dainninventory.dto.ImageDTO;
+import org.dainn.dainninventory.dto.image.ImageDTO;
 import org.dainn.dainninventory.entity.ImageEntity;
 import org.dainn.dainninventory.entity.ProductEntity;
 import org.dainn.dainninventory.exception.AppException;
@@ -41,12 +41,12 @@ public class ImageService implements IImageService {
         }
     }
 
-    @Override
-    public void uploadImages(List<MultipartFile> images, ProductEntity productEntity) {
-        for (MultipartFile image : images) {
-            save(uploadImage(image), productEntity);
-        }
-    }
+//    @Override
+//    public void uploadImages(List<MultipartFile> images, ProductEntity productEntity) {
+//        for (MultipartFile image : images) {
+//            save(uploadImage(image), productEntity);
+//        }
+//    }
 
     @Override
     public List<ImageDTO> findByProductId(Integer productId) {
