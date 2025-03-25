@@ -7,14 +7,13 @@ import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.filter.JwtProvider;
 import org.dainn.dainninventory.repository.ITokenRepository;
 import org.dainn.dainninventory.service.IBaseRedisService;
+import org.dainn.dainninventory.utils.CookieUtil;
 import org.dainn.dainninventory.utils.JwtUtil;
 import org.dainn.dainninventory.utils.constant.RedisConstant;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
@@ -29,15 +28,9 @@ public class LogoutHandleService implements LogoutHandler {
         String jwt = JwtUtil.getJwtFromRequest(request);
         String uuid = jwtProvider.extractUUID(jwt);
         String key = RedisConstant.BLACKLISTING + ":" + uuid;
-        System.out.println("key = " + key);
         baseRedisService.set(key, uuid);
 
-        Cookie[] cookies = request.getCookies();
-        String refreshToken = Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals("refresh_token"))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
+        String refreshToken = CookieUtil.getRefreshToken(request);
         if (refreshToken == null) {
             return;
         }

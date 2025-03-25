@@ -1,6 +1,9 @@
 package org.dainn.dainninventory.utils;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.Arrays;
 
 public class CookieUtil {
     public static Cookie createRefreshTokenCookie(String refreshToken) {
@@ -11,5 +14,14 @@ public class CookieUtil {
         refreshTokenCookie.setMaxAge(15 * 24 * 60 * 60);
         refreshTokenCookie.setPath("/");
         return refreshTokenCookie;
+    }
+
+    public static String getRefreshToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals("refresh_token"))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
     }
 }
