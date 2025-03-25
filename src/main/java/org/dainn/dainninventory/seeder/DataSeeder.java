@@ -25,10 +25,13 @@ public class DataSeeder implements CommandLineRunner {
         if (roleRepository.count() == 0) {
             RoleEntity adminRole = new RoleEntity();
             adminRole.setName(RoleConstant.PREFIX_ROLE + "ADMIN");
+            adminRole.setDescription("Administrator role");
             RoleEntity staffRole = new RoleEntity();
             staffRole.setName(RoleConstant.PREFIX_ROLE + "STAFF");
+            staffRole.setDescription("Staff role");
             RoleEntity userRole = new RoleEntity();
             userRole.setName(RoleConstant.PREFIX_ROLE + "USER");
+            userRole.setDescription("User role");
             roleRepository.saveAll(List.of(adminRole, staffRole, userRole));
 
             if (userRepository.count() == 0) {

@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dainn.dainninventory.dto.auth.LoginDTO;
 import org.dainn.dainninventory.dto.auth.RegisterDTO;
 import org.dainn.dainninventory.dto.auth.ResetPassword;
@@ -27,6 +28,7 @@ import org.dainn.dainninventory.service.ITokenService;
 import org.dainn.dainninventory.service.IUserService;
 import org.dainn.dainninventory.utils.CookieUtil;
 import org.dainn.dainninventory.utils.IPAddressUtil;
+import org.dainn.dainninventory.utils.JwtUtil;
 import org.dainn.dainninventory.utils.constant.RoleConstant;
 import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,6 +42,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService implements IAuthService {
@@ -64,6 +67,9 @@ public class AuthService implements IAuthService {
         if (!encoder.matches(dto.getPassword(), userEntity.getPassword())) {
             throw new AppException(ErrorCode.PASSWORD_IS_INCORRECT);
         }
+        if (userEntity.getAvatar() == null) {
+            userEntity.setAvatar("");
+        }
         String accessToken = jwtProvider.generateToken(userMapper.toDTO(userEntity));
         String refreshToken = jwtProvider.generateRefreshToken();
         TokenDTO tokenDTO = createTokenDTO(refreshToken, userEntity.getId(), request);
@@ -71,8 +77,6 @@ public class AuthService implements IAuthService {
         response.addCookie(CookieUtil.createRefreshTokenCookie(refreshToken));
         return new JwtResponse(accessToken);
     }
-
-
 
     @Override
     public UserDTO register(@Valid RegisterDTO request) {
@@ -83,7 +87,7 @@ public class AuthService implements IAuthService {
     @Override
     public JwtResponse loginGoogle(HttpServletRequest request, HttpServletResponse response) {
         try {
-            String token = getTokenFromRequest(request);
+            String token = JwtUtil.getJwtFromRequest(request);
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
                     .setAudience(Collections.singleton(googleClientId))
                     .build();
@@ -91,21 +95,23 @@ public class AuthService implements IAuthService {
             GoogleIdToken.Payload payload = idToken.getPayload();
             String email = payload.getEmail();
             String name = (String) payload.get("name");
+            String avatar = (String) payload.get("picture");
             Optional<UserEntity> optional = userRepository.findByEmailAndProviderAndStatus(email, Provider.google, 1);
             UserEntity userEntity = new UserEntity();
             if (optional.isEmpty()) {
                 userEntity.setEmail(email);
-                userEntity.setName(name);
                 userEntity.setPassword(encoder.encode("dainn"));
                 userEntity.setProvider(Provider.google);
                 RoleEntity roleEntity = roleRepository.findByName(RoleConstant.PREFIX_ROLE + "USER")
                         .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
                 userEntity.setRole(roleEntity);
+                userEntity.setAvatar(avatar);
             } else {
                 userEntity = optional.get();
-                userEntity.setName(name);
             }
+            userEntity.setName(name);
             userEntity = userRepository.save(userEntity);
+
             String accessToken = jwtProvider.generateToken(userMapper.toDTO(userEntity));
             String refreshToken = jwtProvider.generateRefreshToken();
             TokenDTO tokenDTO = createTokenDTO(refreshToken, userEntity.getId(), request);
@@ -153,13 +159,5 @@ public class AuthService implements IAuthService {
                 .refreshTokenExpirationDate(new Date(new Date().getTime() + expirationRefresh))
                 .userId(userId)
                 .build();
-    }
-
-    private String getTokenFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
     }
 }

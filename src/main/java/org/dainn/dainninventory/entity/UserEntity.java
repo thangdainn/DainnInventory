@@ -29,7 +29,7 @@ public class UserEntity extends BaseEntity{
     @Column(name = "avatar")
     private String avatar;
 
-    @Column(name = "phone", nullable = false)
+    @Column(name = "phone")
     private String phone;
 
     @Enumerated(EnumType.STRING)
