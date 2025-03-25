@@ -11,7 +11,7 @@ import java.util.Date;
 @Builder
 public class TokenDTO {
     private Integer id;
-    private String deviceInfo;
+    private String ipAddress;
     private String refreshToken;
 //    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date refreshTokenExpirationDate;

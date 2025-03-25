@@ -25,8 +25,8 @@ public class AuthController {
     private final IOtpService otpService;
 
     @PostMapping(Endpoint.Auth.LOGIN)
-    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO request, HttpServletResponse response) {
-        return ResponseEntity.ok(authService.login(request, response));
+    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO dto, HttpServletRequest request, HttpServletResponse response) {
+        return ResponseEntity.ok(authService.login(dto, request, response));
     }
 
     @PostMapping(Endpoint.Auth.REGISTER)
@@ -40,8 +40,8 @@ public class AuthController {
     }
 
     @PostMapping(Endpoint.Auth.LOGIN_GOOGLE)
-    public ResponseEntity<?> googleLogin(HttpServletRequest request, @RequestBody DeviceInfoDTO deviceInfo, HttpServletResponse response){
-        return ResponseEntity.ok(authService.loginGoogle(request, deviceInfo, response));
+    public ResponseEntity<?> googleLogin(HttpServletRequest request, HttpServletResponse response){
+        return ResponseEntity.ok(authService.loginGoogle(request, response));
     }
 
     @PostMapping(Endpoint.Auth.SEND_OTP)
@@ -58,6 +58,17 @@ public class AuthController {
     @PostMapping(Endpoint.Auth.CHECK_EMAIL_EXISTS)
     public ResponseEntity<?> checkEmailExists(@RequestBody OtpDTO dto) {
         return ResponseEntity.ok(userService.checkEmailAndProvider(dto.getEmail(), Provider.local));
+    }
+
+    @PostMapping(Endpoint.Auth.CHECK_PASSWORD)
+    public ResponseEntity<?> checkPassword(@RequestBody ResetPassword dto) {
+        return ResponseEntity.ok(authService.checkPassword(dto));
+    }
+
+    @PostMapping(Endpoint.Auth.RESET_PASSWORD)
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPassword dto, HttpServletRequest request) {
+        authService.resetPassword(dto, request);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping(Endpoint.Auth.FORGOT_PASSWORD)

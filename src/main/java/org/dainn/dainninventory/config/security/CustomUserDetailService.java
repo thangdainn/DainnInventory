@@ -2,7 +2,6 @@ package org.dainn.dainninventory.config.security;
 
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.entity.UserEntity;
-import org.dainn.dainninventory.repository.IRoleRepository;
 import org.dainn.dainninventory.repository.IUserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,7 +9,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -18,8 +16,6 @@ import java.util.Optional;
 public class CustomUserDetailService implements UserDetailsService {
 
     private final IUserRepository userRepository;
-
-    private final IRoleRepository roleRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

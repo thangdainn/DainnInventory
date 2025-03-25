@@ -34,9 +34,6 @@ public class SecurityConfig {
     private final CustomUserDetailService customUserDetailService;
     private final LogoutHandleService logoutHandleService;
     private final JwtProvider jwtProvider;
-//    public SecurityConfig(CustomUserDetailService customUserDetailService) {
-//        this.customUserDetailService = customUserDetailService;
-//    }
     @Bean
     public UserDetailsService userDetailsService() {
         return customUserDetailService;
@@ -46,11 +43,6 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-//    @Bean
-//    public LogoutHandleService logoutHandlerService() {
-//        return new LogoutHandleService();
-//    }
 
     @Bean
     public RestTemplate restTemplate() {
@@ -90,8 +82,27 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
     }
+
     @Bean
     @Order(3)
+    public SecurityFilterChain logoutSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .securityMatcher(new AntPathRequestMatcher("/api/logout"))
+                .authorizeHttpRequests((requests) -> requests
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .logout((logout) -> logout
+                        .logoutUrl("/api/logout")
+                        .addLogoutHandler(logoutHandleService)
+                        .logoutSuccessHandler(((request, response, authentication) -> SecurityContextHolder.clearContext()))
+                );
+        return http.build();
+    }
+
+    @Bean
+    @Order(4)
     public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -107,8 +118,9 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthenticationFilter(exceptionResolver, customUserDetailService, jwtProvider), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
     @Bean
-    @Order(4)
+    @Order(5)
     public SecurityFilterChain wsSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -123,22 +135,5 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    @Order(5)
-    public SecurityFilterChain logoutSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .securityMatcher(new AntPathRequestMatcher("/logout"))
-                .authorizeHttpRequests((requests) -> requests
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .logout((logout) -> logout
-                        .logoutUrl("/logout")
-                        .addLogoutHandler(logoutHandleService)
-                        .logoutSuccessHandler(((request, response, authentication) -> SecurityContextHolder.clearContext()))
-                );
 
-        return http.build();
-    }
 }

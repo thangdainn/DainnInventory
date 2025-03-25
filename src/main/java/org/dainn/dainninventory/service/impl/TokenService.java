@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +36,8 @@ public class TokenService implements ITokenService {
     @Override
     public TokenDTO insert(TokenDTO dto) {
         TokenEntity tokenEntity = tokenMapper.toEntity(dto);
+        Optional<TokenEntity> oldToken = tokenRepository.findByUserIdAndIpAddress(dto.getUserId(), dto.getIpAddress());
+        oldToken.ifPresent(entity -> tokenRepository.deleteById(entity.getId()));
         tokenEntity.setUser(userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
         return tokenMapper.toDTO(tokenRepository.save(tokenEntity));
@@ -70,5 +73,11 @@ public class TokenService implements ITokenService {
     @Transactional
     public void deleteByUserId(Integer userId) {
         tokenRepository.deleteByUser_Id(userId);
+    }
+
+    @Transactional
+    @Override
+    public void deleteByUserIdAndNotIpAddress(Integer userId, String ipAddress) {
+        tokenRepository.deleteByUserIdAndNotIpAddress(userId, ipAddress);
     }
 }

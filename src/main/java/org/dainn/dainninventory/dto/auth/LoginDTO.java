@@ -17,7 +17,4 @@ public class LoginDTO {
     private String email;
     @NotBlank(message = "Password is required")
     private String password;
-
-    @NotBlank(message = "Device info is required")
-    private String deviceInfo;
 }

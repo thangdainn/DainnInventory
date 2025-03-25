@@ -11,11 +11,17 @@ import java.util.Optional;
 
 @Repository
 public interface ITokenRepository extends JpaRepository<TokenEntity, Integer> {
+    Optional<TokenEntity> findByUserIdAndIpAddress(Integer userId, String ipAddress);
+
     @Modifying
     @Query("UPDATE TokenEntity t SET t.refreshToken = :refreshToken WHERE t.id = :id")
     void updateRefreshToken(@Param("refreshToken") String refreshToken, @Param("id") Integer id);
-    void deleteByUser_IdAndDeviceInfo(Integer userId, String deviceInfo);
+
     Optional<TokenEntity> findByRefreshToken(String refreshToken);
     void deleteByRefreshToken(String refreshToken);
     void deleteByUser_Id(Integer userId);
+
+    @Modifying
+    @Query("DELETE FROM TokenEntity t WHERE t.user.id = :userId AND t.ipAddress != :ipAddress")
+    void deleteByUserIdAndNotIpAddress(@Param("userId") Integer userId, @Param("ipAddress") String ipAddress);
 }

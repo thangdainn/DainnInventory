@@ -4,7 +4,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
+import org.dainn.dainninventory.config.endpoint.Endpoint;
 import org.dainn.dainninventory.config.security.CustomUserDetailService;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +15,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CustomUserDetailService customUserDetailService;
@@ -36,6 +41,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,@NonNull FilterChain filterChain) {
         try {
+            if (isByPassToken(request)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
             String jwt = getJwtFromRequest(request);
             if (!StringUtils.hasText(jwt) || !jwtProvider.validateToken(jwt)) {
                 filterChain.doFilter(request, response);
@@ -53,6 +62,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             exception.resolveException(request, response, null, e);
         }
+    }
 
+    private boolean isByPassToken(@NonNull HttpServletRequest request) {
+        final String apiPrefix = Endpoint.API_PREFIX;
+        final List<Pair<String, String>> byPassToken = Arrays.asList(
+                Pair.of(String.format("%s/products", apiPrefix), "GET"),
+                Pair.of(String.format("%s/categories", apiPrefix), "GET"),
+                Pair.of(String.format("%s/brands", apiPrefix), "GET"),
+                Pair.of(String.format("%s/sizes", apiPrefix), "GET")
+        );
+        for (Pair<String, String> item : byPassToken) {
+            if (request.getRequestURI().contains(item.getFirst()) &&
+                    request.getMethod().contains(item.getSecond())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -29,8 +29,8 @@ public class TokenEntity{
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date refreshTokenExpirationDate;
 
-    @Column(name = "device_info", nullable = false)
-    private String deviceInfo;
+    @Column(name = "ip_address", nullable = false)
+    private String ipAddress;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

@@ -8,13 +8,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.dainn.dainninventory.dto.response.JwtResponse;
-import org.dainn.dainninventory.dto.device.DeviceInfoDTO;
-import org.dainn.dainninventory.dto.token.TokenDTO;
-import org.dainn.dainninventory.dto.user.UserDTO;
 import org.dainn.dainninventory.dto.auth.LoginDTO;
 import org.dainn.dainninventory.dto.auth.RegisterDTO;
 import org.dainn.dainninventory.dto.auth.ResetPassword;
+import org.dainn.dainninventory.dto.response.JwtResponse;
+import org.dainn.dainninventory.dto.token.TokenDTO;
+import org.dainn.dainninventory.dto.user.UserDTO;
 import org.dainn.dainninventory.entity.RoleEntity;
 import org.dainn.dainninventory.entity.UserEntity;
 import org.dainn.dainninventory.exception.AppException;
@@ -27,12 +26,14 @@ import org.dainn.dainninventory.service.IAuthService;
 import org.dainn.dainninventory.service.ITokenService;
 import org.dainn.dainninventory.service.IUserService;
 import org.dainn.dainninventory.utils.CookieUtil;
+import org.dainn.dainninventory.utils.IPAddressUtil;
 import org.dainn.dainninventory.utils.constant.RoleConstant;
 import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.Collections;
@@ -57,27 +58,30 @@ public class AuthService implements IAuthService {
     String googleClientId;
 
     @Override
-    public JwtResponse login(LoginDTO request, HttpServletResponse response) {
-        UserEntity userEntity = userRepository.findByEmailAndProviderAndStatus(request.getEmail(), Provider.local, 1)
+    public JwtResponse login(LoginDTO dto, HttpServletRequest request, HttpServletResponse response) {
+        UserEntity userEntity = userRepository.findByEmailAndProviderAndStatus(dto.getEmail(), Provider.local, 1)
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_IS_INCORRECT));
-        if (!encoder.matches(request.getPassword(), userEntity.getPassword())) {
+        if (!encoder.matches(dto.getPassword(), userEntity.getPassword())) {
             throw new AppException(ErrorCode.PASSWORD_IS_INCORRECT);
         }
         String accessToken = jwtProvider.generateToken(userMapper.toDTO(userEntity));
         String refreshToken = jwtProvider.generateRefreshToken();
-        TokenDTO tokenDTO = createTokenDTO(refreshToken, userEntity.getId(), request.getDeviceInfo());
+        TokenDTO tokenDTO = createTokenDTO(refreshToken, userEntity.getId(), request);
         tokenService.insert(tokenDTO);
         response.addCookie(CookieUtil.createRefreshTokenCookie(refreshToken));
         return new JwtResponse(accessToken);
     }
+
+
 
     @Override
     public UserDTO register(@Valid RegisterDTO request) {
         return userService.insert(userMapper.toUserRequest(request));
     }
 
+    @Transactional
     @Override
-    public JwtResponse loginGoogle(HttpServletRequest request, DeviceInfoDTO deviceInfo, HttpServletResponse response) {
+    public JwtResponse loginGoogle(HttpServletRequest request, HttpServletResponse response) {
         try {
             String token = getTokenFromRequest(request);
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
@@ -104,7 +108,7 @@ public class AuthService implements IAuthService {
             userEntity = userRepository.save(userEntity);
             String accessToken = jwtProvider.generateToken(userMapper.toDTO(userEntity));
             String refreshToken = jwtProvider.generateRefreshToken();
-            TokenDTO tokenDTO = createTokenDTO(refreshToken, userEntity.getId(), deviceInfo.getDeviceInfo());
+            TokenDTO tokenDTO = createTokenDTO(refreshToken, userEntity.getId(), request);
             tokenService.insert(tokenDTO);
             response.addCookie(CookieUtil.createRefreshTokenCookie(refreshToken));
             return new JwtResponse(accessToken);
@@ -113,6 +117,7 @@ public class AuthService implements IAuthService {
         }
     }
 
+    @Transactional
     @Override
     public void forgotPassword(ResetPassword dto) {
         UserEntity userEntity = userRepository.findByEmailAndProviderAndStatus(dto.getEmail(), Provider.local, 1)
@@ -122,9 +127,28 @@ public class AuthService implements IAuthService {
         tokenService.deleteByUserId(userEntity.getId());
     }
 
-    private TokenDTO createTokenDTO(String refreshToken, Integer userId, String deviceInfo) {
+    @Override
+    public boolean checkPassword(ResetPassword dto) {
+        UserEntity userEntity = userRepository.findByEmailAndProviderAndStatus(dto.getEmail(), Provider.local, 1)
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_IS_INCORRECT));
+        return encoder.matches(dto.getPassword(), userEntity.getPassword());
+    }
+
+    @Transactional
+    @Override
+    public void resetPassword(ResetPassword dto, HttpServletRequest request) {
+        UserEntity userEntity = userRepository.findByEmailAndProviderAndStatus(dto.getEmail(), Provider.local, 1)
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_IS_INCORRECT));
+        userEntity.setPassword(encoder.encode(dto.getPassword()));
+        String ipAddress = IPAddressUtil.getClientIpAddress(request);
+        userRepository.save(userEntity);
+        tokenService.deleteByUserIdAndNotIpAddress(userEntity.getId(), ipAddress);
+    }
+
+    private TokenDTO createTokenDTO(String refreshToken, Integer userId, HttpServletRequest request) {
+        String ipAddress = IPAddressUtil.getClientIpAddress(request);
         return TokenDTO.builder()
-                .deviceInfo(deviceInfo)
+                .ipAddress(ipAddress)
                 .refreshToken(refreshToken)
                 .refreshTokenExpirationDate(new Date(new Date().getTime() + expirationRefresh))
                 .userId(userId)

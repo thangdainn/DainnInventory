@@ -14,7 +14,8 @@ public class Endpoint {
         public static final String SEND_OTP = "/send-otp";
         public static final String VERIFY_OTP = "/verify-otp";
         public static final String CHECK_EMAIL_EXISTS = "/check-email";
-
+        public static final String CHECK_PASSWORD = "/check-password";
+        public static final String RESET_PASSWORD = "/reset-password";
     }
 
     public static final class User {
