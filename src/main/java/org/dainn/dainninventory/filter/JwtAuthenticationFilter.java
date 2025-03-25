@@ -6,8 +6,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import org.dainn.dainninventory.config.endpoint.Endpoint;
 import org.dainn.dainninventory.config.security.CustomUserDetailService;
+import org.dainn.dainninventory.service.IBaseRedisService;
+import org.dainn.dainninventory.utils.JwtUtil;
+import org.dainn.dainninventory.utils.constant.RedisConstant;
 import org.springframework.data.util.Pair;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,20 +24,14 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CustomUserDetailService customUserDetailService;
     private final JwtProvider jwtProvider;
+    private final IBaseRedisService baseRedisService;
     private final HandlerExceptionResolver exception;
 
-    public JwtAuthenticationFilter(HandlerExceptionResolver exception, CustomUserDetailService customUserDetailService, JwtProvider jwtProvider) {
+    public JwtAuthenticationFilter(HandlerExceptionResolver exception, CustomUserDetailService customUserDetailService, JwtProvider jwtProvider, IBaseRedisService baseRedisService) {
         this.exception = exception;
         this.customUserDetailService = customUserDetailService;
         this.jwtProvider = jwtProvider;
-    }
-
-    private String getJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
+        this.baseRedisService = baseRedisService;
     }
 
     @Override
@@ -45,7 +41,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-            String jwt = getJwtFromRequest(request);
+            String jwt = JwtUtil.getJwtFromRequest(request);
+            if (isBlackListed(jwt)) {
+                exception.resolveException(request, response, null, new Exception("Token is blacklisted"));
+                return;
+            }
             if (!StringUtils.hasText(jwt) || !jwtProvider.validateToken(jwt)) {
                 filterChain.doFilter(request, response);
                 return;
@@ -62,6 +62,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             exception.resolveException(request, response, null, e);
         }
+    }
+
+    private boolean isBlackListed(String jwt) {
+        String uuid = jwtProvider.extractUUID(jwt);
+        String key = RedisConstant.BLACKLISTING + ":" + uuid;
+        String value = (String) baseRedisService.get(key);
+        return uuid.equals(value);
     }
 
     private boolean isByPassToken(@NonNull HttpServletRequest request) {

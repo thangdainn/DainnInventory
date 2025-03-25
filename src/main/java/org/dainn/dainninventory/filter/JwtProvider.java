@@ -29,7 +29,8 @@ public class JwtProvider {
                 "id", user.getId(),
                 "email", user.getEmail(),
                 "avatar", user.getAvatar(),
-                "role", user.getRoleName()
+                "role", user.getRoleName(),
+                "uuid", UUID.randomUUID().toString()
         );
         return Jwts.builder()
                 .setClaims(claims)
@@ -70,6 +71,10 @@ public class JwtProvider {
             throw new ExpiredJwtException(null, null, "TOKEN EXPIRED");
         }
         return extractClaim(token, claims -> claims.get("id", Integer.class));
+    }
+
+    public String extractUUID(String token) {
+        return extractClaim(token, claims -> claims.get("uuid", String.class));
     }
 
     public boolean isTokenExpired(String token) {

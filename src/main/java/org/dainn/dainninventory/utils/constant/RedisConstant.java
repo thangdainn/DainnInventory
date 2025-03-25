@@ -13,4 +13,5 @@ public class RedisConstant {
     public static final String SIZES_KEY_PREFIX = "sizes";
     public static final String OTP_KEY_PREFIX = "otp";
     public static final long OTP_EXPIRATION = 300;
+    public static final String BLACKLISTING = "blacklist";
 }

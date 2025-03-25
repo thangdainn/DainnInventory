@@ -2,10 +2,10 @@ package org.dainn.dainninventory.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.dainn.dainninventory.dto.user.UpdateProfile;
+import org.dainn.dainninventory.dto.user.UserDTO;
 import org.dainn.dainninventory.dto.user.UserPageRequest;
 import org.dainn.dainninventory.dto.user.UserRequest;
-import org.dainn.dainninventory.dto.user.UserDTO;
-import org.dainn.dainninventory.dto.user.UpdateProfile;
 import org.dainn.dainninventory.entity.RoleEntity;
 import org.dainn.dainninventory.entity.UserEntity;
 import org.dainn.dainninventory.exception.AppException;
@@ -18,12 +18,12 @@ import org.dainn.dainninventory.repository.specification.SearchOperation;
 import org.dainn.dainninventory.repository.specification.SpecSearchCriteria;
 import org.dainn.dainninventory.repository.specification.SpecificationBuilder;
 import org.dainn.dainninventory.service.IUserService;
+import org.dainn.dainninventory.utils.JwtUtil;
 import org.dainn.dainninventory.utils.Paging;
 import org.dainn.dainninventory.utils.constant.RoleConstant;
 import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,7 +104,7 @@ public class UserService implements IUserService {
 
     @Override
     public UserDTO findMyInfo(HttpServletRequest request) {
-        String jwt = getJwtFromRequest(request);
+        String jwt = JwtUtil.getJwtFromRequest(request);
         Integer userId = jwtProvider.extractId(jwt);
         return userMapper.toDTO(userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
@@ -112,7 +112,7 @@ public class UserService implements IUserService {
 
     @Override
     public UserDTO updateProfile(UpdateProfile dto, HttpServletRequest request) {
-        String jwt = getJwtFromRequest(request);
+        String jwt = JwtUtil.getJwtFromRequest(request);
         Integer userId = jwtProvider.extractId(jwt);
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -120,14 +120,6 @@ public class UserService implements IUserService {
         user.setName(dto.getName());
         user.setAvatar(dto.getAvatar());
         return userMapper.toDTO(userRepository.save(user));
-    }
-
-    private String getJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
     }
 
     @Override

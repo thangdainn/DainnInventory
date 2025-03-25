@@ -3,6 +3,7 @@ package org.dainn.dainninventory.config.security;
 import lombok.RequiredArgsConstructor;
 import org.dainn.dainninventory.filter.JwtAuthenticationFilter;
 import org.dainn.dainninventory.filter.JwtProvider;
+import org.dainn.dainninventory.service.IBaseRedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +35,7 @@ public class SecurityConfig {
     private final CustomUserDetailService customUserDetailService;
     private final LogoutHandleService logoutHandleService;
     private final JwtProvider jwtProvider;
+    private final IBaseRedisService baseRedisService;
     @Bean
     public UserDetailsService userDetailsService() {
         return customUserDetailService;
@@ -115,7 +117,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new JwtAuthenticationFilter(exceptionResolver, customUserDetailService, jwtProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(exceptionResolver, customUserDetailService, jwtProvider, baseRedisService), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -131,7 +133,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new JwtAuthenticationFilter(exceptionResolver, customUserDetailService, jwtProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(exceptionResolver, customUserDetailService, jwtProvider, baseRedisService), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
