@@ -5,6 +5,7 @@ import org.dainn.dainninventory.entity.RoleEntity;
 import org.dainn.dainninventory.entity.UserEntity;
 import org.dainn.dainninventory.repository.IRoleRepository;
 import org.dainn.dainninventory.repository.IUserRepository;
+import org.dainn.dainninventory.utils.constant.DefaultAvatar;
 import org.dainn.dainninventory.utils.constant.RoleConstant;
 import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.boot.CommandLineRunner;
@@ -39,6 +40,7 @@ public class DataSeeder implements CommandLineRunner {
                 admin.setEmail("admin@gmail.com");
                 admin.setName("Administrator");
                 admin.setPhone("0333207334");
+                admin.setAvatar(DefaultAvatar.DEFAULT_AVATAR);
                 admin.setPassword(encoder.encode("123123"));
                 admin.setProvider(Provider.local);
                 admin.setRole(adminRole);

@@ -3,16 +3,20 @@ version: '3.8'
 services:
   app:
     build: .
+    container_name: di-backend
     ports:
       - "8090:8090"
     env_file:
       - .env
     depends_on:
-      - postgres
-      - redis
+      di-postgres:
+        condition: service_healthy
+      di-redis:
+          condition: service_started
 
-  postgres:
+  di-postgres:
     image: postgres:15-alpine
+    container_name: di-postgres
     environment:
       - POSTGRES_DB=dainn_inventory
       - POSTGRES_USER=postgres
@@ -20,17 +24,18 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - di-postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres -d dainn_inventory" ]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  redis:
+  di-redis:
     image: redis:alpine
+    container_name: di-redis
     ports:
       - "6379:6379"
 
 volumes:
-  postgres-data:
+  di-postgres-data:

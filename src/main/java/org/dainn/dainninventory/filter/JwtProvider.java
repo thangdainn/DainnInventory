@@ -30,6 +30,7 @@ public class JwtProvider {
                 "email", user.getEmail(),
                 "avatar", user.getAvatar(),
                 "role", user.getRoleName(),
+                "provider", user.getProvider(),
                 "uuid", UUID.randomUUID().toString()
         );
         return Jwts.builder()

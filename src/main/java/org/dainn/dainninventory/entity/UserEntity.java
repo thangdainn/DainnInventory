@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.dainn.dainninventory.utils.constant.DefaultAvatar;
 import org.dainn.dainninventory.utils.enums.Provider;
 
 import java.util.ArrayList;

@@ -20,6 +20,7 @@ import org.dainn.dainninventory.repository.specification.SpecificationBuilder;
 import org.dainn.dainninventory.service.IUserService;
 import org.dainn.dainninventory.utils.JwtUtil;
 import org.dainn.dainninventory.utils.Paging;
+import org.dainn.dainninventory.utils.constant.DefaultAvatar;
 import org.dainn.dainninventory.utils.constant.RoleConstant;
 import org.dainn.dainninventory.utils.enums.Provider;
 import org.springframework.data.domain.Page;
@@ -50,6 +51,9 @@ public class UserService implements IUserService {
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
         UserEntity userEntity = userMapper.toEntity(userDTO);
+        if (!StringUtils.hasText(userEntity.getAvatar())){
+            userEntity.setAvatar(DefaultAvatar.DEFAULT_AVATAR);
+        }
         userEntity.setPassword(encoder.encode(userDTO.getPassword()));
         userEntity.setRole(handleRole(userDTO.getRoleName()));
         return userMapper.toDTO(userRepository.save(userEntity));
