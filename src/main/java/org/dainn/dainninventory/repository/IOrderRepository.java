@@ -1,6 +1,5 @@
 package org.dainn.dainninventory.repository;
 
-import org.dainn.dainninventory.config.endpoint.Endpoint;
 import org.dainn.dainninventory.dto.statistic.SaleByCateDTO;
 import org.dainn.dainninventory.entity.OrderEntity;
 import org.dainn.dainninventory.utils.enums.OrderStatus;
@@ -22,8 +21,8 @@ public interface IOrderRepository extends JpaRepository<OrderEntity, Integer>, J
     void updateStatuses(@Param("ids") List<Integer> ids, @Param("status") OrderStatus status);
 
     @Modifying
-    @Query("UPDATE OrderEntity o SET o.isPaid = :isPaid WHERE o.id = :id")
-    void updatePaid(@Param("id") Integer id, @Param("isPaid") boolean isPaid);
+    @Query("UPDATE OrderEntity o SET o.isPaid = :isPaid, o.status = :status  WHERE o.id = :id")
+    void updatePaid(@Param("id") Integer id, @Param("isPaid") boolean isPaid, @Param("status") OrderStatus status);
 
     List<OrderEntity> findAllByOrderDateBetween(Date startDate, Date endDate);
     List<OrderEntity> findAllByStatusAndOrderDateBetween(OrderStatus status, Date startDate, Date endDate, Sort sort);

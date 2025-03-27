@@ -3,22 +3,22 @@ package org.dainn.dainninventory.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dainn.dainninventory.config.endpoint.Endpoint;
 import org.dainn.dainninventory.dto.momo.MomoCallbackDTO;
+import org.dainn.dainninventory.dto.momo.MomoCallbackResp;
 import org.dainn.dainninventory.service.IMomoService;
 import org.dainn.dainninventory.service.IOrderService;
 import org.dainn.dainninventory.service.IPaymentService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
 @RestController
 @RequestMapping(Endpoint.Payment.BASE)
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentController {
     private final IPaymentService paymentService;
     private final IOrderService orderService;
@@ -36,7 +36,7 @@ public class PaymentController {
         if (vnp_ResponseCode.equals("00")) {
             orderService.updateIsPaid(vnp_TxnRef);
         }
-        response.sendRedirect("http://localhost:4200/order-status?orderOd=" + vnp_TxnRef + "&ResponseCode=" + vnp_ResponseCode);
+        response.sendRedirect("http://localhost:4200/order-status?orderId=" + vnp_TxnRef + "&ResponseCode=" + vnp_ResponseCode);
 
     }
 
@@ -45,11 +45,11 @@ public class PaymentController {
         return ResponseEntity.ok(momoService.createMomoPayment(orderId));
     }
 
-    @GetMapping(Endpoint.Payment.MOMO_CALLBACK)
-    public void handleMomoCallBack(MomoCallbackDTO callbackDto,
-                                   HttpServletResponse response) throws IOException {
+    @PostMapping(Endpoint.Payment.MOMO_CALLBACK)
+    public ResponseEntity<?> handleMomoCallBack(@RequestBody MomoCallbackDTO callbackDto) {
         int resultCode = momoService.handleMomoCallBack(callbackDto);
         int orderId = Integer.parseInt(callbackDto.getOrderId().substring(0, callbackDto.getOrderId().indexOf("_")));
-        response.sendRedirect("http://localhost:4200/donation-status?orderId=" + orderId + "responseCode=" + resultCode);
+        MomoCallbackResp resp = new MomoCallbackResp(orderId, resultCode);
+        return ResponseEntity.ok().body(resp);
     }
 }

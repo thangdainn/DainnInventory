@@ -2,6 +2,7 @@ package org.dainn.dainninventory.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dainn.dainninventory.config.payment.vnpay.VNPayConfig;
 import org.dainn.dainninventory.dto.payment.PaymentDTO;
 import org.dainn.dainninventory.service.IPaymentService;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentService implements IPaymentService {
@@ -18,10 +20,13 @@ public class PaymentService implements IPaymentService {
     public PaymentDTO.VNPAYResponse createVNPayPayment(HttpServletRequest request, Integer orderId) {
         long amount = Integer.parseInt(request.getParameter("amount")) * 100L;
         String bankCode = request.getParameter("bankCode");
+        log.info("bankCode {}", bankCode);
         Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig(orderId);
         vnpParamsMap.put("vnp_Amount", String.valueOf(amount));
         if (bankCode != null && !bankCode.isEmpty()) {
             vnpParamsMap.put("vnp_BankCode", bankCode);
+        } else {
+            vnpParamsMap.put("vnp_BankCode", "VNBANK");
         }
         vnpParamsMap.put("vnp_IpAddr", VNPayUtil.getIpAddress(request));
         //build query url

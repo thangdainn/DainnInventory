@@ -88,9 +88,8 @@ public class OrderService implements IOrderService {
     @Transactional
     @Override
     public void updateIsPaid(Integer id) {
-        orderRepository.updatePaid(id, true);
+        orderRepository.updatePaid(id, true, OrderStatus.PROCESSING);
     }
-
 
     @Override
     public OrderDTO findById(Integer id) {

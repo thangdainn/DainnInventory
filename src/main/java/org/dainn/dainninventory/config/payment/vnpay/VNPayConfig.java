@@ -1,6 +1,7 @@
 package org.dainn.dainninventory.config.payment.vnpay;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.dainn.dainninventory.utils.VNPay;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,6 +13,7 @@ import java.util.TimeZone;
 
 @Configuration
 @Getter
+@Slf4j
 public class VNPayConfig {
     private final String vnp_Url = VNPay.VN_PAY_URL;
     private final String vnp_ReturnUrl = VNPay.VN_PAY_RETURN_URL;
@@ -33,13 +35,18 @@ public class VNPayConfig {
         vnpParamsMap.put("vnp_OrderType", this.vnp_OrderType);
         vnpParamsMap.put("vnp_Locale", "vn");
         vnpParamsMap.put("vnp_ReturnUrl", this.vnp_ReturnUrl);
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        formatter.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+
         String vnpCreateDate = formatter.format(calendar.getTime());
         vnpParamsMap.put("vnp_CreateDate", vnpCreateDate);
         calendar.add(Calendar.MINUTE, 15);
         String vnp_ExpireDate = formatter.format(calendar.getTime());
         vnpParamsMap.put("vnp_ExpireDate", vnp_ExpireDate);
+        log.info("vnp_CreateDate: {}", vnpCreateDate);
+        log.info("vnp_ExpireDate: {}", vnp_ExpireDate);
+
         return vnpParamsMap;
     }
 }
